@@ -9,7 +9,6 @@
     <PackageIcon>icon.png</PackageIcon>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Description>Base project for all NanoWorks cache packages.</Description>
-    <Copyright>2024 NanoWorks-Project</Copyright>
     <PackageProjectUrl>https://github.com/NanoWorks-Project/NanoWorks</PackageProjectUrl>
   </PropertyGroup>
 

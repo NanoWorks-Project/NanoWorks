@@ -6,7 +6,6 @@ name: .NET Build, Pack, Push Version
 on:
   push:
     branches: ["version/**/*"]
-    paths: ["./src/Cache"]
 
 jobs:
   build:

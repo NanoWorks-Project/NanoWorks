@@ -32,7 +32,7 @@ jobs:
       run: dotnet pack ./src/Cache/NanoWorks.Cache/NanoWorks.Cache.csproj -p:PackageVersion=${{ vars.PACKAGE_VERSION }} --output ./pack
 
     - name: Pack NanoWorks.Cache.Redis
-      run: dotnet pack ./src/Cache/NanoWorks.Cache.Redis/NanoWorks.Cache.Redis.csproj -p:PackageVersion=${{ vars.PACKAGE_VERSION }}--output ./pack
+      run: dotnet pack ./src/Cache/NanoWorks.Cache.Redis/NanoWorks.Cache.Redis.csproj -p:PackageVersion=${{ vars.PACKAGE_VERSION }} --output ./pack
 
     - name: Push
       run: dotnet nuget push ./pack/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json

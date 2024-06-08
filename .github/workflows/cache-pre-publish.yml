@@ -1,0 +1,27 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: .NET NuGet Push Cache Prerelease
+
+on:
+  push:
+    branches: [ "version/**/*" ]
+    paths: ["src/Cache/**/*"]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+    - name: NuGet Pack NanoWorks.Cache
+      run: dotnet pack ./src/Cache/NanoWorks.Cache -p:PackageVersion=1.0.0-pre --output ./pack
+    - name: Pack NanoWorks.Cache.Redis
+      run: dotnet pack ./src/Cache/NanoWorks.Cache.Redis/NanoWorks.Cache.Redis.csproj -p:PackageVersion=1.0.0-pre --output ./pack
+    - name: Nuget Push
+      run: dotnet nuget push ./pack/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json

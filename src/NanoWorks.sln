@@ -1,0 +1,65 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34607.119
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Cache", "Cache", "{C0DAFF16-63B8-4D05-8E00-7C761A144BB2}"
+	ProjectSection(SolutionItems) = preProject
+		Cache\README.md = Cache\README.md
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NanoWorks.Cache", "Cache\NanoWorks.Cache\NanoWorks.Cache.csproj", "{2FF30752-0845-4C32-BEF2-9BAF9810030B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NanoWorks.Cache.Redis", "Cache\NanoWorks.Cache.Redis\NanoWorks.Cache.Redis.csproj", "{9228FA6E-031B-4030-9167-1ECB5FC73608}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NanoWorks.Cache.Redis.Tests", "Cache\NanoWorks.Cache.Redis.Tests\NanoWorks.Cache.Redis.Tests.csproj", "{E3FB5078-F141-4D44-948C-589A9ACCA1A1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample", "Sample", "{28C40FEF-155B-4822-AE5C-E3E75C4462D1}"
+	ProjectSection(SolutionItems) = preProject
+		Cache\Sample\docker\docker-compose.yml = Cache\Sample\docker\docker-compose.yml
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.WebApi", "Cache\Sample\Sample.WebApi\Sample.WebApi.csproj", "{C0BD8B75-00AF-4652-A635-CD1E26C9C489}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C083DD36-0E20-44A0-B4A8-C8DB498805E1}"
+	ProjectSection(SolutionItems) = preProject
+		..\README.md = ..\README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2FF30752-0845-4C32-BEF2-9BAF9810030B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FF30752-0845-4C32-BEF2-9BAF9810030B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FF30752-0845-4C32-BEF2-9BAF9810030B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FF30752-0845-4C32-BEF2-9BAF9810030B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9228FA6E-031B-4030-9167-1ECB5FC73608}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9228FA6E-031B-4030-9167-1ECB5FC73608}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9228FA6E-031B-4030-9167-1ECB5FC73608}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9228FA6E-031B-4030-9167-1ECB5FC73608}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3FB5078-F141-4D44-948C-589A9ACCA1A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3FB5078-F141-4D44-948C-589A9ACCA1A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3FB5078-F141-4D44-948C-589A9ACCA1A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3FB5078-F141-4D44-948C-589A9ACCA1A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0BD8B75-00AF-4652-A635-CD1E26C9C489}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0BD8B75-00AF-4652-A635-CD1E26C9C489}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0BD8B75-00AF-4652-A635-CD1E26C9C489}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0BD8B75-00AF-4652-A635-CD1E26C9C489}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2FF30752-0845-4C32-BEF2-9BAF9810030B} = {C0DAFF16-63B8-4D05-8E00-7C761A144BB2}
+		{9228FA6E-031B-4030-9167-1ECB5FC73608} = {C0DAFF16-63B8-4D05-8E00-7C761A144BB2}
+		{E3FB5078-F141-4D44-948C-589A9ACCA1A1} = {C0DAFF16-63B8-4D05-8E00-7C761A144BB2}
+		{28C40FEF-155B-4822-AE5C-E3E75C4462D1} = {C0DAFF16-63B8-4D05-8E00-7C761A144BB2}
+		{C0BD8B75-00AF-4652-A635-CD1E26C9C489} = {28C40FEF-155B-4822-AE5C-E3E75C4462D1}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7285D8C3-8D52-494B-BB80-A1D61658F7B0}
+	EndGlobalSection
+EndGlobal

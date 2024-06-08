@@ -29,10 +29,10 @@ jobs:
       run: dotnet test ./src/NanoWorks.sln --no-build --verbosity normal --filter FullyQualifiedName!~IntegrationTests
 
     - name: Pack NanoWorks.Cache
-      run: dotnet pack ./src/Cache/NanoWorks.Cache/NanoWorks.Cache.csproj -p:PackageVersion=${{ vars.PACKAGE_VERSION }} --output ./pack
+      run: dotnet pack ./src/Cache/NanoWorks.Cache/NanoWorks.Cache.csproj -p:PackageVersion=${{vars.PRERELEASE_PACKAGE_VERSION}}-${{vars.GITHUB_RUN_ID}} --output ./pack
 
     - name: Pack NanoWorks.Cache.Redis
-      run: dotnet pack ./src/Cache/NanoWorks.Cache.Redis/NanoWorks.Cache.Redis.csproj -p:PackageVersion=${{ vars.PACKAGE_VERSION }} --output ./pack
+      run: dotnet pack ./src/Cache/NanoWorks.Cache.Redis/NanoWorks.Cache.Redis.csproj -p:PackageVersion=${{vars.PRERELEASE_PACKAGE_VERSION}}-${{vars.GITHUB_RUN_ID}} --output ./pack
 
     - name: Push
-      run: dotnet nuget push ./pack/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+      run: dotnet nuget push ./pack/*.nupkg --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json

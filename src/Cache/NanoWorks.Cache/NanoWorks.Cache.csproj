@@ -8,6 +8,9 @@
     <IsPackable>True</IsPackable>
     <PackageIcon>icon.png</PackageIcon>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <Description>Base project for all NanoWorks cache packages.</Description>
+    <Copyright>2024 NanoWorks-Project</Copyright>
+    <PackageProjectUrl>https://github.com/NanoWorks-Project/NanoWorks</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,8 +22,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="../../../img/icon.png" Pack="true" PackagePath=""/>
-    <None Include="../../../LICENSE" Pack="true" PackagePath=""/>
+    <None Include="../../../img/icon.png" Pack="true" PackagePath="" />
+    <None Include="../../../LICENSE" Pack="true" PackagePath="" />
   </ItemGroup>
 
 </Project>

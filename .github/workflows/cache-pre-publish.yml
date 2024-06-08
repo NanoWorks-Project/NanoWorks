@@ -6,7 +6,7 @@ name: .NET NuGet Push Cache Prerelease
 on:
   push:
     branches: [ "version/**/*" ]
-    paths: ["src/Cache/**/*"]
+    paths: ["./src/Cache/**/*"]
 
 jobs:
   build:

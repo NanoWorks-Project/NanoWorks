@@ -1,14 +1,14 @@
 # This workflow will build a .NET project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
-name: .NET Build, Pack, Push Version
+name: Cache Build, Pack, Push Prerelease
 
 on:
   push:
     branches: ["version/**/*"]
 
 jobs:
-  build:
+  build-pack-push:
 
     runs-on: ubuntu-latest
 

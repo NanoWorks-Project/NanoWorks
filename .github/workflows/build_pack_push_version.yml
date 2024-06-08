@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      PACKAGE_VERSION: ${{vars.PRERELEASE_PACKAGE_VERSION}}-${{ github.run_id }}
+      PACKAGE_VERSION: ${{vars.PRERELEASE_PACKAGE_VERSION}}-${{github.run_id}}
       NUGET_API_KEY: ${{secrets.NUGET_API_KEY}}
 
     steps:

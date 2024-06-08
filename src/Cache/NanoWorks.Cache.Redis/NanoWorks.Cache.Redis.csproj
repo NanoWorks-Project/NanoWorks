@@ -4,6 +4,9 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <CodeAnalysisRuleSet>../../StyleCop.Analyzers.ruleset</CodeAnalysisRuleSet>
+    <IsPackable>True</IsPackable>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,6 +20,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NanoWorks.Cache\NanoWorks.Cache.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../../../img/icon.png" Pack="true" PackagePath=""/>
+    <None Include="../../../LICENSE" Pack="true" PackagePath=""/>
   </ItemGroup>
 
 </Project>

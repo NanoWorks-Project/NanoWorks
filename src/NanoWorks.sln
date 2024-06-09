@@ -38,6 +38,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample", "Sample", "{AFC6A465-3EB9-4CEF-9987-357A6CD8F9D6}"
+	ProjectSection(SolutionItems) = preProject
+		Sample\README.md = Sample\README.md
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.WebApi", "Sample\Sample.WebApi\Sample.WebApi.csproj", "{A57631CA-EA0D-4492-9971-657022D9DB21}"
 EndProject

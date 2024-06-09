@@ -29,7 +29,7 @@ namespace NanoWorks.Cache.Redis.CacheSets
 
             if (!isValidKey)
             {
-                throw new InvalidOperationException("Key must be a string, guid, int, or long.");
+                throw new InvalidOperationException($"Key must be a {typeof(string).Name}, {nameof(Guid)}, {typeof(int).Name}, or {typeof(long).Name}.");
             }
 
             _database = database;

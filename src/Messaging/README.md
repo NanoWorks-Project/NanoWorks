@@ -34,7 +34,7 @@ Each consumer is assigned a queue, and the queue is bound to all exchanges / mes
 
 ### Important Considerations
 
-Avoid exchange and queue naming collisions by using different RabbitMQ virtual hosts and servers.  
+Avoid exchange and queue name collisions by using different RabbitMQ virtual hosts and servers.  
 
 If exchanges and queues are not configured to be auto-deleted, orphaned exchanges and queues are possible. This may require manual cleanup, and it can occur when configured queue names change, message types change, etc...
 
@@ -42,7 +42,7 @@ If exchanges and queues are not configured to be auto-deleted, orphaned exchange
 
 ### Dead Letters
 
-Any messages that fail to be processed or exceed the configured retry limit will be published to the `NanoWorks.DeadLetter` queue.
+Any messages that fail to be processed, or exceed the configured retry limit, will be published to the `NanoWorks.DeadLetter` queue.
 
 Messages that fail serialization can be ignored and discarded through configuration - by default they are sent to the `NanoWorks.DeadLetter` queue.
 

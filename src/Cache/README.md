@@ -146,7 +146,7 @@ public enum SerializerExceptionBehavior
 
 ### Best Practices
 
-Keep stale data out of the cache by using short expiration timespans
+Keep stale data out of the cache by using short expiration timespans.
 
 Avoid non-indexed queries against cache sets with many items.
 

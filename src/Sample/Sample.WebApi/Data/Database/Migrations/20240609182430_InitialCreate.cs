@@ -17,7 +17,7 @@ namespace Sample.WebApi.Data.Database.Migrations
                 {
                     AuthorId = table.Column<Guid>(type: "uuid", nullable: false),
                     FirstName = table.Column<string>(type: "text", nullable: false),
-                    LastName = table.Column<string>(type: "text", nullable: false)
+                    LastName = table.Column<string>(type: "text", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -30,7 +30,7 @@ namespace Sample.WebApi.Data.Database.Migrations
                 {
                     BookId = table.Column<Guid>(type: "uuid", nullable: false),
                     AuthorId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Title = table.Column<string>(type: "text", nullable: false)
+                    Title = table.Column<string>(type: "text", nullable: false),
                 },
                 constraints: table =>
                 {

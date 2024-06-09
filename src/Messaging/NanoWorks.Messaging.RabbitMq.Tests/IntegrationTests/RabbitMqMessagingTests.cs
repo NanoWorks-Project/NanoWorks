@@ -1,4 +1,7 @@
-﻿using AutoFixture;
+﻿// Ignore Spelling: Nano
+// Ignore Spelling: Mq
+
+using AutoFixture;
 using AutoFixture.AutoMoq;
 using Microsoft.Extensions.DependencyInjection;
 using NanoWorks.Messaging.MessagePublishers;

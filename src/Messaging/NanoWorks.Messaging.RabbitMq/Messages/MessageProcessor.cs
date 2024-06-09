@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Ignore Spelling: Nano
+// Ignore Spelling: Mq
+
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;

@@ -8,7 +8,7 @@ namespace Sample.WebApi.Data.Cache;
 
 public class BookStoreCache : RedisCacheContext, IBookStoreCache
 {
-    public BookStoreCache(CacheContextOptions options) 
+    public BookStoreCache(CacheContextOptions options)
         : base(options)
     {
         Authors = NewSet<AuthorDto, Guid>(options =>

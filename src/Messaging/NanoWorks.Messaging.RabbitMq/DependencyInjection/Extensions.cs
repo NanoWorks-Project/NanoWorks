@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Ignore Spelling: Nano
+// Ignore Spelling: Mq
+
+using System;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using NanoWorks.Messaging.MessagePublishers;

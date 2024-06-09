@@ -12,7 +12,7 @@ The libraries are open-source and offered under the Apache 2.0 license.
 
 </center>
 
-### Cache
+### NanoWorks.Cache
 
 `NanoWorks.Cache` is inspired by Entity Framework's [DbSet.](https://learn.microsoft.com/en-us/dotnet/api/system.data.entity.dbset-1?view=entity-framework-6.2.0) This library offers a similar syntax and coding experience for caching. 
 
@@ -20,7 +20,7 @@ The libraries are open-source and offered under the Apache 2.0 license.
 
 ---
 
-### Messaging
+### NanoWorks.Messaging
 
 `NanoWorks.Messaging` is a distributed messaging library that enables developers to build asynchronous messaging systems with publishers and subscribers.
 

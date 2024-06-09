@@ -12,7 +12,7 @@ The libraries are open-source and offered under the Apache 2.0 license.
 
 </center>
 
-### Messaging
+### NanoWorks.Messaging
 
 `NanoWorks.Messaging` is a distributed messaging library that enables developers to build asynchronous messaging systems with publishers and subscribers.
 

@@ -62,137 +62,9 @@ namespace NanoWorks.Cache.Redis.CacheSets
         }
 
         /// <inheritdoc />
-        public bool Contains(TKey key)
-        {
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
-
-            return _database.HashExists(_options.TableName, key.ToString());
-        }
-
-        /// <inheritdoc />
-        public async Task<bool> ContainsAsync(TKey key)
-        {
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
-
-            return await _database.HashExistsAsync(_options.TableName, key.ToString());
-        }
-
-        /// <inheritdoc />
         public long Count()
         {
             return _database.HashLength(_options.TableName);
-        }
-
-        /// <inheritdoc />
-        public TItem Get(TKey key)
-        {
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
-
-            var value = _database.HashGet(_options.TableName, key.ToString());
-
-            if (!value.HasValue)
-            {
-                return null;
-            }
-
-            var item = CacheSerializer.Deserialize<TItem>(value, _options.SerializerExceptionBehavior);
-            ResetExpiration();
-            return item;
-        }
-
-        /// <inheritdoc />
-        public IEnumerable<TItem> Get(IEnumerable<TKey> keys)
-        {
-            foreach (var key in keys)
-            {
-                var item = Get(key);
-
-                if (item != null)
-                {
-                    yield return item;
-                }
-            }
-        }
-
-        /// <inheritdoc />
-        public async Task<TItem> GetAsync(TKey key)
-        {
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
-
-            var value = await _database.HashGetAsync(_options.TableName, key.ToString());
-
-            if (!value.HasValue)
-            {
-                return null;
-            }
-
-            var item = CacheSerializer.Deserialize<TItem>(value, _options.SerializerExceptionBehavior);
-            await ResetExpirationAsync();
-            return item;
-        }
-
-        /// <inheritdoc />
-        public void Set(TItem item)
-        {
-            if (item == null)
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
-
-            var json = CacheSerializer.Serialize(item, _options.SerializerExceptionBehavior);
-
-            if (string.IsNullOrWhiteSpace(json))
-            {
-                return;
-            }
-
-            var key = GetKey(item);
-
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
-
-            _database.HashSet(_options.TableName, key.ToString(), json);
-            ResetExpiration();
-        }
-
-        /// <inheritdoc />
-        public async Task SetAsync(TItem item)
-        {
-            if (item == null)
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
-
-            var json = CacheSerializer.Serialize(item, _options.SerializerExceptionBehavior);
-
-            if (string.IsNullOrWhiteSpace(json))
-            {
-                return;
-            }
-
-            var key = GetKey(item);
-
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
-
-            await _database.HashSetAsync(_options.TableName, key.ToString(), json);
-            await ResetExpirationAsync();
         }
 
         /// <inheritdoc />
@@ -215,30 +87,6 @@ namespace NanoWorks.Cache.Redis.CacheSets
             }
 
             await _database.HashDeleteAsync(_options.TableName, key.ToString());
-        }
-
-        /// <inheritdoc />
-        public void Remove(TItem item)
-        {
-            if (item == null)
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
-
-            var key = GetKey(item);
-            Remove(key);
-        }
-
-        /// <inheritdoc />
-        public async Task RemoveAsync(TItem item)
-        {
-            if (item == null)
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
-
-            var key = GetKey(item);
-            await RemoveAsync(key);
         }
 
         /// <inheritdoc />
@@ -286,6 +134,63 @@ namespace NanoWorks.Cache.Redis.CacheSets
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        private TItem Get(TKey key)
+        {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
+            var value = _database.HashGet(_options.TableName, key.ToString());
+
+            if (!value.HasValue)
+            {
+                return null;
+            }
+
+            var item = CacheSerializer.Deserialize<TItem>(value, _options.SerializerExceptionBehavior);
+            ResetExpiration();
+            return item;
+        }
+
+        private void Set(TItem item)
+        {
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+
+            var json = CacheSerializer.Serialize(item, _options.SerializerExceptionBehavior);
+
+            if (string.IsNullOrWhiteSpace(json))
+            {
+                return;
+            }
+
+            var key = GetKey(item);
+
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
+            _database.HashSet(_options.TableName, key.ToString(), json);
+            ResetExpiration();
+        }
+
+        private IEnumerable<TItem> Get(IEnumerable<TKey> keys)
+        {
+            foreach (var key in keys)
+            {
+                var item = Get(key);
+
+                if (item != null)
+                {
+                    yield return item;
+                }
+            }
         }
     }
 }

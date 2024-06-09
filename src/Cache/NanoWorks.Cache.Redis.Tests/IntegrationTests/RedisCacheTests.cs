@@ -2,6 +2,7 @@
 using AutoFixture.AutoMoq;
 using NanoWorks.Cache.Redis.Options;
 using NanoWorks.Cache.Redis.Tests.TestObjects;
+using NetTopologySuite.Index.HPRtree;
 using Shouldly;
 
 namespace NanoWorks.Cache.Redis.Tests.IntegrationTests;
@@ -28,7 +29,7 @@ public class RedisCacheTests
 
         foreach (var item in _fixture.CreateMany<CacheTestItem>(_oneThousandItems))
         {
-            _cache.TestSet.Set(item);
+            _cache.TestSet[item.Id] = item;
             cacheTestItems.Add(item);
         }
     }
@@ -38,7 +39,7 @@ public class RedisCacheTests
     {
         // Arrange
         var item = _fixture.Create<CacheTestItem>();
-        _cache.TestSet.Set(item);
+        _cache.TestSet[item.Id] = item;
 
         // Act
         var result = _cache.TestSet[item.Id];
@@ -53,7 +54,7 @@ public class RedisCacheTests
     {
         // Arrange
         var item = _fixture.Create<CacheTestItem>();
-        _cache.TestSet.Set(item);
+        _cache.TestSet[item.Id] = item;
 
         // Act
         var result = _cache.TestSet[Guid.NewGuid()];
@@ -71,7 +72,7 @@ public class RedisCacheTests
 
         foreach (var item in items)
         {
-            _cache.TestSet.Set(item);
+            _cache.TestSet[item.Id] = item;
         }
 
         // Act
@@ -92,7 +93,7 @@ public class RedisCacheTests
 
         foreach (var item in items)
         {
-            _cache.TestSet.Set(item);
+            _cache.TestSet[item.Id] = item;
         }
 
         // Act
@@ -103,225 +104,17 @@ public class RedisCacheTests
     }
 
     [Test]
-    public void Contains_WhenItemExists_ReturnsTrue()
+    public void Remove_RemovesItem()
     {
         // Arrange
         var item = _fixture.Create<CacheTestItem>();
-        _cache.TestSet.Set(item);
-
-        // Act
-        var result = _cache.TestSet.Contains(item.Id);
-
-        // Assert
-        result.ShouldBeTrue();
-    }
-
-    [Test]
-    public void ContainsAsync_WhenItemExists_ReturnsTrue()
-    {
-        // Arrange
-        var item = _fixture.Create<CacheTestItem>();
-        _cache.TestSet.Set(item);
-
-        // Act
-        var result = _cache.TestSet.ContainsAsync(item.Id).Result;
-
-        // Assert
-        result.ShouldBeTrue();
-    }
-
-    [Test]
-    public void Contains_WhenItemNotExists_ReturnsFalse()
-    {
-        // Arrange
-        var item = _fixture.Create<CacheTestItem>();
-        _cache.TestSet.Set(item);
-
-        // Act
-        var result = _cache.TestSet.Contains(Guid.NewGuid());
-
-        // Assert
-        result.ShouldBeFalse();
-    }
-
-    [Test]
-    public async Task ContainsAsync_WhenItemNotExists_ReturnsFalse()
-    {
-        // Arrange
-        var item = _fixture.Create<CacheTestItem>();
-        _cache.TestSet.Set(item);
-
-        // Act
-        var result = await _cache.TestSet.ContainsAsync(Guid.NewGuid());
-
-        // Assert
-        result.ShouldBeFalse();
-    }
-
-    [Test]
-    public void Get_WhenItemExists_ReturnsItem()
-    {
-        // Arrange
-        var item = _fixture.Create<CacheTestItem>();
-        _cache.TestSet.Set(item);
-
-        // Act
-        var result = _cache.TestSet.Get(item.Id);
-
-        // Assert
-        result.ShouldNotBeNull();
-        result.ShouldBeEquivalentTo(item);
-    }
-
-    [Test]
-    public async Task GetAsync_WhenItemExists_ReturnsItem()
-    {
-        // Arrange
-        var item = _fixture.Create<CacheTestItem>();
-        _cache.TestSet.Set(item);
-
-        // Act
-        var result = await _cache.TestSet.GetAsync(item.Id);
-
-        // Assert
-        result.ShouldNotBeNull();
-        result.ShouldBeEquivalentTo(item);
-    }
-
-    [Test]
-    public void Get_WhenItemNotExists_ReturnsNull()
-    {
-        // Arrange
-        var item = _fixture.Create<CacheTestItem>();
-        _cache.TestSet.Set(item);
-
-        // Act
-        var result = _cache.TestSet.Get(Guid.NewGuid());
-
-        // Assert
-        result.ShouldBeNull();
-    }
-
-    [Test]
-    public async Task GetAsync_WhenItemNotExists_ReturnsNull()
-    {
-        // Arrange
-        var item = _fixture.Create<CacheTestItem>();
-        _cache.TestSet.Set(item);
-
-        // Act
-        var result = await _cache.TestSet.GetAsync(Guid.NewGuid());
-
-        // Assert
-        result.ShouldBeNull();
-    }
-
-    [Test]
-    public void Set_AddsItem()
-    {
-        // Arrange
-        var item = _fixture.Create<CacheTestItem>();
-
-        // Act
-        _cache.TestSet.Set(item);
-
-        // Assert
-        var result = _cache.TestSet.Get(item.Id);
-        result.ShouldNotBeNull();
-        result.ShouldBeEquivalentTo(item);
-    }
-
-    [Test]
-    public async Task SetAsync_AddsItem()
-    {
-        // Arrange
-        var item = _fixture.Create<CacheTestItem>();
-
-        // Act
-        await _cache.TestSet.SetAsync(item);
-
-        // Assert
-        var result = await _cache.TestSet.GetAsync(item.Id);
-        result.ShouldNotBeNull();
-        result.ShouldBeEquivalentTo(item);
-    }
-
-    [Test]
-    public void Set_UpdatesItem()
-    {
-        // Arrange
-        var item = _fixture.Create<CacheTestItem>();
-        _cache.TestSet.Set(item);
-
-        // Act
-        item.Description = "Updated";
-        _cache.TestSet.Set(item);
-
-        // Assert
-        var result = _cache.TestSet.Get(item.Id);
-        result.ShouldNotBeNull();
-        result.ShouldBeEquivalentTo(item);
-    }
-
-    [Test]
-    public async Task SetAsync_UpdatesItem()
-    {
-        // Arrange
-        var item = _fixture.Create<CacheTestItem>();
-        _cache.TestSet.Set(item);
-
-        // Act
-        item.Description = "Updated";
-        await _cache.TestSet.SetAsync(item);
-
-        // Assert
-        var result = await _cache.TestSet.GetAsync(item.Id);
-        result.ShouldNotBeNull();
-        result.ShouldBeEquivalentTo(item);
-    }
-
-    [Test]
-    public void Remove_ByKey_RemovesItem()
-    {
-        // Arrange
-        var item = _fixture.Create<CacheTestItem>();
-        _cache.TestSet.Set(item);
+        _cache.TestSet[item.Id] = item;
 
         // Act
         _cache.TestSet.Remove(item.Id);
 
         // Assert
-        var result = _cache.TestSet.Get(item.Id);
-        result.ShouldBeNull();
-    }
-
-    [Test]
-    public async Task RemoveAsync_ByKey_RemovesItem()
-    {
-        // Arrange
-        var item = _fixture.Create<CacheTestItem>();
-        _cache.TestSet.Set(item);
-
-        // Act
-        await _cache.TestSet.RemoveAsync(item.Id);
-
-        // Assert
-        var result = await _cache.TestSet.GetAsync(item.Id);
-        result.ShouldBeNull();
-    }
-
-    [Test]
-    public void Remove_RemovesItem()
-    {
-        // Arrange
-        var item = _fixture.Create<CacheTestItem>();
-        _cache.TestSet.Set(item);
-
-        // Act
-        _cache.TestSet.Remove(item);
-
-        // Assert
-        var result = _cache.TestSet.Get(item.Id);
+        var result = _cache.TestSet[item.Id];
         result.ShouldBeNull();
     }
 
@@ -330,41 +123,47 @@ public class RedisCacheTests
     {
         // Arrange
         var item = _fixture.Create<CacheTestItem>();
-        _cache.TestSet.Set(item);
+        _cache.TestSet[item.Id] = item;
 
         // Act
-        await _cache.TestSet.RemoveAsync(item);
+        await _cache.TestSet.RemoveAsync(item.Id);
 
         // Assert
-        var result = await _cache.TestSet.GetAsync(item.Id);
+        var result = _cache.TestSet[item.Id];
         result.ShouldBeNull();
     }
 
     [Test]
-    public async Task Enumerate_ReturnsItems()
+    public void GetKey_ReturnsKey()
     {
         // Arrange
-        var items = _fixture.CreateMany<CacheTestItem>(10);
-
-        foreach (var item in items)
-        {
-            await _cache.TestSet.SetAsync(item);
-        }
+        var item = _fixture.Create<CacheTestItem>();
+        _cache.TestSet[item.Id] = item;
 
         // Act
-        var result = _cache.TestSet.ToList();
+        var key = _cache.TestSet.GetKey(item);
 
         // Assert
-        result.ShouldNotBeNull();
-        result.Any().ShouldBeTrue();
+        key.ShouldBe(item.Id);
+    }
 
-        foreach (var item in items)
-        {
-            var resultItem = result.FirstOrDefault(x => x.Id == item.Id);
-            resultItem.ShouldNotBeNull();
-            resultItem.ShouldBeEquivalentTo(item);
-        }
+    [Test]
+    public void Count_ReturnsCount()
+    {
+        // act
+        var count = _cache.TestSet.Count();
 
-        result.Count.ShouldBeGreaterThanOrEqualTo(_oneThousandItems);
+        // assert
+        count.ShouldBeGreaterThan(0);
+    }
+
+    [Test]
+    public void Enumerate_ReturnsItems()
+    {
+        // act
+        var items = _cache.TestSet.ToList();
+
+        // assert
+        items.Count.ShouldBeGreaterThanOrEqualTo(_oneThousandItems);
     }
 }

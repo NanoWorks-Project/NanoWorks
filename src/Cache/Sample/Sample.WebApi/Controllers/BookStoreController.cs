@@ -66,7 +66,7 @@ public class BookStoreController(IBookStoreCache cache) : ControllerBase
             return BadRequest(validationErrors);
         }
 
-        cache.Authors.Set(author);
+        cache.Authors[author.AuthorId] = author;
         return Ok();
     }
 
@@ -102,8 +102,8 @@ public class BookStoreController(IBookStoreCache cache) : ControllerBase
         var authorBooks = cache.AuthorBooks[author.AuthorId] ?? new AuthorBooks { AuthorId = author.AuthorId };
         authorBooks.BookIds.Add(book.BookId);
 
-        cache.Books.Set(book);
-        cache.AuthorBooks.Set(authorBooks);
+        cache.Books[book.BookId] = book;
+        cache.AuthorBooks[authorBooks.AuthorId] = authorBooks;
         return Ok();
     }
 }

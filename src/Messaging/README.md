@@ -26,11 +26,13 @@ The libraries are open-source and offered under the Apache 2.0 license.
 
 Publishers publish messages, and consumers subscribe to and consume messages.
 
-Within RabbitMQ, each message type is assigned an exchange using the fully-qualified name (E.G. "Sample.WebApi.Models.Events.AuthorUpdatedEvent").
+Within RabbitMQ, each message type is assigned an exchange using the fully-qualified name ("Sample.WebApi.Models.Events.AuthorUpdatedEvent").
 
 Each consumer is assigned a queue, and the queue is bound to all exchanges / message types it is subscribed to.
 
-**Important Notes**
+---
+
+### Important Considerations
 
 Avoid exchange and queue naming collisions by using different RabbitMQ virtual hosts and servers.  
 
@@ -56,7 +58,7 @@ If the message retry limit has not been exceeded, the message will be re-publish
 
 ### Getting Started
 
-#### Download / install the `NanoWorks.Messaging.RabbitMq` NuGet package
+#### Download / install the [NanoWorks.Messaging.RabbitMq](https://www.nuget.org/packages/NanoWorks.Messaging.RabbitMq) NuGet package
 
 #### Create a message consumer
 
@@ -150,7 +152,7 @@ Location
 [root]\src\Cache\Sample
 ```
 
-Run the docker compose file to start Redis
+Run the docker compose file to start Redis, PostgreSQL, and RabbitMQ
 ```
 [root]\src\Sample\docker\docker-compose
 ```

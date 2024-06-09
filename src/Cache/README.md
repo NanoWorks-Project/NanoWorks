@@ -22,7 +22,7 @@ The libraries are open-source and offered under the Apache 2.0 license.
 
 ### Getting Started
 
-#### Download / install the `NanoWorks.Cache.Redis` NuGet package
+#### Download / install the [NanoWorks.Cache.Redis](https://www.nuget.org/packages/NanoWorks.Cache.Redis) NuGet package
 
 #### Create a `RedisCacheContext`
 
@@ -186,7 +186,7 @@ Location
 [root]\src\Cache\Sample
 ```
 
-Run the docker compose file to start Redis
+Run the docker compose file to start Redis, PostgreSQL, and RabbitMQ
 ```
 [root]\src\Sample\docker\docker-compose
 ```

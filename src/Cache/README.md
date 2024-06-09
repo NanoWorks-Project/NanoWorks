@@ -80,7 +80,7 @@ public class BookStoreCache : RedisCacheContext
 ```
 builder.Services.AddNanoWorksRedisCache<BookStoreCache>(options =>
 {
-    options.UseConnectionString("localhost:6379");
+    options.UseConnectionString("your connection string");
     options.UseConnectionPoolSize(Environment.ProcessorCount);
 });
 

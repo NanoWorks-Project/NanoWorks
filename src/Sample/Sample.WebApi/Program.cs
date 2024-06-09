@@ -44,6 +44,7 @@ builder.Services.AddNanoWorksRabbitMq(options =>
         consumerOptions.Retries(maxRetryCount: 3, retryDelay: TimeSpan.FromSeconds(1));
         consumerOptions.AutoDelete();
         consumerOptions.OnSerializationException(ConsumerSerializerExceptionBehavior.DeadLetter);
+
         consumerOptions.Subscribe<AuthorUpdatedEvent>(consumer => consumer.OnAuthorUpdated);
         consumerOptions.Subscribe<BookUpdatedEvent>(consumer => consumer.OnBookUpdated);
     });

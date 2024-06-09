@@ -14,17 +14,17 @@ The libraries are open-source and offered under the Apache 2.0 license.
 
 ### Cache
 
-NanoWorks.Cache is inspired by Entity Framework's [DbSet.](https://learn.microsoft.com/en-us/dotnet/api/system.data.entity.dbset-1?view=entity-framework-6.2.0) This library offers a similar syntax and coding experience for caching. 
+`NanoWorks.Cache` is inspired by Entity Framework's [DbSet.](https://learn.microsoft.com/en-us/dotnet/api/system.data.entity.dbset-1?view=entity-framework-6.2.0) This library offers a similar syntax and coding experience for caching. 
 
-NanoWorks.Cache currently supports [Redis.](https://redis.io/)
+`NanoWorks.Cache` currently supports [Redis.](https://redis.io/)
 
 ---
 
 ### Getting Started
 
-#### Download / install the <i>NanoWorks.Cache.Redis</i> NuGet package
+#### Download / install the `NanoWorks.Cache.Redis` NuGet package
 
-#### Create a <i>RedisCacheContext</i>
+#### Create a `RedisCacheContext`
 
 ```
 public class BookStoreCache : RedisCacheContext
@@ -35,7 +35,7 @@ public class BookStoreCache : RedisCacheContext
 }
 ```
 
-#### Define and configure <i>CacheSets</i>
+#### Define and configure `CacheSet`
 
 ```
 public class BookStoreCache : RedisCacheContext
@@ -75,7 +75,7 @@ public class BookStoreCache : RedisCacheContext
 }
 ```
 
-### Add your <i>RedisCacheContext</i> to the service collection
+### Add your `RedisCacheContext` to the service collection
 
 ```
 builder.Services.AddNanoWorksRedisCache<BookStoreCache>(options =>
@@ -87,7 +87,7 @@ builder.Services.AddNanoWorksRedisCache<BookStoreCache>(options =>
 builder.Services.AddScoped<IBookStoreCache, BookStoreCache>();
 ```
 
-### Use your <i>RedisCacheContext</i>
+### Use your `RedisCacheContext`
 
 ```
 [ApiController, Route("api")]
@@ -150,7 +150,7 @@ Keep stale data out of the cache by using short expiration timespans
 
 Avoid non-indexed queries against cache sets with many items.
 
-To optimize indexed queries against the cache, use models to track related items with <i>HashSet</i>.
+To optimize indexed queries against the cache, use models to track related items with `HashSet`.
 
 ```
 public class AuthorBooks
@@ -191,7 +191,7 @@ Run the docker compose file to start Redis
 [root]\src\Sample\docker\docker-compose
 ```
 
-Build the project, and run it
+Build and run the project
 ```
 [root]\src\Sample\Sample.WebApi\Sample.WebApi.csproj
 ```

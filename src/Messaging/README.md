@@ -14,7 +14,7 @@ The libraries are open-source and offered under the Apache 2.0 license.
 
 ### Messaging
 
-NanoWorks.Messaging is a distributed messaging library that enables developers to build asynchronous messaging systems with publishers and subscribers.
+`NanoWorks.Messaging` is a distributed messaging library that enables developers to build asynchronous messaging systems with publishers and subscribers.
 
 `NanoWorks.Messaging` currently supports [RabbitMQ.](https://www.rabbitmq.com/)
 
@@ -33,7 +33,7 @@ Run the docker compose file to start Redis
 [root]\src\Sample\docker\docker-compose
 ```
 
-Build the project, and run it
+Build and run the project
 ```
 [root]\src\Sample\Sample.WebApi\Sample.WebApi.csproj
 ```

@@ -66,6 +66,7 @@ public class RabbitMqMessagingTests : IDisposable
 
     public void Dispose()
     {
+        _messagePublisher.Dispose();
         _messagingService.StopAsync(CancellationToken.None).Wait();
         _serviceScope.Dispose();
         GC.SuppressFinalize(this);

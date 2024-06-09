@@ -4,5 +4,5 @@ public class TestComplexMessage
 {
     public Guid Guid { get; set; }
 
-    public IEnumerable<TestSimpleMessage> SimpleMessages { get; set; }
+    public IEnumerable<TestSimpleMessage> SimpleMessages { get; set; } = [];
 }

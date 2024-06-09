@@ -4,7 +4,7 @@ public class TestSimpleMessage
 {
     public Guid Guid { get; set; }
 
-    public string String { get; set; }
+    public string String { get; set; } = string.Empty;
 
     public int Integer { get; set; }
 

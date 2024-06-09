@@ -1,0 +1,14 @@
+﻿namespace NanoWorks.Messaging.RabbitMq.Tests.TestObjects;
+
+public class TestSimpleMessage
+{
+    public Guid Guid { get; set; }
+
+    public string String { get; set; }
+
+    public int Integer { get; set; }
+
+    public float Float { get; set; }
+
+    public DateTime DateTime { get; set; }
+}

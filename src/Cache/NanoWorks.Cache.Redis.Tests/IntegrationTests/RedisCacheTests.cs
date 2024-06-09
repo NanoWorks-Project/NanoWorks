@@ -2,7 +2,6 @@
 using AutoFixture.AutoMoq;
 using NanoWorks.Cache.Redis.Options;
 using NanoWorks.Cache.Redis.Tests.TestObjects;
-using NetTopologySuite.Index.HPRtree;
 using Shouldly;
 
 namespace NanoWorks.Cache.Redis.Tests.IntegrationTests;
@@ -14,8 +13,8 @@ public class RedisCacheTests
 {
     private const int _oneThousandItems = 1000;
     private readonly TestCache _cache;
-    private readonly IFixture _fixture = new Fixture();
-    private readonly List<CacheTestItem> cacheTestItems = new List<CacheTestItem>();
+    private readonly Fixture _fixture = new();
+    private readonly List<CacheTestItem> cacheTestItems = [];
 
     public RedisCacheTests()
     {

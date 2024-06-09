@@ -6,6 +6,7 @@ name: Cache Build, Pack, Push Prerelease
 on:
   push:
     branches: ["version/**/*"]
+    paths: ["src/Cache/**"]
 
 jobs:
   build-pack-push:

@@ -14,20 +14,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NanoWorks.Cache.Redis", "Ca
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NanoWorks.Cache.Redis.Tests", "Cache\NanoWorks.Cache.Redis.Tests\NanoWorks.Cache.Redis.Tests.csproj", "{E3FB5078-F141-4D44-948C-589A9ACCA1A1}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample", "Sample", "{28C40FEF-155B-4822-AE5C-E3E75C4462D1}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.WebApi", "Cache\Sample\Sample.WebApi\Sample.WebApi.csproj", "{C0BD8B75-00AF-4652-A635-CD1E26C9C489}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Messaging", "Messaging", "{88E9FED1-409C-41E6-87C3-B79A3FBFE980}"
 	ProjectSection(SolutionItems) = preProject
 		Messaging\README.md = Messaging\README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NanoWorks.Messaging", "Messaging\NanoWorks.Messaging\NanoWorks.Messaging.csproj", "{8463CFFB-F27D-4B69-B11F-8BC99BA883D1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NanoWorks.Messaging", "Messaging\NanoWorks.Messaging\NanoWorks.Messaging.csproj", "{8463CFFB-F27D-4B69-B11F-8BC99BA883D1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NanoWorks.Messaging.RabbitMq", "Messaging\NanoWorks.Messaging.RabbitMq\NanoWorks.Messaging.RabbitMq.csproj", "{F73D1EA3-1EAD-4598-A70B-1EB317BE48D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NanoWorks.Messaging.RabbitMq", "Messaging\NanoWorks.Messaging.RabbitMq\NanoWorks.Messaging.RabbitMq.csproj", "{F73D1EA3-1EAD-4598-A70B-1EB317BE48D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NanoWorks.Messaging.RabbitMq.Tests", "Messaging\NanoWorks.Messaging.RabbitMq.Tests\NanoWorks.Messaging.RabbitMq.Tests.csproj", "{9B7E5110-D62A-4429-9D97-8C8B4555113F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NanoWorks.Messaging.RabbitMq.Tests", "Messaging\NanoWorks.Messaging.RabbitMq.Tests\NanoWorks.Messaging.RabbitMq.Tests.csproj", "{9B7E5110-D62A-4429-9D97-8C8B4555113F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pipelines", "Pipelines", "{FB9DE702-1F38-4AA9-B78E-FF0EA262CF38}"
 	ProjectSection(SolutionItems) = preProject
@@ -39,6 +35,15 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8D0672D8-96EA-46D0-8B81-E34F23597368}"
 	ProjectSection(SolutionItems) = preProject
 		..\README.md = ..\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample", "Sample", "{AFC6A465-3EB9-4CEF-9987-357A6CD8F9D6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.WebApi", "Sample\Sample.WebApi\Sample.WebApi.csproj", "{A57631CA-EA0D-4492-9971-657022D9DB21}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docker", "Docker", "{776ADDC0-760E-49D7-8041-DD90E3B75CD4}"
+	ProjectSection(SolutionItems) = preProject
+		Sample\docker\docker-compose.yml = Sample\docker\docker-compose.yml
 	EndProjectSection
 EndProject
 Global
@@ -59,10 +64,6 @@ Global
 		{E3FB5078-F141-4D44-948C-589A9ACCA1A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E3FB5078-F141-4D44-948C-589A9ACCA1A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E3FB5078-F141-4D44-948C-589A9ACCA1A1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C0BD8B75-00AF-4652-A635-CD1E26C9C489}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C0BD8B75-00AF-4652-A635-CD1E26C9C489}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C0BD8B75-00AF-4652-A635-CD1E26C9C489}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C0BD8B75-00AF-4652-A635-CD1E26C9C489}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8463CFFB-F27D-4B69-B11F-8BC99BA883D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8463CFFB-F27D-4B69-B11F-8BC99BA883D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8463CFFB-F27D-4B69-B11F-8BC99BA883D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -75,6 +76,10 @@ Global
 		{9B7E5110-D62A-4429-9D97-8C8B4555113F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9B7E5110-D62A-4429-9D97-8C8B4555113F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9B7E5110-D62A-4429-9D97-8C8B4555113F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A57631CA-EA0D-4492-9971-657022D9DB21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A57631CA-EA0D-4492-9971-657022D9DB21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A57631CA-EA0D-4492-9971-657022D9DB21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A57631CA-EA0D-4492-9971-657022D9DB21}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -83,11 +88,11 @@ Global
 		{2FF30752-0845-4C32-BEF2-9BAF9810030B} = {C0DAFF16-63B8-4D05-8E00-7C761A144BB2}
 		{9228FA6E-031B-4030-9167-1ECB5FC73608} = {C0DAFF16-63B8-4D05-8E00-7C761A144BB2}
 		{E3FB5078-F141-4D44-948C-589A9ACCA1A1} = {C0DAFF16-63B8-4D05-8E00-7C761A144BB2}
-		{28C40FEF-155B-4822-AE5C-E3E75C4462D1} = {C0DAFF16-63B8-4D05-8E00-7C761A144BB2}
-		{C0BD8B75-00AF-4652-A635-CD1E26C9C489} = {28C40FEF-155B-4822-AE5C-E3E75C4462D1}
 		{8463CFFB-F27D-4B69-B11F-8BC99BA883D1} = {88E9FED1-409C-41E6-87C3-B79A3FBFE980}
 		{F73D1EA3-1EAD-4598-A70B-1EB317BE48D5} = {88E9FED1-409C-41E6-87C3-B79A3FBFE980}
 		{9B7E5110-D62A-4429-9D97-8C8B4555113F} = {88E9FED1-409C-41E6-87C3-B79A3FBFE980}
+		{A57631CA-EA0D-4492-9971-657022D9DB21} = {AFC6A465-3EB9-4CEF-9987-357A6CD8F9D6}
+		{776ADDC0-760E-49D7-8041-DD90E3B75CD4} = {AFC6A465-3EB9-4CEF-9987-357A6CD8F9D6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7285D8C3-8D52-494B-BB80-A1D61658F7B0}

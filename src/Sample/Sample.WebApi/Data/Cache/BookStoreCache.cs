@@ -2,15 +2,16 @@
 using NanoWorks.Cache.Redis.CacheContexts;
 using NanoWorks.Cache.Redis.CacheSets;
 using NanoWorks.Cache.Redis.Options;
-using Sample.WebApi.Models;
+using Sample.WebApi.Models.Dtos;
 
-namespace Sample.WebApi.Cache;
+namespace Sample.WebApi.Data.Cache;
 
 public class BookStoreCache : RedisCacheContext, IBookStoreCache
 {
-    public BookStoreCache(CacheContextOptions options) : base(options)
+    public BookStoreCache(CacheContextOptions options) 
+        : base(options)
     {
-        Authors = NewSet<Author, Guid>(options =>
+        Authors = NewSet<AuthorDto, Guid>(options =>
         {
             options.Table("Authors");
             options.Key(author => author.AuthorId);
@@ -18,7 +19,7 @@ public class BookStoreCache : RedisCacheContext, IBookStoreCache
             options.OnSerializationException(SerializerExceptionBehavior.Ignore);
         });
 
-        AuthorBooks = NewSet<AuthorBooks, Guid>(options =>
+        AuthorBooks = NewSet<AuthorBooksDto, Guid>(options =>
         {
             options.Table("AuthorBooks");
             options.Key(authorBook => authorBook.AuthorId);
@@ -26,7 +27,7 @@ public class BookStoreCache : RedisCacheContext, IBookStoreCache
             options.OnSerializationException(SerializerExceptionBehavior.Ignore);
         });
 
-        Books = NewSet<Book, Guid>(options =>
+        Books = NewSet<BookDto, Guid>(options =>
         {
             options.Table("Books");
             options.Key(book => book.BookId);
@@ -35,9 +36,9 @@ public class BookStoreCache : RedisCacheContext, IBookStoreCache
         });
     }
 
-    public CacheSet<Author, Guid> Authors { get; }
+    public CacheSet<AuthorDto, Guid> Authors { get; }
 
-    public CacheSet<AuthorBooks, Guid> AuthorBooks { get; }
+    public CacheSet<AuthorBooksDto, Guid> AuthorBooks { get; }
 
-    public CacheSet<Book, Guid> Books { get; }
+    public CacheSet<BookDto, Guid> Books { get; }
 }

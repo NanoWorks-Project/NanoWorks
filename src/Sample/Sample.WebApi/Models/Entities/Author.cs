@@ -1,4 +1,4 @@
-﻿namespace Sample.WebApi.Models;
+﻿namespace Sample.WebApi.Models.Entities;
 
 public class Author
 {

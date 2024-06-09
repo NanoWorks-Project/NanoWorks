@@ -22,7 +22,7 @@ NanoWorks.Cache currently supports [Redis.](https://redis.io/)
 
 ### Getting Started
 
-#### Download / install the <i>NanoWorks.Cache</i> NuGet package
+#### Download / install the <i>NanoWorks.Cache.Redis</i> NuGet package
 
 #### Create a <i>RedisCacheContext</i>
 
@@ -146,6 +146,8 @@ public enum SerializerExceptionBehavior
 
 ### Best Practices
 
+Keep stale data out of the cache by using short expiration timespans
+
 Avoid non-indexed queries against cache sets with many items.
 
 To optimize indexed queries against the cache, use models to track related items with <i>HashSet</i>.
@@ -186,10 +188,10 @@ Location
 
 Run the docker compose file to start Redis
 ```
-[root]\src\Cache\Sample\docker\docker-compose
+[root]\src\Sample\docker\docker-compose
 ```
 
 Build the project, and run it
 ```
-[root]\src\Cache\Sample\Sample.WebApi\Sample.WebApi.csproj
+[root]\src\Sample\Sample.WebApi\Sample.WebApi.csproj
 ```

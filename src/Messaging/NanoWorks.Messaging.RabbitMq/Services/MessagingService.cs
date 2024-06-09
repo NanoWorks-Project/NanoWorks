@@ -21,7 +21,7 @@ namespace NanoWorks.Messaging.RabbitMq.Services
 
         private readonly MessagingOptions _options;
 
-        internal MessagingService(IServiceProvider serviceProvider, MessagingOptions options)
+        public MessagingService(IServiceProvider serviceProvider, MessagingOptions options)
         {
             _serviceProvider = serviceProvider;
             _options = options;

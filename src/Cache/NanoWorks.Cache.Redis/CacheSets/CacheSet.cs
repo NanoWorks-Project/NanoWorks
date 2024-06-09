@@ -126,8 +126,6 @@ namespace NanoWorks.Cache.Redis.CacheSets
 
                 yield return item;
             }
-
-            ResetExpiration();
         }
 
         /// <inheritdoc />

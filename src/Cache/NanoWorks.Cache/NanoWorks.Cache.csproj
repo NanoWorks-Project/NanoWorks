@@ -8,7 +8,7 @@
     <IsPackable>True</IsPackable>
     <PackageIcon>icon.png</PackageIcon>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <Description>Base project for all NanoWorks cache packages.</Description>
+    <Description>Base package for all NanoWorks cache packages.</Description>
     <PackageProjectUrl>https://github.com/NanoWorks-Project/NanoWorks</PackageProjectUrl>
   </PropertyGroup>
 

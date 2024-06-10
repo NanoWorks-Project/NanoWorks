@@ -39,6 +39,20 @@ public sealed class ConsumerOptionsTests
     }
 
     [Test]
+    public void Validate_WhenRetryQueueNameIsNullOrWhiteSpace_ThrowsArgumentNullException()
+    {
+        // Arrange
+        var options = _fixture.Create<ConsumerOptions>();
+        options.RetryQueueName = null;
+
+        // Act
+        void Act() => options.Validate();
+
+        // Assert
+        Assert.Throws<ArgumentNullException>(Act, $"Value cannot be null. (Parameter '{nameof(options.RetryQueueName)}')");
+    }
+
+    [Test]
     public void Validate_WhenTtlIsLessThanZero_ThrowsArgumentOutOfRangeException()
     {
         // Arrange

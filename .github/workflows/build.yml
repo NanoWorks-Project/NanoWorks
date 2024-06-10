@@ -5,9 +5,9 @@ name: Build
 
 on:
   push:
-    branches: ["main", "dev/**/*"]
+    branches: ["**"]
   pull_request:
-    branches: ["version/**/*"]
+    branches: ["**"]
 
 jobs:
   build:

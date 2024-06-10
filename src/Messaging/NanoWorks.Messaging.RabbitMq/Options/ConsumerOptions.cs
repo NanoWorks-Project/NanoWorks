@@ -16,31 +16,60 @@ namespace NanoWorks.Messaging.RabbitMq.Options
     /// </summary>
     public class ConsumerOptions
     {
-        internal ConsumerOptions()
-        {
-        }
+        /// <summary>
+        /// Gets or sets consumer type.
+        /// </summary>
+        public Type ConsumerType { get; set; }
 
-        internal Type ConsumerType { get; set; }
+        /// <summary>
+        /// Gets or sets queue name for the consumer.
+        /// </summary>
+        public string QueueName { get; set; }
 
-        internal string QueueName { get; set; }
+        /// <summary>
+        /// Gets or sets time-to-live for messages in the queue.
+        /// </summary>
+        public TimeSpan Ttl { get; set; } = TimeSpan.Zero;
 
-        internal TimeSpan Ttl { get; set; } = TimeSpan.Zero;
+        /// <summary>
+        /// Gets or sets maximum number of messages allowed in the queue.
+        /// </summary>
+        public int MaxCount { get; set; } = 0;
 
-        internal int MaxCount { get; set; } = 0;
+        /// <summary>
+        /// Gets or sets max number of messages that can be processed concurrently.
+        /// </summary>
+        public ushort MaxConcurrency { get; set; } = 10;
 
-        internal ushort MaxConcurrency { get; set; } = 10;
+        /// <summary>
+        /// Gets or sets maximum number of times a message can be retried.
+        /// </summary>
+        public int MaxRetryCount { get; set; } = 3;
 
-        internal int MaxRetryCount { get; set; } = 3;
+        /// <summary>
+        /// Gets or sets delay between each retry.
+        /// </summary>
+        public TimeSpan RetryDelay { get; set; } = TimeSpan.FromSeconds(1);
 
-        internal TimeSpan RetryDelay { get; set; } = TimeSpan.FromSeconds(1);
+        /// <summary>
+        /// Gets or sets a value indicating whether the queue should be deleted if there are no consumers connected to it.
+        /// </summary>
+        public bool AutoDeleteQueue { get; set; } = false;
 
-        internal bool AutoDeleteQueue { get; set; } = false;
+        /// <summary>
+        /// Gets or sets behavior to use when a serializer exception occurs.
+        /// </summary>
+        public ConsumerSerializerExceptionBehavior SerializerExceptionBehavior { get; set; }
 
-        internal ConsumerSerializerExceptionBehavior SerializerExceptionBehavior { get; set; }
+        /// <summary>
+        /// Gets or sets the subscriptions for the consumer.
+        /// </summary>
+        public IDictionary<string, SubscriptionOptions> Subscriptions { get; set; } = new Dictionary<string, SubscriptionOptions>();
 
-        internal IDictionary<string, SubscriptionOptions> Subscriptions { get; } = new Dictionary<string, SubscriptionOptions>();
-
-        internal void Validate()
+        /// <summary>
+        /// Validates the consumer options.
+        /// </summary>
+        public void Validate()
         {
             if (ConsumerType == null)
             {

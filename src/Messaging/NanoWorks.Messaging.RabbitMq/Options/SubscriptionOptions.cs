@@ -13,17 +13,25 @@ namespace NanoWorks.Messaging.RabbitMq.Options
     /// </summary>
     public class SubscriptionOptions
     {
-        internal SubscriptionOptions()
-        {
-        }
+        /// <summary>
+        /// Gets or sets consumer type for the subscription.
+        /// </summary>
+        public Type ConsumerType { get; set; }
 
-        internal Type ConsumerType { get; set; }
+        /// <summary>
+        /// Gets or sets message type for the subscription.
+        /// </summary>
+        public Type MessageType { get; set; }
 
-        internal Type MessageType { get; set; }
+        /// <summary>
+        /// Gets or sets the consumer method to receive the message.
+        /// </summary>
+        public Func<object, Func<object, CancellationToken, Task>> ReceiveMethodSelector { get; set; }
 
-        internal Func<object, Func<object, CancellationToken, Task>> ReceiveMethodSelector { get; set; }
-
-        internal void Validate()
+        /// <summary>
+        /// Validates the subscription options.
+        /// </summary>
+        public void Validate()
         {
             if (ConsumerType == null)
             {

@@ -11,19 +11,30 @@ namespace NanoWorks.Cache.Redis.Options
     /// </summary>
     public class CashSetOptions
     {
-        internal CashSetOptions()
-        {
-        }
+        /// <summary>
+        /// Gets or sets table name for the cache set.
+        /// </summary>
+        public string TableName { get; set; }
 
-        internal string TableName { get; set; }
+        /// <summary>
+        /// Gets or sets key selector for items in the cache set.
+        /// </summary>
+        public Func<object, object> KeySelector { get; set; }
 
-        internal Func<object, object> KeySelector { get; set; }
+        /// <summary>
+        /// Gets or sets expiration duration for the cache set.
+        /// </summary>
+        public TimeSpan ExpirationDuration { get; set; } = TimeSpan.Zero;
 
-        internal TimeSpan ExpirationDuration { get; set; } = TimeSpan.Zero;
+        /// <summary>
+        /// Gets or sets serializer exception behavior.
+        /// </summary>
+        public SerializerExceptionBehavior SerializerExceptionBehavior { get; set; } = SerializerExceptionBehavior.Ignore;
 
-        internal SerializerExceptionBehavior SerializerExceptionBehavior { get; set; } = SerializerExceptionBehavior.Ignore;
-
-        internal void Validate()
+        /// <summary>
+        /// Validates the cache set options.
+        /// </summary>
+        public void Validate()
         {
             if (string.IsNullOrWhiteSpace(TableName))
             {

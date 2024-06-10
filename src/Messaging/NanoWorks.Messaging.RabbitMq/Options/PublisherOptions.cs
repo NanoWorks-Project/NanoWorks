@@ -10,13 +10,15 @@ namespace NanoWorks.Messaging.RabbitMq.Options
     /// </summary>
     public sealed class PublisherOptions
     {
-        internal PublisherOptions()
-        {
-        }
+        /// <summary>
+        /// Gets or sets a value indicating whether to delete the exchange for this message type when the last subscriber / queue is unbound from it.
+        /// </summary>
+        public bool AutoDeleteExchange { get; set; } = false;
 
-        internal bool AutoDeleteExchange { get; set; } = false;
-
-        internal PublisherSerializerExceptionBehavior SerializerExceptionBehavior { get; set; }
+        /// <summary>
+        /// Gets or sets the behavior for the serializer when an exception occurs.
+        /// </summary>
+        public PublisherSerializerExceptionBehavior SerializerExceptionBehavior { get; set; }
 
         /// <summary>
         /// Deletes the exchange for this message type when the last subscriber / queue is unbound from it.
@@ -39,7 +41,10 @@ namespace NanoWorks.Messaging.RabbitMq.Options
             return this;
         }
 
-        internal void Validate()
+        /// <summary>
+        /// Validates the publisher options.
+        /// </summary>
+        public void Validate()
         {
         }
     }

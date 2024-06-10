@@ -13,15 +13,20 @@ namespace NanoWorks.Cache.Redis.Options
     /// </summary>
     public class CacheContextOptions
     {
-        internal CacheContextOptions()
-        {
-        }
+        /// <summary>
+        /// Gets or sets connection string for the cache context.
+        /// </summary>
+        public string ConnectionString { get; set; }
 
-        internal string ConnectionString { get; set; }
+        /// <summary>
+        /// Gets the connection from the connection pool.
+        /// </summary>
+        public IConnectionMultiplexer Connection => ConnectionPool.GetConnection(ConnectionString);
 
-        internal IConnectionMultiplexer Connection => ConnectionPool.GetConnection(ConnectionString);
-
-        internal void Validate()
+        /// <summary>
+        /// Validates the cache context options.
+        /// </summary>
+        public void Validate()
         {
             if (string.IsNullOrWhiteSpace(ConnectionString))
             {

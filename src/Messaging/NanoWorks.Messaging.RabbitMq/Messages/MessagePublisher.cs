@@ -44,7 +44,7 @@ namespace NanoWorks.Messaging.RabbitMq.Messages
             properties.Persistent = true;
             properties.Type = messageType;
 
-            _channel.ExchangeDeclare(exchange: messageType, type: ExchangeType.Fanout, durable: true, autoDelete: false);
+            _channel.ExchangeDeclare(exchange: messageType, type: ExchangeType.Fanout, durable: true, autoDelete: _options.AutoDeleteExchange);
             _channel.BasicPublish(exchange: messageType, routingKey: string.Empty, body: jsonBytes, basicProperties: properties);
         }
     }

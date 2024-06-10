@@ -8,9 +8,15 @@ NanoWorks creates **_small_** libraries that provide **_big_** value to software
 
 The libraries are open-source and offered under the Apache 2.0 license.
 
----
+
+| Package          | Status                                                                                                
+|------------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
+| [Cache 1.0.1](https://www.nuget.org/profiles/sspaniel_nanoworks-project.org)     |    [![main](https://github.com/NanoWorks-Project/NanoWorks/actions/workflows/cache_release.yml/badge.svg?branch=main)](https://github.com/NanoWorks-Project/NanoWorks/actions/workflows/cache_release.yml)         |
+| [Messaging 1.0.1](https://www.nuget.org/profiles/sspaniel_nanoworks-project.org)  |    [![main](https://github.com/NanoWorks-Project/NanoWorks/actions/workflows/messaging_release.yml/badge.svg?branch=main)](https://github.com/NanoWorks-Project/NanoWorks/actions/workflows/messaging_release.yml) |
 
 </center>
+
+---
 
 ### NanoWorks.Cache
 

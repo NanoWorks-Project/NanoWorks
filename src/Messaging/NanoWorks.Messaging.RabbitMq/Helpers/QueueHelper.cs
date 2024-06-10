@@ -34,6 +34,7 @@ namespace NanoWorks.Messaging.RabbitMq.Helpers
             }
 
             channel.QueueDeclare(consumerOptions.QueueName, durable: true, exclusive: false, autoDelete: consumerOptions.AutoDeleteQueue, queueOptions);
+            channel.QueueDeclare(consumerOptions.RetryQueueName, durable: true, exclusive: false, autoDelete: consumerOptions.AutoDeleteQueue, queueOptions);
 
             foreach (var subscription in consumerOptions.Subscriptions.Values)
             {

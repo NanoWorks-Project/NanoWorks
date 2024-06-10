@@ -1,0 +1,43 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: Messaging Prerelease
+
+on:
+  push:
+    branches: ["version/**/*"]
+    paths: ["src/Messaging/**"]
+
+jobs:
+  build-pack-push:
+
+    runs-on: ubuntu-latest
+
+    env:
+      PACKAGE_VERSION: ${{vars.PRERELEASE_PACKAGE_VERSION}}-${{github.run_id}}
+      NUGET_API_KEY: ${{secrets.NUGET_API_KEY}}
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Restore 
+      run: dotnet restore ./src/NanoWorks.sln
+
+    - name: Build
+      run: dotnet build ./src/NanoWorks.sln --no-restore
+
+    - name: Test
+      run: dotnet test ./src/NanoWorks.sln --no-build --verbosity normal --filter FullyQualifiedName!~IntegrationTests
+
+    - name: Pack NanoWorks.Messaging
+      run: dotnet pack ./src/Messaging/NanoWorks.Messaging/NanoWorks.Messaging.csproj -p:PackageVersion=$PACKAGE_VERSION --output ./pack
+
+    - name: Pack NanoWorks.Messaging.RabbitMq
+      run: dotnet pack ./src/Messaging/NanoWorks.Messaging.RabbitMq/NanoWorks.Messaging.RabbitMq.csproj -p:PackageVersion=$PACKAGE_VERSION --output ./pack
+
+    - name: Push
+      run: dotnet nuget push ./pack/*.nupkg --api-key $NUGET_API_KEY --source https://api.nuget.org/v3/index.json

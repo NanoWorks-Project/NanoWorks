@@ -95,7 +95,7 @@ namespace NanoWorks.Messaging.RabbitMq.Messages
             properties.Persistent = _eventArgs.BasicProperties.Persistent;
             properties.Type = _eventArgs.BasicProperties.Type;
 
-            _channel.BasicPublish(exchange: string.Empty, routingKey: _consumerOptions.QueueName, properties, _eventArgs.Body);
+            _channel.BasicPublish(exchange: string.Empty, routingKey: _consumerOptions.RetryQueueName, properties, _eventArgs.Body);
         }
     }
 }

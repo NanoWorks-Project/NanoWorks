@@ -55,6 +55,7 @@ public sealed class RabbitMqMessagingTests : IDisposable
                 consumerOptions.Subscribe<TestSimpleMessage>(consumer => consumer.ReceiveSimpleMessage);
                 consumerOptions.Subscribe<TestComplexMessage>(consumer => consumer.ReceiveComplexMessage);
                 consumerOptions.Subscribe<TestExceptionMessage>(consumer => consumer.ReceiveExceptionMessage);
+                consumerOptions.Subscribe<OtherTestExceptionMessage>(consumer => consumer.ReceiveOtherExceptionMessage);
             });
         });
 
@@ -163,6 +164,28 @@ public sealed class RabbitMqMessagingTests : IDisposable
         TestMessageConsumer.ExceptionMessages().Count().ShouldBe(expectedMessageCount);
 
         foreach (var receivedExceptionMessage in TestMessageConsumer.ExceptionMessages())
+        {
+            receivedExceptionMessage.ShouldNotBeNull();
+            receivedExceptionMessage.Guid.ShouldBe(publishedExceptionMessage.Guid);
+        }
+    }
+
+    [Test]
+    public async Task Consumer_Other_Exception_Thrown_Message_Is_Retried()
+    {
+        // arrange
+        var publishedExceptionMessage = _fixture.Create<OtherTestExceptionMessage>();
+        var expectedMessageCount = 3; // three retries
+
+        // act
+        await _messagePublisher.PublishAsync(publishedExceptionMessage);
+
+        Thread.Sleep(1000); // wait for messages to be delivered and retried
+
+        // assert
+        TestMessageConsumer.OtherExceptionMessages().Count().ShouldBe(expectedMessageCount);
+
+        foreach (var receivedExceptionMessage in TestMessageConsumer.OtherExceptionMessages())
         {
             receivedExceptionMessage.ShouldNotBeNull();
             receivedExceptionMessage.Guid.ShouldBe(publishedExceptionMessage.Guid);

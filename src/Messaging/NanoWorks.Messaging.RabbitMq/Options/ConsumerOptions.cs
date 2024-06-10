@@ -27,6 +27,11 @@ namespace NanoWorks.Messaging.RabbitMq.Options
         public string QueueName { get; set; }
 
         /// <summary>
+        /// Gets or sets the retry queue name for the consumer.
+        /// </summary>
+        public string RetryQueueName { get; set; }
+
+        /// <summary>
         /// Gets or sets time-to-live for messages in the queue.
         /// </summary>
         public TimeSpan Ttl { get; set; } = TimeSpan.Zero;
@@ -81,6 +86,11 @@ namespace NanoWorks.Messaging.RabbitMq.Options
                 throw new ArgumentNullException(nameof(QueueName));
             }
 
+            if (string.IsNullOrWhiteSpace(RetryQueueName))
+            {
+                throw new ArgumentNullException(nameof(RetryQueueName));
+            }
+
             if (Ttl < TimeSpan.Zero)
             {
                 throw new ArgumentOutOfRangeException(nameof(Ttl));
@@ -132,6 +142,7 @@ namespace NanoWorks.Messaging.RabbitMq.Options
         {
             ConsumerType = typeof(TConsumer);
             QueueName = ConsumerType.FullName;
+            RetryQueueName = $"{QueueName}.Retry";
         }
 
         /// <summary>
@@ -141,6 +152,7 @@ namespace NanoWorks.Messaging.RabbitMq.Options
         public void Queue(string queueName)
         {
             QueueName = queueName;
+            RetryQueueName = $"{QueueName}.Retry";
         }
 
         /// <summary>

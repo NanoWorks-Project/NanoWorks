@@ -19,6 +19,7 @@ namespace NanoWorks.Messaging.RabbitMq.Messages
         private readonly IModel _channel;
 
         private EventingBasicConsumer _rabbitMqConsumer;
+        private EventingBasicConsumer _rabbitMqRetryConsumer;
 
         internal MessageConsumer(IServiceProvider serviceProvider, ConsumerOptions consumerOptions, IModel channel)
         {
@@ -33,6 +34,11 @@ namespace NanoWorks.Messaging.RabbitMq.Messages
             {
                 _channel.BasicCancel(consumerTag);
             }
+
+            foreach (var consumerTag in _rabbitMqRetryConsumer?.ConsumerTags ?? new string[0])
+            {
+                _channel.BasicCancel(consumerTag);
+            }
         }
 
         internal void Start()
@@ -41,6 +47,11 @@ namespace NanoWorks.Messaging.RabbitMq.Messages
             _rabbitMqConsumer.Received += async (sender, eventArgs) => await TryProcessMessageAsync(eventArgs);
             _channel.BasicQos(prefetchSize: 0, prefetchCount: _consumerOptions.MaxConcurrency, global: false);
             _channel.BasicConsume(queue: _consumerOptions.QueueName, autoAck: false, consumer: _rabbitMqConsumer);
+
+            _rabbitMqRetryConsumer = new EventingBasicConsumer(_channel);
+            _rabbitMqRetryConsumer.Received += async (sender, eventArgs) => await TryProcessMessageAsync(eventArgs);
+            _channel.BasicQos(prefetchSize: 0, prefetchCount: _consumerOptions.MaxConcurrency, global: false);
+            _channel.BasicConsume(queue: _consumerOptions.RetryQueueName, autoAck: false, consumer: _rabbitMqRetryConsumer);
         }
 
         private async Task TryProcessMessageAsync(BasicDeliverEventArgs eventArgs)

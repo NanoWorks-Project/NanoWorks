@@ -52,7 +52,7 @@ Messages that fail serialization can be ignored and discarded through configurat
 
 If a consumer throws an exception while processing a message, a `TransportError` with the exception details will be published to the `NanoWorks.Errors` queue.
 
-If the message retry limit has not been exceeded, the message will be re-published to the queue and processed again. 
+If the message retry limit has not been exceeded, the message will be published to the consumer's retry queue and processed again. 
 
 ---
 

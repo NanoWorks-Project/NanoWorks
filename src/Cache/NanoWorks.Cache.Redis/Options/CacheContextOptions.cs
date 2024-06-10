@@ -1,4 +1,5 @@
-﻿// Ignore Spelling: Nano
+﻿#pragma warning disable SA1402 // File may only contain a single type
+// Ignore Spelling: Nano
 
 using System;
 using NanoWorks.Cache.Redis.CacheContexts;
@@ -12,6 +13,10 @@ namespace NanoWorks.Cache.Redis.Options
     /// </summary>
     public class CacheContextOptions
     {
+        internal CacheContextOptions()
+        {
+        }
+
         internal string ConnectionString { get; set; }
 
         internal IConnectionMultiplexer Connection => ConnectionPool.GetConnection(ConnectionString);
@@ -34,11 +39,13 @@ namespace NanoWorks.Cache.Redis.Options
     /// Options for the cache context.
     /// </summary>
     /// <typeparam name="TCacheContext">Type of <see cref="RedisCacheContext"/>.</typeparam>
-#pragma warning disable SA1402 // File may only contain a single type
-    public class CacheContextOptions<TCacheContext> : CacheContextOptions
-#pragma warning restore SA1402 // File may only contain a single type
+    public sealed class CacheContextOptions<TCacheContext> : CacheContextOptions
         where TCacheContext : RedisCacheContext
     {
+        internal CacheContextOptions()
+        {
+        }
+
         /// <summary>
         /// Sets the connection string.
         /// </summary>

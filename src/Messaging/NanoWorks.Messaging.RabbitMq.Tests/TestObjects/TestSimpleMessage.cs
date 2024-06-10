@@ -3,7 +3,7 @@
 
 namespace NanoWorks.Messaging.RabbitMq.Tests.TestObjects;
 
-public class TestSimpleMessage
+public sealed class TestSimpleMessage
 {
     public Guid Guid { get; set; }
 

@@ -155,6 +155,26 @@ namespace NanoWorks.Cache.Redis.CacheSets
             return item;
         }
 
+        private IEnumerable<TItem> Get(IEnumerable<TKey> keys)
+        {
+            foreach (var key in keys)
+            {
+                if (key == null)
+                {
+                    continue;
+                }
+
+                var item = Get(key);
+
+                if (item == null)
+                {
+                    continue;
+                }
+
+                yield return item;
+            }
+        }
+
         private void Set(TItem item)
         {
             if (item == null)
@@ -178,19 +198,6 @@ namespace NanoWorks.Cache.Redis.CacheSets
 
             _database.HashSet(_options.TableName, key.ToString(), json);
             ResetExpiration();
-        }
-
-        private IEnumerable<TItem> Get(IEnumerable<TKey> keys)
-        {
-            foreach (var key in keys)
-            {
-                var item = Get(key);
-
-                if (item != null)
-                {
-                    yield return item;
-                }
-            }
         }
     }
 }

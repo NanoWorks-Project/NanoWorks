@@ -2,6 +2,6 @@
 
 namespace NanoWorks.Cache.Redis.Tests.UnitTests.Options;
 
-internal class CashSetOptionsTests
+public sealed class CashSetOptionsTests
 {
 }

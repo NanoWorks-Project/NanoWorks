@@ -1,6 +1,6 @@
 ﻿namespace Sample.WebApi.Models.Events;
 
-public class AuthorUpdatedEvent
+public sealed class AuthorUpdatedEvent
 {
     public Guid AuthorId { get; set; }
 }

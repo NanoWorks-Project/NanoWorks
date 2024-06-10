@@ -1,4 +1,5 @@
-﻿// Ignore Spelling: Nano
+﻿#pragma warning disable SA1402 // File may only contain a single type
+// Ignore Spelling: Nano
 // Ignore Spelling: Mq
 
 using System;
@@ -7,8 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using NanoWorks.Messaging.Errors;
 using NanoWorks.Messaging.Serialization;
-
-#pragma warning disable SA1402 // File may only contain a single type
 
 namespace NanoWorks.Messaging.RabbitMq.Options
 {
@@ -97,7 +96,7 @@ namespace NanoWorks.Messaging.RabbitMq.Options
     /// Options for the consumer.
     /// </summary>
     /// <typeparam name="TConsumer">Type of consumer.</typeparam>
-    public class ConsumerOptions<TConsumer> : ConsumerOptions
+    public sealed class ConsumerOptions<TConsumer> : ConsumerOptions
         where TConsumer : class
     {
         internal ConsumerOptions()

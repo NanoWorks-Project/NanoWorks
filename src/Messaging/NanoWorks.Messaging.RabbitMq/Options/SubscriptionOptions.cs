@@ -1,11 +1,10 @@
-﻿// Ignore Spelling: Nano
+﻿#pragma warning disable SA1402 // File may only contain a single type
+// Ignore Spelling: Nano
 // Ignore Spelling: Mq
 
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-
-#pragma warning disable SA1402 // File may only contain a single type
 
 namespace NanoWorks.Messaging.RabbitMq.Options
 {
@@ -48,7 +47,7 @@ namespace NanoWorks.Messaging.RabbitMq.Options
     /// </summary>
     /// <typeparam name="TConsumer">Type of consumer.</typeparam>
     /// <typeparam name="TMessage">Type of message.</typeparam>
-    public class SubscriptionOptions<TConsumer, TMessage> : SubscriptionOptions
+    public sealed class SubscriptionOptions<TConsumer, TMessage> : SubscriptionOptions
         where TMessage : class, new()
     {
         internal SubscriptionOptions(Func<TConsumer, Func<TMessage, CancellationToken, Task>> receiveMethodSelector)

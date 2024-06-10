@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using NanoWorks.Messaging.RabbitMq.Options;
 using NanoWorks.Messaging.RabbitMq.Services;
 using RabbitMQ.Client;
 

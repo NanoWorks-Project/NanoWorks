@@ -8,8 +8,12 @@ namespace NanoWorks.Messaging.RabbitMq.Options
     /// <summary>
     /// Options for the publisher.
     /// </summary>
-    public class PublisherOptions
+    public sealed class PublisherOptions
     {
+        internal PublisherOptions()
+        {
+        }
+
         internal bool AutoDeleteExchange { get; set; } = false;
 
         internal PublisherSerializerExceptionBehavior SerializerExceptionBehavior { get; set; }

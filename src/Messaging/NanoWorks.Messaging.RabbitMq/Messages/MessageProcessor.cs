@@ -15,7 +15,7 @@ using RabbitMQ.Client.Events;
 
 namespace NanoWorks.Messaging.RabbitMq.Messages
 {
-    internal class MessageProcessor
+    internal sealed class MessageProcessor
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly ConsumerOptions _consumerOptions;

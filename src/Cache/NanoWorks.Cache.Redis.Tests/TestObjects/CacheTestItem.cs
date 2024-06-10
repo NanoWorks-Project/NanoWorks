@@ -6,7 +6,7 @@ namespace NanoWorks.Cache.Redis.Tests.TestObjects;
 /// <summary>
 /// Test item for the cache.
 /// </summary>
-public class CacheTestItem
+public sealed class CacheTestItem
 {
     /// <summary>
     /// Gets or sets the identifier.

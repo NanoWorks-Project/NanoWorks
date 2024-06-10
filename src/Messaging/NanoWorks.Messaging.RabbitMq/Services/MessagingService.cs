@@ -12,7 +12,7 @@ using NanoWorks.Messaging.RabbitMq.Options;
 
 namespace NanoWorks.Messaging.RabbitMq.Services
 {
-    internal class MessagingService : IHostedService
+    internal sealed class MessagingService : IHostedService
     {
         internal const string ErrorQueueName = "NanoWorks.Errors";
 

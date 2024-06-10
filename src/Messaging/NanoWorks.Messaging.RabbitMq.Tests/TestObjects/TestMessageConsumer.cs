@@ -6,7 +6,7 @@
 
 namespace NanoWorks.Messaging.RabbitMq.Tests.TestObjects;
 
-public class TestMessageConsumer
+public sealed class TestMessageConsumer
 {
     public static IEnumerable<TestSimpleMessage> SimpleMessages() => _simpleMessages;
     public static IEnumerable<TestComplexMessage> ComplexMessages() => _complexMessages;

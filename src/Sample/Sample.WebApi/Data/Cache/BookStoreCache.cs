@@ -8,7 +8,7 @@ using Sample.WebApi.Models.Dtos;
 
 namespace Sample.WebApi.Data.Cache;
 
-public class BookStoreCache : RedisCacheContext, IBookStoreCache
+public sealed class BookStoreCache : RedisCacheContext, IBookStoreCache
 {
     public BookStoreCache(CacheContextOptions options)
         : base(options)

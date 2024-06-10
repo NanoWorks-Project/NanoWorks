@@ -12,7 +12,7 @@ using RabbitMQ.Client.Events;
 
 namespace NanoWorks.Messaging.RabbitMq.Messages
 {
-    internal class MessageConsumer : IDisposable
+    internal sealed class MessageConsumer : IDisposable
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly ConsumerOptions _consumerOptions;

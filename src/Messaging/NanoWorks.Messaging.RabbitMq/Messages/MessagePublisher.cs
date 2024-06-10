@@ -10,7 +10,7 @@ using RabbitMQ.Client;
 
 namespace NanoWorks.Messaging.RabbitMq.Messages
 {
-    internal class MessagePublisher : IMessagePublisher
+    internal sealed class MessagePublisher : IMessagePublisher
     {
         private readonly IModel _channel;
         private readonly PublisherOptions _options;

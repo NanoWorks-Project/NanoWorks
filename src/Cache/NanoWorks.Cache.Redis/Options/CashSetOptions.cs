@@ -1,4 +1,5 @@
-﻿// Ignore Spelling: Nano
+﻿#pragma warning disable SA1402 // File may only contain a single type
+// Ignore Spelling: Nano
 
 using System;
 using NanoWorks.Cache.Options;
@@ -10,6 +11,10 @@ namespace NanoWorks.Cache.Redis.Options
     /// </summary>
     public class CashSetOptions
     {
+        internal CashSetOptions()
+        {
+        }
+
         internal string TableName { get; set; }
 
         internal Func<object, object> KeySelector { get; set; }
@@ -42,11 +47,13 @@ namespace NanoWorks.Cache.Redis.Options
     /// </summary>
     /// <typeparam name="TItem">The type of items in the cache.</typeparam>
     /// <typeparam name="TKey">The type of the key for the cache set.</typeparam>
-#pragma warning disable SA1402 // File may only contain a single type
-    public class CashSetOptions<TItem, TKey> : CashSetOptions
-#pragma warning restore SA1402 // File may only contain a single type
+    public sealed class CashSetOptions<TItem, TKey> : CashSetOptions
         where TItem : class, new()
     {
+        internal CashSetOptions()
+        {
+        }
+
         /// <summary>
         /// Table name for the cache set.
         /// </summary>

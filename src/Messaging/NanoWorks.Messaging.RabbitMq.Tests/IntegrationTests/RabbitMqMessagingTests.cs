@@ -19,7 +19,7 @@ namespace NanoWorks.Messaging.RabbitMq.Tests.IntegrationTests;
 /// These tests require RabbitMq running locally on the default ports.
 /// </summary>
 /// </summary>
-public class RabbitMqMessagingTests : IDisposable
+public sealed class RabbitMqMessagingTests : IDisposable
 {
     private readonly Fixture _fixture;
     private readonly IServiceScope _serviceScope;

@@ -11,7 +11,7 @@ namespace NanoWorks.Messaging.RabbitMq.Options
     /// <summary>
     /// Options for RabbitMq messaging.
     /// </summary>
-    public class MessagingOptions
+    public sealed class MessagingOptions
     {
         internal MessagingOptions()
         {

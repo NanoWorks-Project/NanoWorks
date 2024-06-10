@@ -1,6 +1,6 @@
 ﻿namespace Sample.WebApi.Models.Entities;
 
-public class Author
+public sealed class Author
 {
     public Guid AuthorId { get; set; }
 

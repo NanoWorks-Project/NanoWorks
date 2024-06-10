@@ -10,7 +10,7 @@ namespace NanoWorks.Cache.Redis.Tests.TestObjects;
 /// <summary>
 /// Test cache.
 /// </summary>
-internal class TestCache : RedisCacheContext
+public sealed class TestCache : RedisCacheContext
 {
     public TestCache(CacheContextOptions<TestCache> options) : base(options)
     {

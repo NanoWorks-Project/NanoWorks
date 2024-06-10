@@ -7,7 +7,7 @@ using Sample.WebApi.Models.Events;
 
 namespace Sample.WebApi.Messaging;
 
-public class CacheConsumer(IBookStoreDatabase bookStoreDatabase, IBookStoreCache bookStoreCache)
+public sealed class CacheConsumer(IBookStoreDatabase bookStoreDatabase, IBookStoreCache bookStoreCache)
 {
     public async Task OnAuthorUpdated(AuthorUpdatedEvent @event, CancellationToken cancellationToken)
     {

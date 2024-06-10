@@ -11,9 +11,9 @@ namespace NanoWorks.Cache.Redis.Tests.IntegrationTests;
 /// <summary>
 /// These tests require Redis running locally on the default port.
 /// </summary>
-public class RedisCacheTests
+public sealed class RedisCacheTests
 {
-    private const int _oneThousandItems = 1000;
+    private const int _tenThousandItems = 10000;
     private readonly TestCache _cache;
     private readonly Fixture _fixture = new();
     private readonly List<CacheTestItem> cacheTestItems = [];
@@ -26,9 +26,9 @@ public class RedisCacheTests
 
         _fixture = new Fixture();
         _fixture.Customize(new AutoMoqCustomization() { ConfigureMembers = true });
-        _fixture.CreateMany<CacheTestItem>(_oneThousandItems);
+        _fixture.CreateMany<CacheTestItem>(_tenThousandItems);
 
-        foreach (var item in _fixture.CreateMany<CacheTestItem>(_oneThousandItems))
+        foreach (var item in _fixture.CreateMany<CacheTestItem>(_tenThousandItems))
         {
             _cache.TestSet[item.Id] = item;
             cacheTestItems.Add(item);
@@ -165,6 +165,6 @@ public class RedisCacheTests
         var items = _cache.TestSet.ToList();
 
         // assert
-        items.Count.ShouldBeGreaterThanOrEqualTo(_oneThousandItems);
+        items.Count.ShouldBeGreaterThanOrEqualTo(_tenThousandItems);
     }
 }

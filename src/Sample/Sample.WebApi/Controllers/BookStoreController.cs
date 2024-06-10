@@ -13,7 +13,7 @@ namespace Sample.WebApi.Controllers;
 
 [ApiController]
 [Route("api")]
-public class BookStoreController(
+public sealed class BookStoreController(
     IBookStoreDatabase bookStoreDatabase,
     IBookStoreCache bookStoreCache,
     IMessagePublisher messagePublisher)

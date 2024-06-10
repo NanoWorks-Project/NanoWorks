@@ -1,4 +1,6 @@
-﻿using NanoWorks.Cache.Options;
+﻿// Ignore Spelling: Nano
+
+using NanoWorks.Cache.Options;
 using NanoWorks.Cache.Redis.CacheContexts;
 using NanoWorks.Cache.Redis.CacheSets;
 using NanoWorks.Cache.Redis.Options;

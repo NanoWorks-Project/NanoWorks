@@ -1,4 +1,7 @@
-﻿namespace NanoWorks.Cache.Redis.Tests.TestObjects;
+﻿// Ignore Spelling: Nano
+// Ignore Spelling: Utc
+
+namespace NanoWorks.Cache.Redis.Tests.TestObjects;
 
 /// <summary>
 /// Test item for the cache.

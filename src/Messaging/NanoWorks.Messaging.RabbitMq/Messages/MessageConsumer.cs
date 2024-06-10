@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Ignore Spelling: Nano
+// Ignore Spelling: Mq
+
+using System;
 using System.Threading.Tasks;
 using NanoWorks.Messaging.Errors;
 using NanoWorks.Messaging.RabbitMq.Options;

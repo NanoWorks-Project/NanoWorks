@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Ignore Spelling: Nano
+// Ignore Spelling: Mq
+
+using System;
 using System.Collections.Generic;
 using NanoWorks.Messaging.RabbitMq.Options;
 using NanoWorks.Messaging.RabbitMq.Services;
@@ -8,7 +11,7 @@ namespace NanoWorks.Messaging.RabbitMq.Helpers
 {
     internal static class ExchangeHelper
     {
-        public static void CreateExchanges(IConnection connection, MessagingOptions options)
+        public static void CreateExchanges(IConnection connection)
         {
             var channel = connection.CreateModel();
 

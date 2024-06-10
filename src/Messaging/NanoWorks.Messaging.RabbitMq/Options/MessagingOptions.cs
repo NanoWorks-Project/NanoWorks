@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Ignore Spelling: Nano
+// Ignore Spelling: Mq
+
+using System;
 using System.Collections.Generic;
 using NanoWorks.Messaging.RabbitMq.ConnectionPools;
 using RabbitMQ.Client;

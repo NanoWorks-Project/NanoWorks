@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Ignore Spelling: Nano
+
+using System;
 using Microsoft.Extensions.DependencyInjection;
 using NanoWorks.Cache.Redis.CacheContexts;
 using NanoWorks.Cache.Redis.Options;

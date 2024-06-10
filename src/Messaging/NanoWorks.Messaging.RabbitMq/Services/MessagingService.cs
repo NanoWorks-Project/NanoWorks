@@ -34,7 +34,7 @@ namespace NanoWorks.Messaging.RabbitMq.Services
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            ExchangeHelper.CreateExchanges(_options.ConsumerConnection, _options);
+            ExchangeHelper.CreateExchanges(_options.ConsumerConnection);
 
             foreach (var subscriberOptions in _options.ConsumerOptions.Values)
             {

@@ -1,4 +1,6 @@
-﻿namespace NanoWorks.Cache.Options
+﻿// Ignore Spelling: Nano
+
+namespace NanoWorks.Cache.Options
 {
     /// <summary>
     /// Behavior for handling exceptions thrown by the serializer.

@@ -1,4 +1,7 @@
-﻿using NanoWorks.Messaging.Serialization;
+﻿// Ignore Spelling: Nano
+// Ignore Spelling: Mq
+
+using NanoWorks.Messaging.Serialization;
 
 namespace NanoWorks.Messaging.RabbitMq.Options
 {

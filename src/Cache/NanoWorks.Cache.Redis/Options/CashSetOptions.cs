@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Ignore Spelling: Nano
+
+using System;
 using NanoWorks.Cache.Options;
 
 namespace NanoWorks.Cache.Redis.Options

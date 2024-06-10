@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Ignore Spelling: Nano
+
+using System;
 using System.Text.Json;
 
 namespace NanoWorks.Messaging.Serialization

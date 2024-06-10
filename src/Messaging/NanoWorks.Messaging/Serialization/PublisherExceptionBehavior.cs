@@ -1,4 +1,6 @@
-﻿namespace NanoWorks.Messaging.Serialization
+﻿// Ignore Spelling: Nano
+
+namespace NanoWorks.Messaging.Serialization
 {
     /// <summary>
     /// Specifies the behavior for handling exceptions thrown by the serializer.

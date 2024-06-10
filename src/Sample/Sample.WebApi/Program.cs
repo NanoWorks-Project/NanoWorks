@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿// Ignore Spelling: Nano
+// Ignore Spelling: Mq
+
+using Microsoft.EntityFrameworkCore;
 using NanoWorks.Cache.Redis.DependencyInjection;
 using NanoWorks.Messaging.RabbitMq.DependencyInjection;
 using NanoWorks.Messaging.Serialization;

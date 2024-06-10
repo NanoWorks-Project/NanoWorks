@@ -9,12 +9,12 @@ namespace Sample.WebApi.Messaging;
 
 public class CacheConsumer(IBookStoreDatabase bookStoreDatabase, IBookStoreCache bookStoreCache)
 {
-    public async Task OnAuthorUpdated(AuthorUpdatedEvent @event, CancellationToken token)
+    public async Task OnAuthorUpdated(AuthorUpdatedEvent @event, CancellationToken cancellationToken)
     {
         Console.WriteLine($"{nameof(Author)} updated '{@event.AuthorId}' - syncing with cache");
 
         var author = await bookStoreDatabase.Authors
-            .SingleOrDefaultAsync(x => x.AuthorId == @event.AuthorId);
+            .SingleOrDefaultAsync(x => x.AuthorId == @event.AuthorId, cancellationToken);
 
         if (author == null)
         {
@@ -25,12 +25,12 @@ public class CacheConsumer(IBookStoreDatabase bookStoreDatabase, IBookStoreCache
         bookStoreCache.Authors[authorDto.AuthorId] = authorDto;
     }
 
-    public async Task OnBookUpdated(BookUpdatedEvent @event, CancellationToken token)
+    public async Task OnBookUpdated(BookUpdatedEvent @event, CancellationToken cancellationToken)
     {
         Console.WriteLine($"{nameof(Book)} updated '{@event.BookId}' - syncing with cache");
 
         var book = await bookStoreDatabase.Books
-            .SingleOrDefaultAsync(x => x.BookId == @event.BookId);
+            .SingleOrDefaultAsync(x => x.BookId == @event.BookId, cancellationToken);
 
         if (book == null)
         {

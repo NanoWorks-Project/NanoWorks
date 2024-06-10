@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿// Ignore Spelling: Nano
+
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NanoWorks.Messaging.MessagePublishers;
 using Sample.WebApi.Data.Cache;

@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Ignore Spelling: Nano
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -14,7 +16,7 @@ namespace NanoWorks.Cache.Redis.CacheSets
     /// </summary>
     /// <typeparam name="TItem">Type of item in the cache.</typeparam>
     /// <typeparam name="TKey">Type of key used to identify the item in the cache.</typeparam>
-    public class CacheSet<TItem, TKey> : ICacheSet<TItem, TKey>
+    public sealed class CacheSet<TItem, TKey> : ICacheSet<TItem, TKey>
         where TItem : class, new()
     {
         private readonly IDatabase _database;

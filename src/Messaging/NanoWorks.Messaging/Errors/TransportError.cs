@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Ignore Spelling: Nano
+
+using System;
 
 namespace NanoWorks.Messaging.Errors
 {

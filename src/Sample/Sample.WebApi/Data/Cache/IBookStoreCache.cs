@@ -1,4 +1,6 @@
-﻿using NanoWorks.Cache.Redis.CacheSets;
+﻿// Ignore Spelling: Nano
+
+using NanoWorks.Cache.Redis.CacheSets;
 using Sample.WebApi.Models.Dtos;
 
 namespace Sample.WebApi.Data.Cache;

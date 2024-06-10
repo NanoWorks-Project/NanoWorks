@@ -1,4 +1,6 @@
-﻿using AutoFixture;
+﻿// Ignore Spelling: Nano
+
+using AutoFixture;
 using AutoFixture.AutoMoq;
 using NanoWorks.Cache.Redis.Options;
 using NanoWorks.Cache.Redis.Tests.TestObjects;

@@ -1,6 +1,8 @@
 ﻿#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 #pragma warning disable CA1822 // Mark members as static
 #pragma warning disable IDE0060 // Remove unused parameter
+// Ignore Spelling: Nano
+// Ignore Spelling: Mq
 
 namespace NanoWorks.Messaging.RabbitMq.Tests.TestObjects;
 

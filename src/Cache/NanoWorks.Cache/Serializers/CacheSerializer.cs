@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Ignore Spelling: Nano
+// Ignore Spelling: Serializers
+
+using System;
 using System.Text.Json;
 using NanoWorks.Cache.Options;
 

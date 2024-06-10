@@ -4,10 +4,6 @@
 name: Messaging Release
 
 on:
-  push:
-    branches: ["main"]
-    paths: ["src/Messaging/**"]
-
   workflow_dispatch:
     inputs:
       PACKAGE_VERSION:
@@ -21,7 +17,6 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      PACKAGE_VERSION: ${{vars.PACKAGE_VERSION}}
       NUGET_API_KEY: ${{secrets.NUGET_API_KEY}}
 
     steps:

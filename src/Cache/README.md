@@ -90,15 +90,11 @@ builder.Services.AddScoped<IBookStoreCache, BookStoreCache>();
 ### Use your `RedisCacheContext`
 
 ```
-[ApiController, Route("api")]
-public class BookStoreController(IBookStoreCache cache) : ControllerBase
+[HttpGet("authors/{authorId}")]
+public IActionResult GetAuthor(Guid authorId)
 {
-    [HttpGet("authors")]
-    public IActionResult GetAuthors()
-    {
-        var authors = cache.Authors;
-        return Ok(authors);
-    }
+    var author = bookStoreCache.Authors[authorId];
+    return Ok(author);
 }
 ```
 

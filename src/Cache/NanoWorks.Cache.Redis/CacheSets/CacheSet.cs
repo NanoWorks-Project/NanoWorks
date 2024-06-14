@@ -1,12 +1,11 @@
 ﻿// Ignore Spelling: Nano
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using NanoWorks.Cache.CacheSets;
 using NanoWorks.Cache.Redis.Options;
-using NanoWorks.Cache.Serializers;
+using NRedisStack.RedisStackCommands;
 using StackExchange.Redis;
 
 namespace NanoWorks.Cache.Redis.CacheSets
@@ -52,6 +51,42 @@ namespace NanoWorks.Cache.Redis.CacheSets
         }
 
         /// <inheritdoc />
+        public TItem Get(TKey key)
+        {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
+            var item = _database.JSON().Get<TItem>($"{_options.TableName}:{key}");
+
+            if (item != null)
+            {
+                ResetExpiration(key);
+            }
+
+            return item;
+        }
+
+        /// <inheritdoc />
+        public async Task<TItem> GetAsync(TKey key)
+        {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
+            var item = await _database.JSON().GetAsync<TItem>($"{_options.TableName}:{key}");
+
+            if (item != null)
+            {
+                await ResetExpirationAsync(key);
+            }
+
+            return item;
+        }
+
+        /// <inheritdoc />
         public TKey GetKey(TItem item)
         {
             if (item == null)
@@ -64,12 +99,6 @@ namespace NanoWorks.Cache.Redis.CacheSets
         }
 
         /// <inheritdoc />
-        public long Count()
-        {
-            return _database.HashLength(_options.TableName);
-        }
-
-        /// <inheritdoc />
         public void Remove(TKey key)
         {
             if (key == null)
@@ -77,7 +106,19 @@ namespace NanoWorks.Cache.Redis.CacheSets
                 throw new ArgumentNullException(nameof(key));
             }
 
-            _database.HashDelete(_options.TableName, key.ToString());
+            _database.KeyDelete($"{_options.TableName}:{key}");
+        }
+
+        /// <inheritdoc />
+        public void Remove(TItem item)
+        {
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+
+            var key = GetKey(item);
+            Remove(key);
         }
 
         /// <inheritdoc />
@@ -88,71 +129,91 @@ namespace NanoWorks.Cache.Redis.CacheSets
                 throw new ArgumentNullException(nameof(key));
             }
 
-            await _database.HashDeleteAsync(_options.TableName, key.ToString());
+            await _database.KeyDeleteAsync($"{_options.TableName}:{key}");
         }
 
         /// <inheritdoc />
-        public void ResetExpiration()
+        public async Task RemoveAsync(TItem item)
         {
-            _database.KeyExpire(_options.TableName, _options.ExpirationDuration);
-        }
-
-        /// <inheritdoc />
-        public async Task ResetExpirationAsync()
-        {
-            await _database.KeyExpireAsync(_options.TableName, _options.ExpirationDuration);
-        }
-
-        /// <inheritdoc />
-        public IEnumerator<TItem> GetEnumerator()
-        {
-            var result = _database.HashScan(_options.TableName);
-            var enumerator = result.GetEnumerator();
-            ResetExpiration();
-
-            while (enumerator.MoveNext())
+            if (item == null)
             {
-                var redisResult = enumerator.Current;
-
-                if (!redisResult.Value.HasValue)
-                {
-                    continue;
-                }
-
-                var item = CacheSerializer.Deserialize<TItem>(redisResult.Value, _options.SerializerExceptionBehavior);
-
-                if (item is null)
-                {
-                    continue;
-                }
-
-                yield return item;
+                throw new ArgumentNullException(nameof(item));
             }
+
+            var key = GetKey(item);
+            await RemoveAsync(key);
         }
 
         /// <inheritdoc />
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        private TItem Get(TKey key)
+        public void ResetExpiration(TKey key)
         {
             if (key == null)
             {
                 throw new ArgumentNullException(nameof(key));
             }
 
-            var value = _database.HashGet(_options.TableName, key.ToString());
+            _database.KeyExpire($"{_options.TableName}:{key}", _options.ExpirationDuration);
+        }
 
-            if (!value.HasValue)
+        /// <inheritdoc />
+        public void ResetExpiration(TItem item)
+        {
+            if (item == null)
             {
-                return null;
+                throw new ArgumentNullException(nameof(item));
             }
 
-            var item = CacheSerializer.Deserialize<TItem>(value, _options.SerializerExceptionBehavior);
-            ResetExpiration();
-            return item;
+            var key = GetKey(item);
+            ResetExpiration(key);
+        }
+
+        /// <inheritdoc />
+        public async Task ResetExpirationAsync(TKey key)
+        {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
+            await _database.KeyExpireAsync($"{_options.TableName}:{key}", _options.ExpirationDuration);
+        }
+
+        /// <inheritdoc />
+        public async Task ResetExpirationAsync(TItem item)
+        {
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+
+            var key = GetKey(item);
+            await ResetExpirationAsync(key);
+        }
+
+        /// <inheritdoc />
+        public void Set(TItem item)
+        {
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+
+            var key = GetKey(item);
+            _database.JSON().Set($"{_options.TableName}:{key}", "$", item);
+            ResetExpiration(key);
+        }
+
+        /// <inheritdoc />
+        public async Task SetAsync(TItem item)
+        {
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+
+            var key = GetKey(item);
+            await _database.JSON().SetAsync($"{_options.TableName}:{key}", "$", item);
+            await ResetExpirationAsync(key);
         }
 
         private IEnumerable<TItem> Get(IEnumerable<TKey> keys)
@@ -173,31 +234,6 @@ namespace NanoWorks.Cache.Redis.CacheSets
 
                 yield return item;
             }
-        }
-
-        private void Set(TItem item)
-        {
-            if (item == null)
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
-
-            var json = CacheSerializer.Serialize(item, _options.SerializerExceptionBehavior);
-
-            if (string.IsNullOrWhiteSpace(json))
-            {
-                return;
-            }
-
-            var key = GetKey(item);
-
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
-
-            _database.HashSet(_options.TableName, key.ToString(), json);
-            ResetExpiration();
         }
     }
 }

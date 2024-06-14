@@ -1,6 +1,5 @@
 ﻿// Ignore Spelling: Nano
 
-using NanoWorks.Cache.Options;
 using NanoWorks.Cache.Redis.CacheContexts;
 using NanoWorks.Cache.Redis.CacheSets;
 using NanoWorks.Cache.Redis.Options;
@@ -18,8 +17,7 @@ public sealed class TestCache : RedisCacheContext
         {
             cacheSetOptions.Table($"{nameof(CacheTestItem)}-{Guid.NewGuid()}");
             cacheSetOptions.Key(item => item.Id);
-            cacheSetOptions.Expiration(TimeSpan.FromSeconds(5));
-            cacheSetOptions.OnSerializationException(SerializerExceptionBehavior.Throw);
+            cacheSetOptions.Expiration(TimeSpan.FromSeconds(10));
         });
     }
 

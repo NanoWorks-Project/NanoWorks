@@ -13,10 +13,8 @@ namespace NanoWorks.Cache.Redis.Tests.IntegrationTests;
 /// </summary>
 public sealed class RedisCacheTests
 {
-    private const int _tenThousandItems = 10000;
     private readonly TestCache _cache;
     private readonly Fixture _fixture = new();
-    private readonly List<CacheTestItem> cacheTestItems = [];
 
     public RedisCacheTests()
     {
@@ -26,13 +24,6 @@ public sealed class RedisCacheTests
 
         _fixture = new Fixture();
         _fixture.Customize(new AutoMoqCustomization() { ConfigureMembers = true });
-        _fixture.CreateMany<CacheTestItem>(_tenThousandItems);
-
-        foreach (var item in _fixture.CreateMany<CacheTestItem>(_tenThousandItems))
-        {
-            _cache.TestSet[item.Id] = item;
-            cacheTestItems.Add(item);
-        }
     }
 
     [Test]
@@ -105,7 +96,86 @@ public sealed class RedisCacheTests
     }
 
     [Test]
-    public void Remove_RemovesItem()
+    public void Get_WhenItemExists_ReturnsItem()
+    {
+        // Arrange
+        var item = _fixture.Create<CacheTestItem>();
+        _cache.TestSet[item.Id] = item;
+
+        // Act
+        var result = _cache.TestSet.Get(item.Id);
+
+        // Assert
+        result.ShouldNotBeNull();
+        result.ShouldBeEquivalentTo(item);
+    }
+
+    [Test]
+    public void Get_WhenItemNotExists_ReturnsNull()
+    {
+        // Arrange
+        var id = _fixture.Create<Guid>();
+
+        // Act
+        var result = _cache.TestSet.Get(id);
+
+        // Assert
+        result.ShouldBeNull();
+    }
+
+    [Test]
+    public async Task GetAsync_WhenItemExists_ReturnsItem()
+    {
+        // Arrange
+        var item = _fixture.Create<CacheTestItem>();
+        _cache.TestSet[item.Id] = item;
+
+        // Act
+        var result = await _cache.TestSet.GetAsync(item.Id);
+
+        // Assert
+        result.ShouldNotBeNull();
+        result.ShouldBeEquivalentTo(item);
+    }
+
+    [Test]
+    public async Task GetAsync_WhenItemNotExists_ReturnsNull()
+    {
+        // Arrange
+        var id = _fixture.Create<Guid>();
+
+        // Act
+        var result = await _cache.TestSet.GetAsync(id);
+
+        // Assert
+        result.ShouldBeNull();
+    }
+
+    [Test]
+    public void GetKey_WhenItemExists_ReturnsKey()
+    {
+        // Arrange
+        var item = _fixture.Create<CacheTestItem>();
+
+        // Act
+        var result = _cache.TestSet.GetKey(item);
+
+        // Assert
+        result.ShouldBe(item.Id);
+    }
+
+    [Test]
+    public void GetKey_WhenItemNotExists_ThrowsArgumentNullException()
+    {
+        // Arrange
+        CacheTestItem item = null!;
+
+        // Act
+        Should.Throw<ArgumentNullException>(() => _cache.TestSet.GetKey(item));
+    }
+
+    [Test]
+    public void Remove_WhenItemExists_RemovesItem()
     {
         // Arrange
         var item = _fixture.Create<CacheTestItem>();
@@ -115,12 +185,72 @@ public sealed class RedisCacheTests
         _cache.TestSet.Remove(item.Id);
 
         // Assert
-        var result = _cache.TestSet[item.Id];
+        var result = _cache.TestSet.Get(item.Id);
         result.ShouldBeNull();
     }
 
     [Test]
-    public async Task RemoveAsync_RemovesItem()
+    public void Remove_WhenItemNotExists_DoesNothing()
+    {
+        // Arrange
+        var id = _fixture.Create<Guid>();
+
+        // Act
+        _cache.TestSet.Remove(id);
+
+        // Assert
+        var result = _cache.TestSet.Get(id);
+        result.ShouldBeNull();
+    }
+
+    [Test]
+    public void Remove_WhenItemExists_RemovesItemByItem()
+    {
+        // Arrange
+        var item = _fixture.Create<CacheTestItem>();
+        _cache.TestSet[item.Id] = item;
+
+        // Act
+        _cache.TestSet.Remove(item);
+
+        // Assert
+        var result = _cache.TestSet.Get(item.Id);
+        result.ShouldBeNull();
+    }
+
+    [Test]
+    public void Remove_WhenItemNotExists_DoesNothingByItem()
+    {
+        // Arrange
+        var item = _fixture.Create<CacheTestItem>();
+
+        // Act
+        _cache.TestSet.Remove(item);
+
+        // Assert
+        var result = _cache.TestSet.Get(item.Id);
+        result.ShouldBeNull();
+    }
+
+    [Test]
+    public void Remove_WhenItemIsNull_ThrowsArgumentNullException()
+    {
+        // Arrange
+        CacheTestItem item = null!;
+
+        // Act
+        Should.Throw<ArgumentNullException>(() => _cache.TestSet.Remove(item));
+    }
+
+    [Test]
+    public void Remove_WhenKeyIsNull_ThrowsArgumentNullException()
+    {
+        // Act
+        Should.Throw<ArgumentNullException>(() => _cache.TestSet.Remove(null!));
+    }
+
+    [Test]
+    public async Task RemoveAsync_WhenItemExists_RemovesItem()
     {
         // Arrange
         var item = _fixture.Create<CacheTestItem>();
@@ -130,41 +260,155 @@ public sealed class RedisCacheTests
         await _cache.TestSet.RemoveAsync(item.Id);
 
         // Assert
-        var result = _cache.TestSet[item.Id];
+        var result = _cache.TestSet.Get(item.Id);
         result.ShouldBeNull();
     }
 
     [Test]
-    public void GetKey_ReturnsKey()
+    public async Task RemoveAsync_WhenItemNotExists_DoesNothing()
+    {
+        // Arrange
+        var id = _fixture.Create<Guid>();
+
+        // Act
+        await _cache.TestSet.RemoveAsync(id);
+
+        // Assert
+        var result = _cache.TestSet.Get(id);
+        result.ShouldBeNull();
+    }
+
+    [Test]
+    public async Task RemoveAsync_WhenItemExists_RemovesItemByItem()
     {
         // Arrange
         var item = _fixture.Create<CacheTestItem>();
         _cache.TestSet[item.Id] = item;
 
         // Act
-        var key = _cache.TestSet.GetKey(item);
+        await _cache.TestSet.RemoveAsync(item);
 
         // Assert
-        key.ShouldBe(item.Id);
+        var result = _cache.TestSet.Get(item.Id);
+        result.ShouldBeNull();
     }
 
     [Test]
-    public void Count_ReturnsCount()
+    public async Task RemoveAsync_WhenItemNotExists_DoesNothingByItem()
     {
-        // act
-        var count = _cache.TestSet.Count();
+        // Arrange
+        var item = _fixture.Create<CacheTestItem>();
 
-        // assert
-        count.ShouldBeGreaterThan(0);
+        // Act
+        await _cache.TestSet.RemoveAsync(item);
+
+        // Assert
+        var result = _cache.TestSet.Get(item.Id);
+        result.ShouldBeNull();
     }
 
     [Test]
-    public void Enumerate_ReturnsItems()
+    public async Task RemoveAsync_WhenItemIsNull_ThrowsArgumentNullException()
     {
-        // act
-        var items = _cache.TestSet.ToList();
+        // Arrange
+        CacheTestItem item = null!;
 
-        // assert
-        items.Count.ShouldBeGreaterThanOrEqualTo(_tenThousandItems);
+        // Act
+        await Should.ThrowAsync<ArgumentNullException>(() => _cache.TestSet.RemoveAsync(item));
+    }
+
+    [Test]
+    public async Task RemoveAsync_WhenKeyIsNull_ThrowsArgumentNullException()
+    {
+        // Act
+        await Should.ThrowAsync<ArgumentNullException>(() => _cache.TestSet.RemoveAsync(null!));
+    }
+
+    [Test]
+    public void Set_WhenItemExists_UpdatesItem()
+    {
+        // Arrange
+        var item = _fixture.Create<CacheTestItem>();
+        _cache.TestSet[item.Id] = item;
+
+        var updatedItem = _fixture.Create<CacheTestItem>();
+        updatedItem.Id = item.Id;
+
+        // Act
+        _cache.TestSet.Set(updatedItem);
+
+        // Assert
+        var result = _cache.TestSet.Get(item.Id);
+        result.ShouldNotBeNull();
+        result.ShouldBeEquivalentTo(updatedItem);
+    }
+
+    [Test]
+    public void Set_WhenItemNotExists_AddsItem()
+    {
+        // Arrange
+        var item = _fixture.Create<CacheTestItem>();
+
+        // Act
+        _cache.TestSet.Set(item);
+
+        // Assert
+        var result = _cache.TestSet.Get(item.Id);
+        result.ShouldNotBeNull();
+        result.ShouldBeEquivalentTo(item);
+    }
+
+    [Test]
+    public void Set_WhenItemIsNull_ThrowsArgumentNullException()
+    {
+        // Arrange
+        CacheTestItem item = null!;
+
+        // Act
+        Should.Throw<ArgumentNullException>(() => _cache.TestSet.Set(item));
+    }
+
+    [Test]
+    public async Task SetAsync_WhenItemExists_UpdatesItem()
+    {
+        // Arrange
+        var item = _fixture.Create<CacheTestItem>();
+        _cache.TestSet[item.Id] = item;
+
+        var updatedItem = _fixture.Create<CacheTestItem>();
+        updatedItem.Id = item.Id;
+
+        // Act
+        await _cache.TestSet.SetAsync(updatedItem);
+
+        // Assert
+        var result = _cache.TestSet.Get(item.Id);
+        result.ShouldNotBeNull();
+        result.ShouldBeEquivalentTo(updatedItem);
+    }
+
+    [Test]
+    public async Task SetAsync_WhenItemNotExists_AddsItem()
+    {
+        // Arrange
+        var item = _fixture.Create<CacheTestItem>();
+
+        // Act
+        await _cache.TestSet.SetAsync(item);
+
+        // Assert
+        var result = _cache.TestSet.Get(item.Id);
+        result.ShouldNotBeNull();
+        result.ShouldBeEquivalentTo(item);
+    }
+
+    [Test]
+    public async Task SetAsync_WhenItemIsNull_ThrowsArgumentNullException()
+    {
+        // Arrange
+        CacheTestItem item = null!;
+
+        // Act
+        await Should.ThrowAsync<ArgumentNullException>(() => _cache.TestSet.SetAsync(item));
     }
 }

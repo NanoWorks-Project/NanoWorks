@@ -2,7 +2,6 @@
 // Ignore Spelling: Nano
 
 using System;
-using NanoWorks.Cache.Options;
 
 namespace NanoWorks.Cache.Redis.Options
 {
@@ -25,11 +24,6 @@ namespace NanoWorks.Cache.Redis.Options
         /// Gets or sets expiration duration for the cache set.
         /// </summary>
         public TimeSpan ExpirationDuration { get; set; } = TimeSpan.Zero;
-
-        /// <summary>
-        /// Gets or sets serializer exception behavior.
-        /// </summary>
-        public SerializerExceptionBehavior SerializerExceptionBehavior { get; set; } = SerializerExceptionBehavior.Ignore;
 
         /// <summary>
         /// Validates the cache set options.
@@ -92,16 +86,6 @@ namespace NanoWorks.Cache.Redis.Options
         public CashSetOptions<TItem, TKey> Expiration(TimeSpan expirationDuration)
         {
             ExpirationDuration = expirationDuration;
-            return this;
-        }
-
-        /// <summary>
-        /// Behavior to use when a serializer exception occurs.
-        /// </summary>
-        /// <param name="behavior"><see cref="SerializerExceptionBehavior"/>.</param>
-        public CashSetOptions<TItem, TKey> OnSerializationException(SerializerExceptionBehavior behavior)
-        {
-            SerializerExceptionBehavior = behavior;
             return this;
         }
     }

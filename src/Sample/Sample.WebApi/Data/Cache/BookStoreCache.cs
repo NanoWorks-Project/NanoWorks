@@ -1,6 +1,5 @@
 ﻿// Ignore Spelling: Nano
 
-using NanoWorks.Cache.Options;
 using NanoWorks.Cache.Redis.CacheContexts;
 using NanoWorks.Cache.Redis.CacheSets;
 using NanoWorks.Cache.Redis.Options;
@@ -18,7 +17,6 @@ public sealed class BookStoreCache : RedisCacheContext, IBookStoreCache
             options.Table("Authors");
             options.Key(author => author.AuthorId);
             options.Expiration(TimeSpan.FromHours(1));
-            options.OnSerializationException(SerializerExceptionBehavior.Ignore);
         });
 
         AuthorBooks = NewSet<AuthorBooksDto, Guid>(options =>
@@ -26,7 +24,6 @@ public sealed class BookStoreCache : RedisCacheContext, IBookStoreCache
             options.Table("AuthorBooks");
             options.Key(authorBook => authorBook.AuthorId);
             options.Expiration(TimeSpan.FromHours(1));
-            options.OnSerializationException(SerializerExceptionBehavior.Ignore);
         });
 
         Books = NewSet<BookDto, Guid>(options =>
@@ -34,7 +31,6 @@ public sealed class BookStoreCache : RedisCacheContext, IBookStoreCache
             options.Table("Books");
             options.Key(book => book.BookId);
             options.Expiration(TimeSpan.FromHours(1));
-            options.OnSerializationException(SerializerExceptionBehavior.Ignore);
         });
     }
 

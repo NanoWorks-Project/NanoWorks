@@ -1,7 +1,7 @@
 ﻿#pragma warning disable SA1402 // File may only contain a single type
+
 // Ignore Spelling: Nano
 // Ignore Spelling: Mq
-
 using System;
 using System.Collections.Generic;
 using System.Threading;

@@ -14,8 +14,6 @@ namespace NanoWorks.Messaging.RabbitMq.Services
 {
     internal sealed class MessagingService : IHostedService
     {
-        internal const string ErrorQueueName = "NanoWorks.Errors";
-
         internal const string DeadLetterQueueName = "NanoWorks.DeadLetter";
 
         internal const string DeadLetterExchangeName = "NanoWorks.DeadLetterExchange";

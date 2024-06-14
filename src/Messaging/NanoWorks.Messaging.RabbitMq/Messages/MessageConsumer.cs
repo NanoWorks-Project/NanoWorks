@@ -5,7 +5,6 @@ using System;
 using System.Threading.Tasks;
 using NanoWorks.Messaging.Errors;
 using NanoWorks.Messaging.RabbitMq.Options;
-using NanoWorks.Messaging.RabbitMq.Services;
 using NanoWorks.Messaging.Serialization;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -65,8 +64,13 @@ namespace NanoWorks.Messaging.RabbitMq.Messages
             catch (Exception error)
             {
                 var transportError = new TransportError(_consumerOptions.ConsumerType.FullName, error);
-                var transportErrorBody = MessageSerializer.Serialize(transportError, PublisherSerializerExceptionBehavior.Ignore);
-                _channel.BasicPublish(exchange: string.Empty, routingKey: MessagingService.ErrorQueueName, body: transportErrorBody);
+                var transportErrorBody = MessageSerializer.Serialize(transportError, PublisherSerializerExceptionBehavior.Throw);
+
+                var properties = _channel.CreateBasicProperties();
+                properties.Persistent = true;
+                properties.Type = typeof(TransportError).FullName;
+
+                _channel.BasicPublish(exchange: properties.Type, routingKey: string.Empty, body: transportErrorBody, basicProperties: properties);
 
                 if (_consumerOptions.MaxRetryCount > 0)
                 {

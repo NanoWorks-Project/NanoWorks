@@ -4,6 +4,8 @@
 // Ignore Spelling: Nano
 // Ignore Spelling: Mq
 
+using NanoWorks.Messaging.Errors;
+
 namespace NanoWorks.Messaging.RabbitMq.Tests.TestObjects;
 
 public sealed class TestMessageConsumer
@@ -11,12 +13,12 @@ public sealed class TestMessageConsumer
     public static IEnumerable<TestSimpleMessage> SimpleMessages() => _simpleMessages;
     public static IEnumerable<TestComplexMessage> ComplexMessages() => _complexMessages;
     public static IEnumerable<TestExceptionMessage> ExceptionMessages() => _exceptionMessages;
-    public static IEnumerable<OtherTestExceptionMessage> OtherExceptionMessages() => _otherExceptionMessages;
+    public static IEnumerable<TransportError> TransportErrors() => _transportErrors;
 
     private static readonly ICollection<TestSimpleMessage> _simpleMessages = new LinkedList<TestSimpleMessage>();
     private static readonly ICollection<TestComplexMessage> _complexMessages = new LinkedList<TestComplexMessage>();
     private static readonly ICollection<TestExceptionMessage> _exceptionMessages = new LinkedList<TestExceptionMessage>();
-    private static readonly ICollection<OtherTestExceptionMessage> _otherExceptionMessages = new LinkedList<OtherTestExceptionMessage>();
+    private static readonly ICollection<TransportError> _transportErrors = new LinkedList<TransportError>();
 
     public async Task ReceiveSimpleMessage(TestSimpleMessage message, CancellationToken cancellationToken)
     {
@@ -34,9 +36,8 @@ public sealed class TestMessageConsumer
         throw new NotImplementedException();
     }
 
-    public async Task ReceiveOtherExceptionMessage(OtherTestExceptionMessage message, CancellationToken token)
+    public async Task ReceiveTransportError(TransportError transportError, CancellationToken cancellationToken)
     {
-        _otherExceptionMessages.Add(message);
-        throw new NotImplementedException();
+        _transportErrors.Add(transportError);
     }
 }

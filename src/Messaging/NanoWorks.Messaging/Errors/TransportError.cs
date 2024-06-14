@@ -12,6 +12,13 @@ namespace NanoWorks.Messaging.Errors
         /// <summary>
         /// Initializes a new instance of the <see cref="TransportError"/> class.
         /// </summary>
+        public TransportError()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TransportError"/> class.
+        /// </summary>
         /// <param name="subscriberName">Destination subscriber that encountered the exception.</param>
         /// <param name="exception">Exception thrown by the subscriber.</param>
         public TransportError(string subscriberName, Exception exception)

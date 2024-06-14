@@ -39,7 +39,7 @@ namespace NanoWorks.Messaging.RabbitMq.Helpers
             foreach (var subscription in consumerOptions.Subscriptions.Values)
             {
                 channel.ExchangeDeclare(exchange: subscription.MessageType.FullName, type: ExchangeType.Fanout, durable: true, autoDelete: false);
-                channel.QueueBind(consumerOptions.QueueName, exchange: subscription.MessageType.FullName, routingKey: string.Empty, null);
+                channel.QueueBind(consumerOptions.QueueName, exchange: subscription.MessageType.FullName, routingKey: string.Empty);
             }
 
             var consumer = new MessageConsumer(serviceProvider, consumerOptions, channel);

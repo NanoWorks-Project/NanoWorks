@@ -26,7 +26,7 @@ The libraries are open-source and offered under the Apache 2.0 license.
 
 Publishers publish messages, and consumers subscribe to and consume messages.
 
-Within RabbitMQ, each message type is assigned an exchange using the fully-qualified name ("Sample.WebApi.Models.Events.AuthorUpdatedEvent").
+Within RabbitMQ, each message type is assigned an exchange using the fully qualified name - "Sample.WebApi.Models.Events.AuthorUpdatedEvent".
 
 Each consumer is assigned a queue, and the queue is bound to all exchanges / message types it is subscribed to.
 
@@ -50,9 +50,34 @@ Messages that fail serialization can be ignored and discarded through configurat
 
 ### Faults and Exceptions
 
-If a consumer throws an exception while processing a message, a `TransportError` with the exception details will be published to the `NanoWorks.Errors` queue.
+If a consumer throws an exception while processing a message, a `TransportError` with the exception details will be published.
 
 If the message retry limit has not been exceeded, the message will be published to the consumer's retry queue and processed again. 
+
+Transport errors can be consumed by subscribing to the `NanoWorks.TransportError` message type.
+
+To avoid transport error loops, these consumers should handle exceptions with a logger of last resort.
+
+```
+options.AddMessageConsumer<SomeConsumer>(consumerOptions =>
+{
+    consumerOptions.Subscribe<TransportError>(consumer => consumer.OnTransportError);
+});
+```
+
+```
+public async Task OnTransportError(TransportError transportError, CancellationToken cancellationToken)
+{
+    try
+    {
+        // Do something with the transport error
+    }
+    catch (Exception ex)
+    {
+        // Log the exception
+    }
+}
+```
 
 ---
 

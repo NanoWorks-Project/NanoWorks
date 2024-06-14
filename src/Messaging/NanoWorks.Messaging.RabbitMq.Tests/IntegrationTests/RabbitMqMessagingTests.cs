@@ -4,6 +4,7 @@
 using AutoFixture;
 using AutoFixture.AutoMoq;
 using Microsoft.Extensions.DependencyInjection;
+using NanoWorks.Messaging.Errors;
 using NanoWorks.Messaging.MessagePublishers;
 using NanoWorks.Messaging.RabbitMq.DependencyInjection;
 using NanoWorks.Messaging.RabbitMq.Options;
@@ -50,12 +51,12 @@ public sealed class RabbitMqMessagingTests : IDisposable
                 consumerOptions.MaxMessageConcurrency((ushort)Environment.ProcessorCount);
                 consumerOptions.MessageTtl(TimeSpan.FromHours(1));
                 consumerOptions.Retries(maxRetryCount: 3, retryDelay: TimeSpan.FromMilliseconds(100));
-                consumerOptions.AutoDelete();
                 consumerOptions.OnSerializationException(ConsumerSerializerExceptionBehavior.DeadLetter);
+                consumerOptions.AutoDelete();
                 consumerOptions.Subscribe<TestSimpleMessage>(consumer => consumer.ReceiveSimpleMessage);
                 consumerOptions.Subscribe<TestComplexMessage>(consumer => consumer.ReceiveComplexMessage);
                 consumerOptions.Subscribe<TestExceptionMessage>(consumer => consumer.ReceiveExceptionMessage);
-                consumerOptions.Subscribe<OtherTestExceptionMessage>(consumer => consumer.ReceiveOtherExceptionMessage);
+                consumerOptions.Subscribe<TransportError>(consumer => consumer.ReceiveTransportError);
             });
         });
 
@@ -168,27 +169,14 @@ public sealed class RabbitMqMessagingTests : IDisposable
             receivedExceptionMessage.ShouldNotBeNull();
             receivedExceptionMessage.Guid.ShouldBe(publishedExceptionMessage.Guid);
         }
-    }
 
-    [Test]
-    public async Task Consumer_Other_Exception_Thrown_Message_Is_Retried()
-    {
-        // arrange
-        var publishedExceptionMessage = _fixture.Create<OtherTestExceptionMessage>();
-        var expectedMessageCount = 3; // three retries
+        TestMessageConsumer.TransportErrors().Count().ShouldBe(expectedMessageCount);
 
-        // act
-        await _messagePublisher.PublishAsync(publishedExceptionMessage);
-
-        Thread.Sleep(1000); // wait for messages to be delivered and retried
-
-        // assert
-        TestMessageConsumer.OtherExceptionMessages().Count().ShouldBe(expectedMessageCount);
-
-        foreach (var receivedExceptionMessage in TestMessageConsumer.OtherExceptionMessages())
+        foreach (var transportError in TestMessageConsumer.TransportErrors())
         {
-            receivedExceptionMessage.ShouldNotBeNull();
-            receivedExceptionMessage.Guid.ShouldBe(publishedExceptionMessage.Guid);
+            transportError.SubscriberName.ShouldBe(typeof(TestMessageConsumer).FullName);
+            transportError.Message.ShouldBe("The method or operation is not implemented.");
+            transportError.StackTrace.ShouldNotBeNullOrWhiteSpace();
         }
     }
 }

@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using NanoWorks.Messaging.Errors;
 using NanoWorks.Messaging.RabbitMq.Options;
-using NanoWorks.Messaging.RabbitMq.Services;
 using NanoWorks.Messaging.Serialization;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -60,8 +59,12 @@ namespace NanoWorks.Messaging.RabbitMq.Messages
                 {
                     var transportError = new TransportError(_consumerOptions.ConsumerType.FullName, error);
                     var transportErrorBody = MessageSerializer.Serialize(transportError, PublisherSerializerExceptionBehavior.Throw);
-                    _channel.BasicReject(_eventArgs.DeliveryTag, requeue: false);
-                    _channel.BasicPublish(exchange: string.Empty, routingKey: MessagingService.ErrorQueueName, body: transportErrorBody);
+
+                    var properties = _channel.CreateBasicProperties();
+                    properties.Persistent = true;
+                    properties.Type = typeof(TransportError).FullName;
+
+                    _channel.BasicPublish(exchange: properties.Type, routingKey: string.Empty, body: transportErrorBody, basicProperties: properties);
                     return;
                 }
             }

@@ -122,7 +122,7 @@ Key selector - function to get the key for an item in the cache set
 ```
 public CashSetOptions<TItem, TKey> Key(Func<TItem, TKey> keySelector)
 ```
-Cache set expiration - automatically resets when items are create, updated, or read from the cache set
+Cache set expiration - automatically resets when items are create and updated
 ```
 public CashSetOptions<TItem, TKey> Expiration(TimeSpan expirationDuration)
 ```

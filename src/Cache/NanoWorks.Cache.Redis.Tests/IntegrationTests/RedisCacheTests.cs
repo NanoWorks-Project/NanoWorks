@@ -14,7 +14,8 @@ namespace NanoWorks.Cache.Redis.Tests.IntegrationTests;
 public sealed class RedisCacheTests
 {
     private readonly TestCache _cache;
-    private readonly Fixture _fixture = new();
+    private readonly Fixture _fixture;
+    private List<CacheTestItem> _items;
 
     public RedisCacheTests()
     {
@@ -24,6 +25,13 @@ public sealed class RedisCacheTests
 
         _fixture = new Fixture();
         _fixture.Customize(new AutoMoqCustomization() { ConfigureMembers = true });
+
+        _items = _fixture.CreateMany<CacheTestItem>(10000).ToList();
+
+        foreach (var item in _items)
+        {
+            _cache.TestSet[item.Id] = item;
+        }
     }
 
     [Test]
@@ -410,5 +418,16 @@ public sealed class RedisCacheTests
 
         // Act
         await Should.ThrowAsync<ArgumentNullException>(() => _cache.TestSet.SetAsync(item));
+    }
+
+    [Test]
+    public void Enumerate_ReturnsAllItems()
+    {
+        // act
+        var results = _cache.TestSet.ToList();
+
+        // assert
+        results.ShouldNotBeEmpty();
+        results.Count.ShouldBe(_items.Count());
     }
 }

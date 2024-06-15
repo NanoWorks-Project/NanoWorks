@@ -23,7 +23,7 @@ namespace NanoWorks.Cache.Redis.CacheContexts
             _options = options;
         }
 
-        private IDatabase Database => _options.Connection.GetDatabase();
+        private IConnectionMultiplexer Connection => _options.Connection;
 
         /// <summary>
         /// Creates a new cache set with the specified options.
@@ -37,7 +37,7 @@ namespace NanoWorks.Cache.Redis.CacheContexts
             var options = new CashSetOptions<TItem, TKey>();
             configure(options);
             options.Validate();
-            return new CacheSet<TItem, TKey>(Database, options);
+            return new CacheSet<TItem, TKey>(Connection, options);
         }
     }
 }

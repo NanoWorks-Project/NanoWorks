@@ -1,7 +1,10 @@
 ﻿// Ignore Spelling: Nano
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using NanoWorks.Cache.CacheSets;
 using NanoWorks.Cache.Redis.Options;
@@ -18,10 +21,11 @@ namespace NanoWorks.Cache.Redis.CacheSets
     public sealed class CacheSet<TItem, TKey> : ICacheSet<TItem, TKey>
         where TItem : class, new()
     {
+        private readonly IConnectionMultiplexer _connection;
         private readonly IDatabase _database;
         private readonly CashSetOptions _options;
 
-        internal CacheSet(IDatabase database, CashSetOptions<TItem, TKey> options)
+        internal CacheSet(IConnectionMultiplexer connection, CashSetOptions<TItem, TKey> options)
         {
             var isValidKey = typeof(TKey) == typeof(string)
                 || typeof(TKey) == typeof(Guid)
@@ -33,7 +37,8 @@ namespace NanoWorks.Cache.Redis.CacheSets
                 throw new InvalidOperationException($"Key must be a {typeof(string).Name}, {nameof(Guid)}, {typeof(int).Name}, or {typeof(long).Name}.");
             }
 
-            _database = database;
+            _connection = connection;
+            _database = _connection.GetDatabase();
             _options = options;
         }
 
@@ -59,12 +64,6 @@ namespace NanoWorks.Cache.Redis.CacheSets
             }
 
             var item = _database.JSON().Get<TItem>($"{_options.TableName}:{key}");
-
-            if (item != null)
-            {
-                ResetExpiration(key);
-            }
-
             return item;
         }
 
@@ -77,13 +76,20 @@ namespace NanoWorks.Cache.Redis.CacheSets
             }
 
             var item = await _database.JSON().GetAsync<TItem>($"{_options.TableName}:{key}");
-
-            if (item != null)
-            {
-                await ResetExpirationAsync(key);
-            }
-
             return item;
+        }
+
+        /// <inheritdoc />
+        public IEnumerator<TItem> GetEnumerator()
+        {
+            var items = Items();
+            return items.GetEnumerator();
+        }
+
+        /// <inheritdoc />
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         /// <inheritdoc />
@@ -218,21 +224,55 @@ namespace NanoWorks.Cache.Redis.CacheSets
 
         private IEnumerable<TItem> Get(IEnumerable<TKey> keys)
         {
-            foreach (var key in keys)
+            var redisKeys = keys
+                .Where(x => !string.IsNullOrWhiteSpace(x?.ToString()))
+                .Select(x => new RedisKey($"{_options.TableName}:{x}")).ToArray();
+
+            var items = Get(redisKeys);
+            return items;
+        }
+
+        private IEnumerable<TItem> Get(IEnumerable<RedisKey> keys)
+        {
+            var redisResults = _database.JSON().MGet(keys.ToArray(), "$");
+
+            foreach (var redisResult in redisResults)
             {
-                if (key == null)
+                if (redisResult.IsNull)
                 {
                     continue;
                 }
 
-                var item = Get(key);
+                var resultItems = JsonSerializer.Deserialize<TItem[]>(redisResult.ToString());
 
-                if (item == null)
+                if (resultItems.Length < 1)
                 {
                     continue;
                 }
 
-                yield return item;
+                yield return resultItems[0];
+            }
+        }
+
+        private IEnumerable<TItem> Items()
+        {
+            var keys = Keys();
+            var items = Get(keys);
+            return items;
+        }
+
+        private IEnumerable<RedisKey> Keys()
+        {
+            var endpoints = _connection.GetEndPoints();
+
+            foreach (var endpoint in endpoints)
+            {
+                var server = _connection.GetServer(endpoint);
+
+                foreach (var key in server.Keys(pattern: $"{_options.TableName}:*", pageSize: 1000))
+                {
+                    yield return key;
+                }
             }
         }
     }

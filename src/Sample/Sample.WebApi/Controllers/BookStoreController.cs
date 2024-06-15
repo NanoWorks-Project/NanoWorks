@@ -22,7 +22,7 @@ public sealed class BookStoreController(
     [HttpGet("authors")]
     public IActionResult GetAuthors()
     {
-        var authors = bookStoreDatabase.Authors;
+        var authors = bookStoreCache.Authors;
         return Ok(authors);
     }
 

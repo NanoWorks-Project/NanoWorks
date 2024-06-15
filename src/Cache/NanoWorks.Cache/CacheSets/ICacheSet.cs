@@ -10,7 +10,7 @@ namespace NanoWorks.Cache.CacheSets
     /// </summary>
     /// <typeparam name="TItem">Type of item in the cache.</typeparam>
     /// <typeparam name="TKey">Type of key used to identify the item in the cache.</typeparam>
-    public interface ICacheSet<TItem, TKey>
+    public interface ICacheSet<TItem, TKey> : IEnumerable<TItem>
         where TItem : class, new()
     {
         /// <summary>

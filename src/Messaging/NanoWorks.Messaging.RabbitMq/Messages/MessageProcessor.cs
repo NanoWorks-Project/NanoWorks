@@ -3,9 +3,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NanoWorks.Messaging.Errors;
 using NanoWorks.Messaging.RabbitMq.Options;
 using NanoWorks.Messaging.Serialization;
@@ -20,13 +22,20 @@ namespace NanoWorks.Messaging.RabbitMq.Messages
         private readonly ConsumerOptions _consumerOptions;
         private readonly IModel _channel;
         private readonly BasicDeliverEventArgs _eventArgs;
+        private readonly ILogger _logger;
 
-        internal MessageProcessor(IServiceProvider serviceProvider, ConsumerOptions consumerOptions, IModel channel, BasicDeliverEventArgs eventArgs)
+        internal MessageProcessor(
+            IServiceProvider serviceProvider,
+            ConsumerOptions consumerOptions,
+            IModel channel,
+            BasicDeliverEventArgs eventArgs,
+            ILogger logger)
         {
             _serviceProvider = serviceProvider;
             _consumerOptions = consumerOptions;
             _channel = channel;
             _eventArgs = eventArgs;
+            _logger = logger;
         }
 
         internal async Task ProcessMessageAsync()
@@ -51,14 +60,16 @@ namespace NanoWorks.Messaging.RabbitMq.Messages
 
             try
             {
-                message = MessageSerializer.Deserialize(subscription.MessageType, _eventArgs.Body.Span, _consumerOptions.SerializerExceptionBehavior);
+                message = MessageSerializer.Deserialize(subscription.MessageType, _eventArgs.Body.Span);
             }
-            catch (Exception error)
+            catch (JsonException ex)
             {
+                _logger.LogError(ex, $"Failed to deserialize message of type {subscription.MessageType.FullName}.");
+
                 if (_consumerOptions.SerializerExceptionBehavior == ConsumerSerializerExceptionBehavior.DeadLetter)
                 {
-                    var transportError = new TransportError(_consumerOptions.ConsumerType.FullName, error);
-                    var transportErrorBody = MessageSerializer.Serialize(transportError, PublisherSerializerExceptionBehavior.Throw);
+                    var transportError = new TransportError(_consumerOptions.ConsumerType.FullName, ex);
+                    var transportErrorBody = MessageSerializer.Serialize(transportError);
 
                     var properties = _channel.CreateBasicProperties();
                     properties.Persistent = true;
@@ -79,8 +90,10 @@ namespace NanoWorks.Messaging.RabbitMq.Messages
             {
                 var messageConsumer = scope.ServiceProvider.GetRequiredService(_consumerOptions.ConsumerType);
                 var receiveMethod = subscription.ReceiveMethodSelector(messageConsumer);
+                _logger.LogInformation($"{_consumerOptions.ConsumerType.Name} processing message of type {subscription.MessageType.Name}.");
                 await receiveMethod.Invoke(message, CancellationToken.None);
                 _channel.BasicAck(_eventArgs.DeliveryTag, multiple: false);
+                _logger.LogInformation($"{_consumerOptions.ConsumerType.Name} finished processing message of type {subscription.MessageType.Name}.");
             }
         }
 
@@ -98,6 +111,7 @@ namespace NanoWorks.Messaging.RabbitMq.Messages
             properties.Persistent = _eventArgs.BasicProperties.Persistent;
             properties.Type = _eventArgs.BasicProperties.Type;
 
+            _logger.LogInformation($"{_consumerOptions.ConsumerType.Name} retrying message of type {_eventArgs.BasicProperties.Type}.");
             _channel.BasicPublish(exchange: string.Empty, routingKey: _consumerOptions.RetryQueueName, properties, _eventArgs.Body);
         }
     }

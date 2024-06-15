@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NanoWorks.Messaging.RabbitMq.Messages;
 using NanoWorks.Messaging.RabbitMq.Options;
 using NanoWorks.Messaging.RabbitMq.Services;
@@ -42,7 +44,7 @@ namespace NanoWorks.Messaging.RabbitMq.Helpers
                 channel.QueueBind(consumerOptions.QueueName, exchange: subscription.MessageType.FullName, routingKey: string.Empty);
             }
 
-            var consumer = new MessageConsumer(serviceProvider, consumerOptions, channel);
+            var consumer = new MessageConsumer(serviceProvider, consumerOptions, channel, serviceProvider.GetRequiredService<ILogger<MessagingService>>());
             return consumer;
         }
     }

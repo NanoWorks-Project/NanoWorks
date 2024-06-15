@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using NanoWorks.Messaging.Errors;
 using NanoWorks.Messaging.RabbitMq.Options;
 using NanoWorks.Messaging.Serialization;
@@ -16,15 +17,17 @@ namespace NanoWorks.Messaging.RabbitMq.Messages
         private readonly IServiceProvider _serviceProvider;
         private readonly ConsumerOptions _consumerOptions;
         private readonly IModel _channel;
+        private readonly ILogger _logger;
 
         private EventingBasicConsumer _rabbitMqConsumer;
         private EventingBasicConsumer _rabbitMqRetryConsumer;
 
-        internal MessageConsumer(IServiceProvider serviceProvider, ConsumerOptions consumerOptions, IModel channel)
+        internal MessageConsumer(IServiceProvider serviceProvider, ConsumerOptions consumerOptions, IModel channel, ILogger logger)
         {
             _serviceProvider = serviceProvider;
             _consumerOptions = consumerOptions;
             _channel = channel;
+            _logger = logger;
         }
 
         public void Dispose()
@@ -55,16 +58,17 @@ namespace NanoWorks.Messaging.RabbitMq.Messages
 
         private async Task TryProcessMessageAsync(BasicDeliverEventArgs eventArgs)
         {
-            var messageProcessor = new MessageProcessor(_serviceProvider, _consumerOptions, _channel, eventArgs);
+            var messageProcessor = new MessageProcessor(_serviceProvider, _consumerOptions, _channel, eventArgs, _logger);
 
             try
             {
                 await messageProcessor.ProcessMessageAsync();
             }
-            catch (Exception error)
+            catch (Exception ex)
             {
-                var transportError = new TransportError(_consumerOptions.ConsumerType.FullName, error);
-                var transportErrorBody = MessageSerializer.Serialize(transportError, PublisherSerializerExceptionBehavior.Throw);
+                _logger.LogError(ex, $"{_consumerOptions.ConsumerType.Name} failed to process message of type {eventArgs.BasicProperties.Type}.");
+                var transportError = new TransportError(_consumerOptions.ConsumerType.FullName, ex);
+                var transportErrorBody = MessageSerializer.Serialize(transportError);
 
                 var properties = _channel.CreateBasicProperties();
                 properties.Persistent = true;

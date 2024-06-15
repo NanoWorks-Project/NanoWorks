@@ -35,30 +35,32 @@ public sealed class RabbitMqMessagingTests : IDisposable
 
         var serviceCollection = new ServiceCollection();
 
-        serviceCollection.AddNanoWorksRabbitMq(options =>
-        {
-            options.UseConnectionString("amqp://rabbitmq:password@localhost:5672/");
-            options.UseConnectionPoolSize(Environment.ProcessorCount);
-
-            options.AddMessagePublisher(publisherOptions =>
+        serviceCollection
+            .AddLogging()
+            .AddNanoWorksRabbitMq(options =>
             {
-                publisherOptions.OnSerializationException(PublisherSerializerExceptionBehavior.Ignore);
-            });
+                options.UseConnectionString("amqp://rabbitmq:password@localhost:5672/");
+                options.UseConnectionPoolSize(Environment.ProcessorCount);
 
-            options.AddMessageConsumer<TestMessageConsumer>(consumerOptions =>
-            {
-                consumerOptions.Queue(nameof(TestMessageConsumer));
-                consumerOptions.MaxMessageConcurrency((ushort)Environment.ProcessorCount);
-                consumerOptions.MessageTtl(TimeSpan.FromHours(1));
-                consumerOptions.Retries(maxRetryCount: 3, retryDelay: TimeSpan.FromMilliseconds(100));
-                consumerOptions.OnSerializationException(ConsumerSerializerExceptionBehavior.DeadLetter);
-                consumerOptions.AutoDelete();
-                consumerOptions.Subscribe<TestSimpleMessage>(consumer => consumer.ReceiveSimpleMessage);
-                consumerOptions.Subscribe<TestComplexMessage>(consumer => consumer.ReceiveComplexMessage);
-                consumerOptions.Subscribe<TestExceptionMessage>(consumer => consumer.ReceiveExceptionMessage);
-                consumerOptions.Subscribe<TransportError>(consumer => consumer.ReceiveTransportError);
+                options.AddMessagePublisher(publisherOptions =>
+                {
+                    publisherOptions.OnSerializationException(PublisherSerializerExceptionBehavior.Ignore);
+                });
+
+                options.AddMessageConsumer<TestMessageConsumer>(consumerOptions =>
+                {
+                    consumerOptions.Queue(nameof(TestMessageConsumer));
+                    consumerOptions.MaxMessageConcurrency((ushort)Environment.ProcessorCount);
+                    consumerOptions.MessageTtl(TimeSpan.FromHours(1));
+                    consumerOptions.Retries(maxRetryCount: 3, retryDelay: TimeSpan.FromMilliseconds(100));
+                    consumerOptions.OnSerializationException(ConsumerSerializerExceptionBehavior.DeadLetter);
+                    consumerOptions.AutoDelete();
+                    consumerOptions.Subscribe<TestSimpleMessage>(consumer => consumer.ReceiveSimpleMessage);
+                    consumerOptions.Subscribe<TestComplexMessage>(consumer => consumer.ReceiveComplexMessage);
+                    consumerOptions.Subscribe<TestExceptionMessage>(consumer => consumer.ReceiveExceptionMessage);
+                    consumerOptions.Subscribe<TransportError>(consumer => consumer.ReceiveTransportError);
+                });
             });
-        });
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
 

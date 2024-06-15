@@ -21,29 +21,14 @@ namespace NanoWorks.Messaging.Serialization
         /// </summary>
         /// <typeparam name="TItem">Type of item to serialize.</typeparam>
         /// <param name="value">The value to serialize.</param>
-        /// <param name="exceptionBehavior">Behavior for handling exceptions thrown by the serializer.</param>
-        public static byte[] Serialize<TItem>(TItem value, PublisherSerializerExceptionBehavior exceptionBehavior)
+        public static byte[] Serialize<TItem>(TItem value)
         {
-            try
+            if (value == null)
             {
-                if (value == null)
-                {
-                    throw new ArgumentNullException(nameof(value));
-                }
+                throw new ArgumentNullException(nameof(value));
+            }
 
-                return JsonSerializer.SerializeToUtf8Bytes(value, typeof(TItem), Options);
-            }
-            catch (JsonException)
-            {
-                if (exceptionBehavior == PublisherSerializerExceptionBehavior.Ignore)
-                {
-                    return new byte[0];
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            return JsonSerializer.SerializeToUtf8Bytes(value, typeof(TItem), Options);
         }
 
         /// <summary>
@@ -51,25 +36,10 @@ namespace NanoWorks.Messaging.Serialization
         /// </summary>
         /// <param name="type">The type of the object to deserialize.</param>
         /// <param name="data">The JSON stream to deserialize.</param>
-        /// <param name="exceptionBehavior">Behavior for handling exceptions thrown by the serializer.</param>
-        public static object Deserialize(Type type, ReadOnlySpan<byte> data, ConsumerSerializerExceptionBehavior exceptionBehavior)
+        public static object Deserialize(Type type, ReadOnlySpan<byte> data)
         {
-            try
-            {
-                var reader = new Utf8JsonReader(data);
-                return JsonSerializer.Deserialize(ref reader, type, Options);
-            }
-            catch (JsonException)
-            {
-                if (exceptionBehavior == ConsumerSerializerExceptionBehavior.Ignore)
-                {
-                    return default;
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            var reader = new Utf8JsonReader(data);
+            return JsonSerializer.Deserialize(ref reader, type, Options);
         }
 
         /// <summary>
@@ -77,24 +47,9 @@ namespace NanoWorks.Messaging.Serialization
         /// </summary>
         /// <param name="type">The type of the object to deserialize.</param>
         /// <param name="data">The JSON string to deserialize.</param>
-        /// <param name="exceptionBehavior">Behavior for handling exceptions thrown by the serializer.</param>
-        public static object Deserialize(Type type, string data, ConsumerSerializerExceptionBehavior exceptionBehavior)
+        public static object Deserialize(Type type, string data)
         {
-            try
-            {
-                return JsonSerializer.Deserialize(data, type, Options);
-            }
-            catch (JsonException)
-            {
-                if (exceptionBehavior == ConsumerSerializerExceptionBehavior.Ignore)
-                {
-                    return default;
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            return JsonSerializer.Deserialize(data, type, Options);
         }
     }
 }

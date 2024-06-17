@@ -12,8 +12,8 @@ Releases
 
 | Package          | Status                                                                                                
 |------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
-| [Cache 1.0.5](https://www.nuget.org/profiles/sspaniel_nanoworks-project.org)     |    [![main](https://github.com/NanoWorks-Project/NanoWorks/actions/workflows/cache_release.yml/badge.svg?branch=main)](https://github.com/NanoWorks-Project/NanoWorks/actions/workflows/cache_release.yml)         |
-| [Messaging 1.0.5](https://www.nuget.org/profiles/sspaniel_nanoworks-project.org) |    [![main](https://github.com/NanoWorks-Project/NanoWorks/actions/workflows/messaging_release.yml/badge.svg?branch=main)](https://github.com/NanoWorks-Project/NanoWorks/actions/workflows/messaging_release.yml) |
+| [Cache 1.0.6](https://www.nuget.org/profiles/sspaniel_nanoworks-project.org)     |    [![main](https://github.com/NanoWorks-Project/NanoWorks/actions/workflows/cache_release.yml/badge.svg?branch=main)](https://github.com/NanoWorks-Project/NanoWorks/actions/workflows/cache_release.yml)         |
+| [Messaging 1.0.6](https://www.nuget.org/profiles/sspaniel_nanoworks-project.org) |    [![main](https://github.com/NanoWorks-Project/NanoWorks/actions/workflows/messaging_release.yml/badge.svg?branch=main)](https://github.com/NanoWorks-Project/NanoWorks/actions/workflows/messaging_release.yml) |
 
 Builds
 

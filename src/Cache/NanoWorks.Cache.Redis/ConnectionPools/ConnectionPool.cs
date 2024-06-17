@@ -30,6 +30,8 @@ namespace NanoWorks.Cache.Redis.ConnectionPools
                         _connections.Enqueue(poolConnection);
                         return poolConnection;
                     }
+
+                    poolConnection.Dispose();
                 }
 
                 var newConnection = ConnectionMultiplexer.Connect(connectionString, options =>

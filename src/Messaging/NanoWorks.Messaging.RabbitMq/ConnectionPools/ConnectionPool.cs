@@ -25,8 +25,14 @@ namespace NanoWorks.Messaging.RabbitMq.ConnectionPools
                 if (_connections.Count >= Size)
                 {
                     var poolConnection = _connections.Dequeue();
-                    _connections.Enqueue(poolConnection);
-                    return poolConnection;
+
+                    if (poolConnection.IsOpen)
+                    {
+                        _connections.Enqueue(poolConnection);
+                        return poolConnection;
+                    }
+
+                    poolConnection.Dispose();
                 }
 
                 var factory = new ConnectionFactory

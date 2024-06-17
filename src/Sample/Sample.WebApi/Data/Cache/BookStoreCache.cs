@@ -7,8 +7,15 @@ using Sample.WebApi.Models.Dtos;
 
 namespace Sample.WebApi.Data.Cache;
 
+/// <summary>
+/// Cache for the book store.
+/// </summary>
 public sealed class BookStoreCache : RedisCacheContext, IBookStoreCache
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BookStoreCache"/> class.
+    /// </summary>
+    /// <param name="options"><see cref="CacheContextOptions"/>.</param>
     public BookStoreCache(CacheContextOptions options)
         : base(options)
     {
@@ -34,9 +41,12 @@ public sealed class BookStoreCache : RedisCacheContext, IBookStoreCache
         });
     }
 
+    /// <inheritdoc />
     public CacheSet<AuthorDto, Guid> Authors { get; }
 
+    /// <inheritdoc />
     public CacheSet<AuthorBooksDto, Guid> AuthorBooks { get; }
 
+    /// <inheritdoc />
     public CacheSet<BookDto, Guid> Books { get; }
 }

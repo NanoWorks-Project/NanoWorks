@@ -11,6 +11,12 @@ using Sample.WebApi.Models.Events;
 
 namespace Sample.WebApi.Controllers;
 
+/// <summary>
+/// Controller for the book store API.
+/// </summary>
+/// <param name="bookStoreDatabase"><see cref="IBookStoreDatabase"/>.</param>
+/// <param name="bookStoreCache"><see cref="IBookStoreCache"/>.</param>
+/// <param name="messagePublisher"><see cref="IMessagePublisher"/>.</param>
 [ApiController]
 [Route("api")]
 public sealed class BookStoreController(
@@ -19,6 +25,9 @@ public sealed class BookStoreController(
     IMessagePublisher messagePublisher)
     : ControllerBase
 {
+    /// <summary>
+    /// Gets all authors.
+    /// </summary>
     [HttpGet("authors")]
     public IActionResult GetAuthors()
     {
@@ -26,6 +35,10 @@ public sealed class BookStoreController(
         return Ok(authors);
     }
 
+    /// <summary>
+    /// Gets an author by Id.
+    /// </summary>
+    /// <param name="authorId">The author Id.</param>
     [HttpGet("authors/{authorId}")]
     public IActionResult GetAuthor(Guid authorId)
     {
@@ -33,6 +46,10 @@ public sealed class BookStoreController(
         return Ok(author);
     }
 
+    /// <summary>
+    /// Gets the books for an author.
+    /// </summary>
+    /// <param name="authorId">The author Id.</param>
     [HttpGet("authors/{authorId}/books")]
     public IActionResult GetAuthorBooks(Guid authorId)
     {
@@ -47,6 +64,10 @@ public sealed class BookStoreController(
         return Ok(books);
     }
 
+    /// <summary>
+    /// Creates an author.
+    /// </summary>
+    /// <param name="authorDto"><see cref="AuthorDto"/>.</param>
     [HttpPost("authors")]
     public async Task<IActionResult> CreateAuthor(AuthorDto authorDto)
     {
@@ -93,6 +114,10 @@ public sealed class BookStoreController(
         return Ok();
     }
 
+    /// <summary>
+    /// Updates an author.
+    /// </summary>
+    /// <param name="authorDto"><see cref="AuthorDto"/>.</param>
     [HttpPut("authors")]
     public async Task<IActionResult> UpdateAuthor(AuthorDto authorDto)
     {
@@ -144,6 +169,10 @@ public sealed class BookStoreController(
         return Ok();
     }
 
+    /// <summary>
+    /// Creates a book.
+    /// </summary>
+    /// <param name="bookDto"><see cref="BookDto"/>.</param>
     [HttpPost("books")]
     public async Task<IActionResult> CreateBook(BookDto bookDto)
     {
@@ -189,6 +218,10 @@ public sealed class BookStoreController(
         return Ok();
     }
 
+    /// <summary>
+    /// Updates a book.
+    /// </summary>
+    /// <param name="bookDto"><see cref="BookDto"/>.</param>
     [HttpPut("books")]
     public async Task<IActionResult> UpdateBook(BookDto bookDto)
     {

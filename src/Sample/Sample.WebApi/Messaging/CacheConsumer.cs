@@ -7,8 +7,18 @@ using Sample.WebApi.Models.Events;
 
 namespace Sample.WebApi.Messaging;
 
+/// <summary>
+/// Message consumer for updating the cache.
+/// </summary>
+/// <param name="bookStoreDatabase"><see cref="IBookStoreDatabase"/>.</param>
+/// <param name="bookStoreCache"><see cref="IBookStoreCache"/>.</param>
 public sealed class CacheConsumer(IBookStoreDatabase bookStoreDatabase, IBookStoreCache bookStoreCache)
 {
+    /// <summary>
+    /// Updates the cache when an author is updated.
+    /// </summary>
+    /// <param name="event"><see cref="AuthorUpdatedEvent"/>.</param>
+    /// <param name="cancellationToken"><see cref="CancellationToken"/>.</param>
     public async Task OnAuthorUpdated(AuthorUpdatedEvent @event, CancellationToken cancellationToken)
     {
         Console.WriteLine($"{nameof(Author)} updated '{@event.AuthorId}' - syncing with cache");
@@ -25,6 +35,11 @@ public sealed class CacheConsumer(IBookStoreDatabase bookStoreDatabase, IBookSto
         bookStoreCache.Authors[authorDto.AuthorId] = authorDto;
     }
 
+    /// <summary>
+    /// Updates the cache when a book is updated.
+    /// </summary>
+    /// <param name="event"><see cref="BookUpdatedEvent"/>.</param>
+    /// <param name="cancellationToken"><see cref="CancellationToken"/>.</param>
     public async Task OnBookUpdated(BookUpdatedEvent @event, CancellationToken cancellationToken)
     {
         Console.WriteLine($"{nameof(Book)} updated '{@event.BookId}' - syncing with cache");

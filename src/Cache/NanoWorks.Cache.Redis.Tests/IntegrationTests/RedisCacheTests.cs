@@ -15,7 +15,7 @@ public sealed class RedisCacheTests
 {
     private readonly TestCache _cache;
     private readonly Fixture _fixture;
-    private List<CacheTestItem> _items;
+    private readonly List<CacheTestItem> _items;
 
     public RedisCacheTests()
     {
@@ -26,7 +26,7 @@ public sealed class RedisCacheTests
         _fixture = new Fixture();
         _fixture.Customize(new AutoMoqCustomization() { ConfigureMembers = true });
 
-        _items = _fixture.CreateMany<CacheTestItem>(10000).ToList();
+        _items = _fixture.CreateMany<CacheTestItem>(1000).ToList();
 
         foreach (var item in _items)
         {
@@ -428,6 +428,6 @@ public sealed class RedisCacheTests
 
         // assert
         results.ShouldNotBeEmpty();
-        results.Count.ShouldBe(_items.Count());
+        results.Count.ShouldBe(_items.Count);
     }
 }

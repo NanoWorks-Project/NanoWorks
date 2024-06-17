@@ -24,11 +24,24 @@ namespace NanoWorks.Cache.Redis.ConnectionPools
                 if (_connections.Count >= Size)
                 {
                     var poolConnection = _connections.Dequeue();
-                    _connections.Enqueue(poolConnection);
-                    return poolConnection;
+
+                    if (poolConnection.IsConnected || poolConnection.IsConnecting)
+                    {
+                        _connections.Enqueue(poolConnection);
+                        return poolConnection;
+                    }
                 }
 
-                var newConnection = ConnectionMultiplexer.Connect(connectionString);
+                var newConnection = ConnectionMultiplexer.Connect(connectionString, options =>
+                {
+                    options.ConnectRetry = 5;
+                    options.ConnectTimeout = 3000;
+                    options.ReconnectRetryPolicy = new ExponentialRetry(options.ConnectTimeout);
+                    options.KeepAlive = 5;
+                    options.HeartbeatInterval = TimeSpan.FromSeconds(5);
+                    options.AbortOnConnectFail = false;
+                });
+
                 _connections.Enqueue(newConnection);
                 return newConnection;
             }

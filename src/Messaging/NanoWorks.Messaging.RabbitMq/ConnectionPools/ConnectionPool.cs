@@ -32,6 +32,10 @@ namespace NanoWorks.Messaging.RabbitMq.ConnectionPools
                 var factory = new ConnectionFactory
                 {
                     Uri = new Uri(connectionString),
+                    AutomaticRecoveryEnabled = true,
+                    NetworkRecoveryInterval = TimeSpan.FromSeconds(3),
+                    TopologyRecoveryEnabled = true,
+                    RequestedHeartbeat = TimeSpan.FromSeconds(5),
                 };
 
                 var newConnection = factory.CreateConnection();

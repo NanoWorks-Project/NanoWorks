@@ -17,7 +17,7 @@ public sealed class TestCache : RedisCacheContext
         {
             cacheSetOptions.Table($"{nameof(CacheTestItem)}-{Guid.NewGuid()}");
             cacheSetOptions.Key(item => item.Id);
-            cacheSetOptions.Expiration(TimeSpan.FromSeconds(30));
+            cacheSetOptions.Expiration(TimeSpan.FromSeconds(10));
         });
     }
 

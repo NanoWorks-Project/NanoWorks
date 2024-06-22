@@ -421,7 +421,7 @@ public sealed class RedisCacheTests
     }
 
     [Test]
-    public void Enumerate_ReturnsAllItems()
+    public void ToList_ReturnsAllItems()
     {
         // act
         var results = _cache.TestSet.ToList();
@@ -429,5 +429,76 @@ public sealed class RedisCacheTests
         // assert
         results.ShouldNotBeEmpty();
         results.Count.ShouldBe(_items.Count);
+    }
+
+    [TestCase(0, 100)]
+    [TestCase(0, 200)]
+    [TestCase(0, 300)]
+    [TestCase(1, 100)]
+    [TestCase(1, 200)]
+    [TestCase(1, 300)]
+    [TestCase(2, 100)]
+    [TestCase(2, 200)]
+    [TestCase(2, 300)]
+    public void ToList_WithPaging_ReturnsAllItems(int page, int pageSize)
+    {
+        // act
+        var results = _cache.TestSet.ToList(page, pageSize);
+
+        // assert
+        results.ShouldNotBeEmpty();
+        results.Count.ShouldBe(pageSize);
+    }
+
+    [TestCase(0, 0)]
+    [TestCase(1, 0)]
+    [TestCase(2, 0)]
+    public void ToList_WithPageSizeZero_ShouldReturnEmptyCollection(int page, int pageSize)
+    {
+        // act
+        var results = _cache.TestSet.ToList(page, pageSize);
+
+        // assert
+        results.ShouldBeEmpty();
+    }
+
+    [Test]
+    public void ToList_WithPaging_PagesShouldBeEquivalent()
+    {
+        // act
+        var results1 = _cache.TestSet.ToList(3, 100);
+        var results2 = _cache.TestSet.ToList(3, 100);
+        var results3 = _cache.TestSet.ToList(3, 100);
+
+        // assert
+        results1.ShouldNotBeEmpty();
+        results2.ShouldNotBeEmpty();
+        results3.ShouldNotBeEmpty();
+
+        foreach (var item in results1)
+        {
+            results2.Any(x => x.Id == item.Id).ShouldBeTrue();
+            results3.Any(x => x.Id == item.Id).ShouldBeTrue();
+        }
+    }
+
+    [Test]
+    public void ToList_WithPaging_PagesShouldNotBeEquivalent()
+    {
+        // act
+        var results1 = _cache.TestSet.ToList(0, 100);
+        var results2 = _cache.TestSet.ToList(1, 100);
+        var results3 = _cache.TestSet.ToList(2, 100);
+
+        // assert
+        results1.ShouldNotBeEmpty();
+        results2.ShouldNotBeEmpty();
+        results3.ShouldNotBeEmpty();
+
+        foreach (var item in results1)
+        {
+            results2.Any(x => x.Id == item.Id).ShouldBeFalse();
+            results3.Any(x => x.Id == item.Id).ShouldBeFalse();
+        }
     }
 }

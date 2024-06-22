@@ -222,6 +222,14 @@ namespace NanoWorks.Cache.Redis.CacheSets
             await ResetExpirationAsync(key);
         }
 
+        /// <inheritdoc />
+        public IReadOnlyList<TItem> ToList(int page = 0, int pageSize = 1000)
+        {
+            var keys = Keys(page, pageSize);
+            var items = Get(keys);
+            return items.ToList();
+        }
+
         private IEnumerable<TItem> Get(IEnumerable<TKey> keys)
         {
             var redisKeys = keys
@@ -234,6 +242,11 @@ namespace NanoWorks.Cache.Redis.CacheSets
 
         private IEnumerable<TItem> Get(IEnumerable<RedisKey> keys)
         {
+            if (!keys.Any())
+            {
+                yield break;
+            }
+
             var redisResults = _database.JSON().MGet(keys.ToArray(), "$");
 
             foreach (var redisResult in redisResults)
@@ -261,16 +274,37 @@ namespace NanoWorks.Cache.Redis.CacheSets
             return items;
         }
 
-        private IEnumerable<RedisKey> Keys()
+        private IEnumerable<RedisKey> Keys(int page = 0, int pageSize = int.MaxValue)
         {
+            if (pageSize < 1)
+            {
+                yield break;
+            }
+
             var endpoints = _connection.GetEndPoints();
+
+            var keysReturned = 0;
+            var currentIndex = 0;
+            var itemsToSkip = page * pageSize;
 
             foreach (var endpoint in endpoints)
             {
                 var server = _connection.GetServer(endpoint);
 
-                foreach (var key in server.Keys(pattern: $"{_options.TableName}:*", pageSize: 1000))
+                foreach (var key in server.Keys(pattern: $"{_options.TableName}:*", pageSize: pageSize == int.MaxValue ? 1000 : pageSize))
                 {
+                    if (currentIndex < itemsToSkip)
+                    {
+                        currentIndex++;
+                        continue;
+                    }
+
+                    if (keysReturned >= pageSize)
+                    {
+                        break;
+                    }
+
+                    keysReturned++;
                     yield return key;
                 }
             }

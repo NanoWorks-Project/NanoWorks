@@ -102,5 +102,12 @@ namespace NanoWorks.Cache.CacheSets
         /// </summary>
         /// <param name="item">The item.</param>
         Task ResetExpirationAsync(TItem item);
+
+        /// <summary>
+        /// Returns a read-only list of items in the cache set for the specified page (starting at 0) and page size.
+        /// </summary>
+        /// <param name="page">Zero-indexed page of items.</param>
+        /// <param name="pageSize">The number of items in the page.</param>
+        IReadOnlyList<TItem> ToList(int page = 0, int pageSize = 1000);
     }
 }

@@ -11,7 +11,7 @@ namespace NanoWorks.Cache.Redis.Tests.TestObjects;
 /// </summary>
 public sealed class TestCache : RedisCacheContext
 {
-    public TestCache(CacheContextOptions<TestCache> options) : base(options)
+    public TestCache(RedisCashSetOptions<TestCache> options) : base(options)
     {
         TestSet = NewSet<CacheTestItem, Guid>(cacheSetOptions =>
         {
@@ -21,5 +21,5 @@ public sealed class TestCache : RedisCacheContext
         });
     }
 
-    public CacheSet<CacheTestItem, Guid> TestSet { get; set; }
+    public RedisCacheSet<CacheTestItem, Guid> TestSet { get; set; }
 }

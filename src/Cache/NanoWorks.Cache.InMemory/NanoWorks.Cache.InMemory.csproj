@@ -8,16 +8,22 @@
     <IsPackable>True</IsPackable>
     <PackageIcon>icon.png</PackageIcon>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <Description>Base package for all NanoWorks cache packages.</Description>
+    <Description>NanoWorks in-memory cache.</Description>
     <PackageProjectUrl>https://github.com/NanoWorks-Project/NanoWorks</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556">
+    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Text.Json" Version="9.0.0-preview.6.24327.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NanoWorks.Cache\NanoWorks.Cache.csproj" />
   </ItemGroup>
 
   <ItemGroup>

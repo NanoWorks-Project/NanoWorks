@@ -2,26 +2,26 @@
 
 using AutoFixture;
 using AutoFixture.AutoMoq;
-using NanoWorks.Cache.Redis.Options;
-using NanoWorks.Cache.Redis.Tests.TestObjects;
+using Microsoft.Extensions.DependencyInjection;
+using NanoWorks.Cache.InMemory.DependencyInjection;
+using NanoWorks.Cache.InMemory.Tests.TestObjects;
 using Shouldly;
 
-namespace NanoWorks.Cache.Redis.Tests.IntegrationTests;
+namespace NanoWorks.Cache.InMemory.Tests.UnitTests;
 
-/// <summary>
-/// These tests require Redis running locally on the default port.
-/// </summary>
-public sealed class RedisCacheTests
+public sealed class InMemoryCacheTests
 {
     private readonly TestCache _cache;
     private readonly Fixture _fixture;
     private readonly List<CacheTestItem> _items;
 
-    public RedisCacheTests()
+    public InMemoryCacheTests()
     {
-        var options = new RedisCashSetOptions<TestCache>();
-        options.UseConnectionString("localhost:6379");
-        _cache = new TestCache(options);
+        var serviceProvider = new ServiceCollection()
+            .AddNanoWorksInMemoryCache<TestCache>()
+            .BuildServiceProvider();
+
+        _cache = serviceProvider.GetRequiredService<TestCache>();
 
         _fixture = new Fixture();
         _fixture.Customize(new AutoMoqCustomization() { ConfigureMembers = true });

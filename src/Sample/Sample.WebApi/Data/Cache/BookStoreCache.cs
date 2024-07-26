@@ -15,8 +15,8 @@ public sealed class BookStoreCache : RedisCacheContext, IBookStoreCache
     /// <summary>
     /// Initializes a new instance of the <see cref="BookStoreCache"/> class.
     /// </summary>
-    /// <param name="options"><see cref="CacheContextOptions"/>.</param>
-    public BookStoreCache(CacheContextOptions options)
+    /// <param name="options"><see cref="RedisCacheContextOptions"/>.</param>
+    public BookStoreCache(RedisCacheContextOptions options)
         : base(options)
     {
         Authors = NewSet<AuthorDto, Guid>(options =>
@@ -42,11 +42,11 @@ public sealed class BookStoreCache : RedisCacheContext, IBookStoreCache
     }
 
     /// <inheritdoc />
-    public CacheSet<AuthorDto, Guid> Authors { get; }
+    public RedisCacheSet<AuthorDto, Guid> Authors { get; }
 
     /// <inheritdoc />
-    public CacheSet<AuthorBooksDto, Guid> AuthorBooks { get; }
+    public RedisCacheSet<AuthorBooksDto, Guid> AuthorBooks { get; }
 
     /// <inheritdoc />
-    public CacheSet<BookDto, Guid> Books { get; }
+    public RedisCacheSet<BookDto, Guid> Books { get; }
 }

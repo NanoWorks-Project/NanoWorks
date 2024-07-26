@@ -1,9 +1,9 @@
 ﻿// Ignore Spelling: Nano
 
 using AutoFixture;
-using NanoWorks.Cache.Redis.Options;
+using NanoWorks.Cache.InMemory.Options;
 
-namespace NanoWorks.Cache.Redis.Tests.UnitTests.Options;
+namespace NanoWorks.Cache.InMemory.Tests.UnitTests.Options;
 
 public sealed class CashSetOptionsTests
 {
@@ -13,7 +13,7 @@ public sealed class CashSetOptionsTests
     public void Validate_WhenTableNameIsNullOrWhiteSpace_ThrowsInvalidOperationException()
     {
         // Arrange
-        var options = _fixture.Create<RedisCashSetOptions>();
+        var options = _fixture.Create<InMemoryCashSetOptions>();
         options.TableName = null;
 
         // Act
@@ -27,7 +27,7 @@ public sealed class CashSetOptionsTests
     public void Validate_WhenKeySelectorIsNull_ThrowsInvalidOperationException()
     {
         // Arrange
-        var options = _fixture.Create<RedisCashSetOptions>();
+        var options = _fixture.Create<InMemoryCashSetOptions>();
         options.KeySelector = null;
 
         // Act
@@ -41,7 +41,7 @@ public sealed class CashSetOptionsTests
     public void Validate_WhenExpirationDurationIsLessThanOrEqualToZero_ThrowsInvalidOperationException()
     {
         // Arrange
-        var options = _fixture.Create<RedisCashSetOptions>();
+        var options = _fixture.Create<InMemoryCashSetOptions>();
         options.ExpirationDuration = TimeSpan.Zero;
 
         // Act

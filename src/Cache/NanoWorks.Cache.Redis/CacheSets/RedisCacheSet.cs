@@ -18,14 +18,14 @@ namespace NanoWorks.Cache.Redis.CacheSets
     /// </summary>
     /// <typeparam name="TItem">Type of item in the cache.</typeparam>
     /// <typeparam name="TKey">Type of key used to identify the item in the cache.</typeparam>
-    public sealed class CacheSet<TItem, TKey> : ICacheSet<TItem, TKey>
+    public sealed class RedisCacheSet<TItem, TKey> : ICacheSet<TItem, TKey>
         where TItem : class, new()
     {
         private readonly IConnectionMultiplexer _connection;
         private readonly IDatabase _database;
-        private readonly CashSetOptions _options;
+        private readonly RedisCashSetOptions _options;
 
-        internal CacheSet(IConnectionMultiplexer connection, CashSetOptions<TItem, TKey> options)
+        internal RedisCacheSet(IConnectionMultiplexer connection, RedisCashSetOptions<TItem, TKey> options)
         {
             var isValidKey = typeof(TKey) == typeof(string)
                 || typeof(TKey) == typeof(Guid)

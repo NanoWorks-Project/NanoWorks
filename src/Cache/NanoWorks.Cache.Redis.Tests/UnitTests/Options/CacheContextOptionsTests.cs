@@ -14,7 +14,7 @@ public sealed class CacheContextOptionsTests
     public void Validate_WhenConnectionStringIsNullOrWhiteSpace_ThrowsInvalidOperationException()
     {
         // Arrange
-        var options = _fixture.Create<CacheContextOptions>();
+        var options = _fixture.Create<RedisCacheContextOptions>();
         options.ConnectionString = null;
 
         // Act
@@ -28,7 +28,7 @@ public sealed class CacheContextOptionsTests
     public void Validate_WhenConnectionPoolSizeIsLessThanOne_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
-        var options = _fixture.Create<CacheContextOptions>();
+        var options = _fixture.Create<RedisCacheContextOptions>();
         options.ConnectionString = "test";
         ConnectionPool.Size = 0;
 

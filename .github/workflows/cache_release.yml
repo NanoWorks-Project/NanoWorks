@@ -39,5 +39,8 @@ jobs:
     - name: Pack NanoWorks.Cache.Redis
       run: dotnet pack ./src/Cache/NanoWorks.Cache.Redis/NanoWorks.Cache.Redis.csproj -p:PackageVersion=$PACKAGE_VERSION --output ./pack
 
+    - name: Pack NanoWorks.Cache.InMemory
+      run: dotnet pack ./src/Cache/NanoWorks.Cache.InMemory/NanoWorks.Cache.InMemory.csproj -p:PackageVersion=$PACKAGE_VERSION --output ./pack
+
     - name: Push
       run: dotnet nuget push ./pack/*.nupkg --api-key $NUGET_API_KEY --source https://api.nuget.org/v3/index.json

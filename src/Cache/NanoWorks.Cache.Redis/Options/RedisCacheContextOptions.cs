@@ -11,7 +11,7 @@ namespace NanoWorks.Cache.Redis.Options
     /// <summary>
     /// Options for the cache context.
     /// </summary>
-    public class CacheContextOptions
+    public class RedisCacheContextOptions
     {
         /// <summary>
         /// Gets or sets connection string for the cache context.
@@ -44,10 +44,10 @@ namespace NanoWorks.Cache.Redis.Options
     /// Options for the cache context.
     /// </summary>
     /// <typeparam name="TCacheContext">Type of <see cref="RedisCacheContext"/>.</typeparam>
-    public sealed class CacheContextOptions<TCacheContext> : CacheContextOptions
+    public sealed class RedisCashSetOptions<TCacheContext> : RedisCacheContextOptions
         where TCacheContext : RedisCacheContext
     {
-        internal CacheContextOptions()
+        internal RedisCashSetOptions()
         {
         }
 

@@ -3,12 +3,12 @@
 
 using System;
 
-namespace NanoWorks.Cache.Redis.Options
+namespace NanoWorks.Cache.InMemory.Options
 {
     /// <summary>
     /// Options for a cache set.
     /// </summary>
-    public class CashSetOptions
+    public class InMemoryCashSetOptions
     {
         /// <summary>
         /// Gets or sets table name for the cache set.
@@ -52,10 +52,10 @@ namespace NanoWorks.Cache.Redis.Options
     /// </summary>
     /// <typeparam name="TItem">The type of items in the cache.</typeparam>
     /// <typeparam name="TKey">The type of the key for the cache set.</typeparam>
-    public sealed class CashSetOptions<TItem, TKey> : CashSetOptions
+    public sealed class InMemoryCashSetOptions<TItem, TKey> : InMemoryCashSetOptions
         where TItem : class, new()
     {
-        internal CashSetOptions()
+        internal InMemoryCashSetOptions()
         {
         }
 
@@ -63,7 +63,7 @@ namespace NanoWorks.Cache.Redis.Options
         /// Table name for the cache set.
         /// </summary>
         /// <param name="tableName">The table name to use.</param>
-        public CashSetOptions<TItem, TKey> Table(string tableName)
+        public InMemoryCashSetOptions<TItem, TKey> Table(string tableName)
         {
             TableName = tableName;
             return this;
@@ -73,7 +73,7 @@ namespace NanoWorks.Cache.Redis.Options
         /// Sets the key selector for the cache set.
         /// </summary>
         /// <param name="keySelector">Function that returns the key for an item.</param>
-        public CashSetOptions<TItem, TKey> Key(Func<TItem, TKey> keySelector)
+        public InMemoryCashSetOptions<TItem, TKey> Key(Func<TItem, TKey> keySelector)
         {
             KeySelector = item => keySelector((TItem)item);
             return this;
@@ -83,7 +83,7 @@ namespace NanoWorks.Cache.Redis.Options
         /// Sets the expiration duration for the cache set.
         /// </summary>
         /// <param name="expirationDuration">The expiration duration of the cache set.</param>
-        public CashSetOptions<TItem, TKey> Expiration(TimeSpan expirationDuration)
+        public InMemoryCashSetOptions<TItem, TKey> Expiration(TimeSpan expirationDuration)
         {
             ExpirationDuration = expirationDuration;
             return this;

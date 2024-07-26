@@ -4,9 +4,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.9.34607.119
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Cache", "Cache", "{C0DAFF16-63B8-4D05-8E00-7C761A144BB2}"
-	ProjectSection(SolutionItems) = preProject
-		Cache\README.md = Cache\README.md
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NanoWorks.Cache", "Cache\NanoWorks.Cache\NanoWorks.Cache.csproj", "{2FF30752-0845-4C32-BEF2-9BAF9810030B}"
 EndProject
@@ -50,6 +47,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docker", "Docker", "{776ADD
 		Sample\docker\docker-compose.yml = Sample\docker\docker-compose.yml
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NanoWorks.Cache.InMemory", "Cache\NanoWorks.Cache.InMemory\NanoWorks.Cache.InMemory.csproj", "{15514551-1970-4088-884C-0A18A989D368}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NanoWorks.Cache.InMemory.Tests", "Cache\NanoWorks.Cache.InMemory.Tests\NanoWorks.Cache.InMemory.Tests.csproj", "{5B883FEB-1781-4AC0-B3F8-DBDEC326061A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -84,6 +85,14 @@ Global
 		{A57631CA-EA0D-4492-9971-657022D9DB21}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A57631CA-EA0D-4492-9971-657022D9DB21}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A57631CA-EA0D-4492-9971-657022D9DB21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15514551-1970-4088-884C-0A18A989D368}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15514551-1970-4088-884C-0A18A989D368}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15514551-1970-4088-884C-0A18A989D368}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15514551-1970-4088-884C-0A18A989D368}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B883FEB-1781-4AC0-B3F8-DBDEC326061A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B883FEB-1781-4AC0-B3F8-DBDEC326061A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B883FEB-1781-4AC0-B3F8-DBDEC326061A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B883FEB-1781-4AC0-B3F8-DBDEC326061A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -97,6 +106,8 @@ Global
 		{9B7E5110-D62A-4429-9D97-8C8B4555113F} = {88E9FED1-409C-41E6-87C3-B79A3FBFE980}
 		{A57631CA-EA0D-4492-9971-657022D9DB21} = {AFC6A465-3EB9-4CEF-9987-357A6CD8F9D6}
 		{776ADDC0-760E-49D7-8041-DD90E3B75CD4} = {AFC6A465-3EB9-4CEF-9987-357A6CD8F9D6}
+		{15514551-1970-4088-884C-0A18A989D368} = {C0DAFF16-63B8-4D05-8E00-7C761A144BB2}
+		{5B883FEB-1781-4AC0-B3F8-DBDEC326061A} = {C0DAFF16-63B8-4D05-8E00-7C761A144BB2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7285D8C3-8D52-494B-BB80-A1D61658F7B0}

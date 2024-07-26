@@ -29,7 +29,7 @@ Builds
 
 `NanoWorks.Cache` is inspired by Entity Framework's [DbSet.](https://learn.microsoft.com/en-us/dotnet/api/system.data.entity.dbset-1?view=entity-framework-6.2.0) This library offers a similar syntax and coding experience for caching. 
 
-`NanoWorks.Cache` currently supports [Redis.](https://redis.io/)
+`NanoWorks.Cache` currently supports caching with [Redis](https://redis.io/) and in-memory.
 
 ---
 

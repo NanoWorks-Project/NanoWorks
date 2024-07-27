@@ -9,35 +9,34 @@ using NanoWorks.Messaging.RabbitMq.Messages;
 using NanoWorks.Messaging.RabbitMq.Options;
 using NanoWorks.Messaging.RabbitMq.Services;
 
-namespace NanoWorks.Messaging.RabbitMq.DependencyInjection
+namespace NanoWorks.Messaging.RabbitMq.DependencyInjection;
+
+/// <summary>
+/// Dependency injection extensions for RabbitMq messaging.
+/// </summary>
+public static class Extensions
 {
     /// <summary>
-    /// Dependency injection extensions for RabbitMq messaging.
+    /// Adds NanoWorks RabbitMq messaging to the service collection.
     /// </summary>
-    public static class Extensions
+    /// <param name="services">The service collection.</param>
+    /// <param name="configure">Action to configure <see cref="MessagingOptions"/>.</param>
+    public static void AddNanoWorksRabbitMq(this IServiceCollection services, Action<MessagingOptions> configure)
     {
-        /// <summary>
-        /// Adds NanoWorks RabbitMq messaging to the service collection.
-        /// </summary>
-        /// <param name="services">The service collection.</param>
-        /// <param name="configure">Action to configure <see cref="MessagingOptions"/>.</param>
-        public static void AddNanoWorksRabbitMq(this IServiceCollection services, Action<MessagingOptions> configure)
+        var options = new MessagingOptions();
+        configure(options);
+        options.Validate();
+        services.AddSingleton(options);
+        services.AddSingleton<IMessagePublisher, MessagePublisher>();
+
+        foreach (var consumerOptions in options.ConsumerOptions.Values)
         {
-            var options = new MessagingOptions();
-            configure(options);
-            options.Validate();
-            services.AddSingleton(options);
-            services.AddSingleton<IMessagePublisher, MessagePublisher>();
+            services.AddScoped(consumerOptions.ConsumerType);
+        }
 
-            foreach (var consumerOptions in options.ConsumerOptions.Values)
-            {
-                services.AddScoped(consumerOptions.ConsumerType);
-            }
-
-            if (options.ConsumerOptions.Any())
-            {
-                services.AddHostedService<MessagingService>();
-            }
+        if (options.ConsumerOptions.Any())
+        {
+            services.AddHostedService<MessagingService>();
         }
     }
 }

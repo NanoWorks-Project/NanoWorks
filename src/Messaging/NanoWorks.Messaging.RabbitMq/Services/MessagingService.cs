@@ -10,52 +10,51 @@ using NanoWorks.Messaging.RabbitMq.Helpers;
 using NanoWorks.Messaging.RabbitMq.Messages;
 using NanoWorks.Messaging.RabbitMq.Options;
 
-namespace NanoWorks.Messaging.RabbitMq.Services
+namespace NanoWorks.Messaging.RabbitMq.Services;
+
+internal sealed class MessagingService : IHostedService
 {
-    internal sealed class MessagingService : IHostedService
+    internal const string DeadLetterQueueName = "NanoWorks.DeadLetter";
+
+    internal const string DeadLetterExchangeName = "NanoWorks.DeadLetterExchange";
+
+    private readonly IServiceProvider _serviceProvider;
+
+    private readonly MessagingOptions _options;
+
+    public MessagingService(IServiceProvider serviceProvider, MessagingOptions options)
     {
-        internal const string DeadLetterQueueName = "NanoWorks.DeadLetter";
+        _serviceProvider = serviceProvider;
+        _options = options;
+    }
 
-        internal const string DeadLetterExchangeName = "NanoWorks.DeadLetterExchange";
+    internal ICollection<MessageConsumer> Consumers { get; } = new LinkedList<MessageConsumer>();
 
-        private readonly IServiceProvider _serviceProvider;
+    public Task StartAsync(CancellationToken cancellationToken)
+    {
+        ExchangeHelper.CreateExchanges(_options.ConsumerConnection);
 
-        private readonly MessagingOptions _options;
-
-        public MessagingService(IServiceProvider serviceProvider, MessagingOptions options)
+        foreach (var subscriberOptions in _options.ConsumerOptions.Values)
         {
-            _serviceProvider = serviceProvider;
-            _options = options;
+            var consumer = QueueHelper.Initialize(_serviceProvider, _options.ConsumerConnection, subscriberOptions);
+            Consumers.Add(consumer);
         }
 
-        internal ICollection<MessageConsumer> Consumers { get; } = new LinkedList<MessageConsumer>();
-
-        public Task StartAsync(CancellationToken cancellationToken)
+        foreach (var consumer in Consumers)
         {
-            ExchangeHelper.CreateExchanges(_options.ConsumerConnection);
-
-            foreach (var subscriberOptions in _options.ConsumerOptions.Values)
-            {
-                var consumer = QueueHelper.Initialize(_serviceProvider, _options.ConsumerConnection, subscriberOptions);
-                Consumers.Add(consumer);
-            }
-
-            foreach (var consumer in Consumers)
-            {
-                consumer.Start();
-            }
-
-            return Task.CompletedTask;
+            consumer.Start();
         }
 
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            foreach (var consumer in Consumers)
-            {
-                consumer.Dispose();
-            }
+        return Task.CompletedTask;
+    }
 
-            return Task.CompletedTask;
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        foreach (var consumer in Consumers)
+        {
+            consumer.Dispose();
         }
+
+        return Task.CompletedTask;
     }
 }

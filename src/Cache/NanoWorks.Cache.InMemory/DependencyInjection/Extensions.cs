@@ -18,7 +18,7 @@ namespace NanoWorks.Cache.InMemory.DependencyInjection
         public static IServiceCollection AddNanoWorksInMemoryCache<TCacheContext>(this IServiceCollection services)
             where TCacheContext : InMemoryCacheContext
         {
-            services.AddScoped<TCacheContext>();
+            services.AddSingleton<TCacheContext>();
             return services;
         }
     }

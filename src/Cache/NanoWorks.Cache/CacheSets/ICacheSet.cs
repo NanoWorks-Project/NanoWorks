@@ -38,6 +38,18 @@ public interface ICacheSet<TItem, TKey> : IEnumerable<TItem>
     Task<TItem> GetAsync(TKey key);
 
     /// <summary>
+    /// Returns the items with the specified keys from the cache or null if the key does not exist.
+    /// </summary>
+    /// <param name="keys">Item keys.</param>
+    IEnumerable<TItem> Get(IEnumerable<TKey> keys);
+
+    /// <summary>
+    /// Returns the items with the specified keys from the cache or null if the key does not exist.
+    /// </summary>
+    /// <param name="keys">Item keys.</param>
+    IAsyncEnumerable<TItem> GetAsync(IEnumerable<TKey> keys);
+
+    /// <summary>
     /// Sets the item in the cache.
     /// </summary>
     /// <param name="item">The item.</param>

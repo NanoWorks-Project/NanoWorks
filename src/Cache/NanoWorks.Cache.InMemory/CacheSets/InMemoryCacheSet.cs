@@ -70,6 +70,42 @@ public sealed class InMemoryCacheSet<TItem, TKey> : ICacheSet<TItem, TKey>
     }
 
     /// <inheritdoc />
+    public IEnumerable<TItem> Get(IEnumerable<TKey> keys)
+    {
+        keys = keys.Where(x => x != null);
+
+        foreach (var key in keys)
+        {
+            var item = Get(key);
+
+            if (item is null)
+            {
+                continue;
+            }
+
+            yield return item;
+        }
+    }
+
+    /// <inheritdoc />
+    public async IAsyncEnumerable<TItem> GetAsync(IEnumerable<TKey> keys)
+    {
+        keys = keys.Where(x => x != null);
+
+        foreach (var key in keys)
+        {
+            var item = await GetAsync(key);
+
+            if (item is null)
+            {
+                continue;
+            }
+
+            yield return item;
+        }
+    }
+
+    /// <inheritdoc />
     public IEnumerator<TItem> GetEnumerator()
     {
         var items = Items();
@@ -209,21 +245,6 @@ public sealed class InMemoryCacheSet<TItem, TKey> : ICacheSet<TItem, TKey>
         var keys = _memoryCache.Get<HashSet<TKey>>($"{_options.TableName}:keys") ?? new HashSet<TKey>();
 
         foreach (var key in keys)
-        {
-            var item = Get(key);
-
-            if (item is null)
-            {
-                continue;
-            }
-
-            yield return Get(key);
-        }
-    }
-
-    private IEnumerable<TItem> Get(IEnumerable<TKey> keys)
-    {
-        foreach (var key in keys.Where(x => !string.IsNullOrWhiteSpace(x?.ToString())))
         {
             var item = Get(key);
 

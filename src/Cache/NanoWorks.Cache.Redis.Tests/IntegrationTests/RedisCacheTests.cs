@@ -160,6 +160,46 @@ public sealed class RedisCacheTests
     }
 
     [Test]
+    public void Get_MultipleKeys_ReturnsItems()
+    {
+        // Arrange
+        var items = _fixture.CreateMany<CacheTestItem>();
+
+        foreach (var item in items)
+        {
+            _cache.TestSet[item.Id] = item;
+        }
+
+        var ids = items.Select(x => x.Id);
+
+        // Act
+        var result = _cache.TestSet.Get(ids);
+
+        // Assert
+        result.ShouldNotBeEmpty();
+    }
+
+    [Test]
+    public async Task GetAsync_MultipleKeys_ReturnsItems()
+    {
+        // Arrange
+        var items = _fixture.CreateMany<CacheTestItem>();
+
+        foreach (var item in items)
+        {
+            _cache.TestSet[item.Id] = item;
+        }
+
+        var ids = items.Select(x => x.Id);
+
+        // Act
+        await foreach (var item in _cache.TestSet.GetAsync(ids))
+        {
+            item.ShouldNotBeNull();
+        }
+    }
+
+    [Test]
     public void GetKey_WhenItemExists_ReturnsKey()
     {
         // Arrange

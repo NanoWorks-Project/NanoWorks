@@ -88,6 +88,42 @@ public sealed class RedisCacheSet<TItem, TKey> : ICacheSet<TItem, TKey>
     }
 
     /// <inheritdoc />
+    public IEnumerable<TItem> Get(IEnumerable<TKey> keys)
+    {
+        keys = keys.Where(x => x != null);
+
+        foreach (var key in keys)
+        {
+            var item = Get(key);
+
+            if (item is null)
+            {
+                continue;
+            }
+
+            yield return item;
+        }
+    }
+
+    /// <inheritdoc />
+    public async IAsyncEnumerable<TItem> GetAsync(IEnumerable<TKey> keys)
+    {
+        keys = keys.Where(x => x != null);
+
+        foreach (var key in keys)
+        {
+            var item = await GetAsync(key);
+
+            if (item is null)
+            {
+                continue;
+            }
+
+            yield return item;
+        }
+    }
+
+    /// <inheritdoc />
     IEnumerator IEnumerable.GetEnumerator()
     {
         return GetEnumerator();
@@ -231,16 +267,6 @@ public sealed class RedisCacheSet<TItem, TKey> : ICacheSet<TItem, TKey>
         var keys = Keys(page, pageSize);
         var items = Get(keys);
         return items.ToList();
-    }
-
-    private IEnumerable<TItem> Get(IEnumerable<TKey> keys)
-    {
-        var redisKeys = keys
-            .Where(x => !string.IsNullOrWhiteSpace(x?.ToString()))
-            .Select(x => new RedisKey($"{_options.TableName}:{x}")).ToArray();
-
-        var items = Get(redisKeys);
-        return items;
     }
 
     private IEnumerable<TItem> Get(IEnumerable<RedisKey> keys)

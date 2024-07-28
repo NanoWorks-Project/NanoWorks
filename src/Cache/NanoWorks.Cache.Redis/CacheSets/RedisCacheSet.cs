@@ -4,11 +4,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using NanoWorks.Cache.CacheSets;
+using NanoWorks.Cache.Redis.Extensions;
 using NanoWorks.Cache.Redis.Options;
-using NRedisStack.RedisStackCommands;
 using StackExchange.Redis;
 
 namespace NanoWorks.Cache.Redis.CacheSets;
@@ -63,7 +62,8 @@ public sealed class RedisCacheSet<TItem, TKey> : ICacheSet<TItem, TKey>
             throw new ArgumentNullException(nameof(key));
         }
 
-        var item = _database.JSON().Get<TItem>($"{_options.TableName}:{key}");
+        var json = _database.StringGet($"{_options.TableName}:{key}").ToString();
+        var item = json.FromJson<TItem>();
         return item;
     }
 
@@ -75,7 +75,8 @@ public sealed class RedisCacheSet<TItem, TKey> : ICacheSet<TItem, TKey>
             throw new ArgumentNullException(nameof(key));
         }
 
-        var item = await _database.JSON().GetAsync<TItem>($"{_options.TableName}:{key}");
+        var json = (await _database.StringGetAsync($"{_options.TableName}:{key}")).ToString();
+        var item = json.FromJson<TItem>();
         return item;
     }
 
@@ -205,7 +206,8 @@ public sealed class RedisCacheSet<TItem, TKey> : ICacheSet<TItem, TKey>
         }
 
         var key = GetKey(item);
-        _database.JSON().Set($"{_options.TableName}:{key}", "$", item);
+        var json = item.ToJson();
+        _database.StringSet($"{_options.TableName}:{key}", json, _options.ExpirationDuration);
         ResetExpiration(key);
     }
 
@@ -218,7 +220,8 @@ public sealed class RedisCacheSet<TItem, TKey> : ICacheSet<TItem, TKey>
         }
 
         var key = GetKey(item);
-        await _database.JSON().SetAsync($"{_options.TableName}:{key}", "$", item);
+        var json = item.ToJson();
+        await _database.StringSetAsync($"{_options.TableName}:{key}", json, _options.ExpirationDuration);
         await ResetExpirationAsync(key);
     }
 
@@ -247,23 +250,17 @@ public sealed class RedisCacheSet<TItem, TKey> : ICacheSet<TItem, TKey>
             yield break;
         }
 
-        var redisResults = _database.JSON().MGet(keys.ToArray(), "$");
-
-        foreach (var redisResult in redisResults)
+        foreach (var key in keys)
         {
-            if (redisResult.IsNull)
+            var json = _database.StringGet(key).ToString();
+            var item = json.FromJson<TItem>();
+
+            if (item is null)
             {
                 continue;
             }
 
-            var resultItems = JsonSerializer.Deserialize<TItem[]>(redisResult.ToString());
-
-            if (resultItems.Length < 1)
-            {
-                continue;
-            }
-
-            yield return resultItems[0];
+            yield return item;
         }
     }
 

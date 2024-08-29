@@ -16,11 +16,11 @@ namespace NanoWorks.Cache.InMemory.CacheSets;
 /// </summary>
 /// <typeparam name="TItem">Type of item in the cache.</typeparam>
 /// <typeparam name="TKey">Type of key used to identify the item in the cache.</typeparam>
-public sealed class InMemoryCacheSet<TItem, TKey> : ICacheSet<TItem, TKey>
+public sealed class InMemoryCacheSet<TItem, TKey> : ICacheSet<TItem, TKey>, IDisposable
     where TItem : class, new()
 {
     private readonly InMemoryCashSetOptions _options;
-    private readonly IMemoryCache _memoryCache = new MemoryCache(new MemoryCacheOptions());
+    private readonly MemoryCache _memoryCache = new(new MemoryCacheOptions());
 
     internal InMemoryCacheSet(InMemoryCashSetOptions<TItem, TKey> options)
     {
@@ -121,11 +121,7 @@ public sealed class InMemoryCacheSet<TItem, TKey> : ICacheSet<TItem, TKey>
     /// <inheritdoc />
     public TKey GetKey(TItem item)
     {
-        if (item == null)
-        {
-            throw new ArgumentNullException(nameof(item));
-        }
-
+        ArgumentNullException.ThrowIfNull(item);
         var key = _options.KeySelector(item);
         return (TKey)_options.KeySelector(item);
     }
@@ -140,7 +136,7 @@ public sealed class InMemoryCacheSet<TItem, TKey> : ICacheSet<TItem, TKey>
 
         _memoryCache.Remove($"{_options.TableName}:{key}");
 
-        var keys = _memoryCache.Get<HashSet<TKey>>($"{_options.TableName}:keys") ?? new HashSet<TKey>();
+        var keys = _memoryCache.Get<HashSet<TKey>>($"{_options.TableName}:keys") ?? [];
         keys.Remove(key);
 
         _memoryCache.Set($"{_options.TableName}:keys", keys, _options.ExpirationDuration);
@@ -149,11 +145,7 @@ public sealed class InMemoryCacheSet<TItem, TKey> : ICacheSet<TItem, TKey>
     /// <inheritdoc />
     public void Remove(TItem item)
     {
-        if (item == null)
-        {
-            throw new ArgumentNullException(nameof(item));
-        }
-
+        ArgumentNullException.ThrowIfNull(item);
         var key = GetKey(item);
         Remove(key);
     }
@@ -186,11 +178,7 @@ public sealed class InMemoryCacheSet<TItem, TKey> : ICacheSet<TItem, TKey>
     /// <inheritdoc />
     public void ResetExpiration(TItem item)
     {
-        if (item == null)
-        {
-            throw new ArgumentNullException(nameof(item));
-        }
-
+        ArgumentNullException.ThrowIfNull(item);
         var key = GetKey(item);
         ResetExpiration(key);
     }
@@ -212,15 +200,12 @@ public sealed class InMemoryCacheSet<TItem, TKey> : ICacheSet<TItem, TKey>
     /// <inheritdoc />
     public void Set(TItem item)
     {
-        if (item == null)
-        {
-            throw new ArgumentNullException(nameof(item));
-        }
+        ArgumentNullException.ThrowIfNull(item);
 
         var key = GetKey(item);
         _memoryCache.Set($"{_options.TableName}:{key}", item, _options.ExpirationDuration);
 
-        var keys = _memoryCache.Get<HashSet<TKey>>($"{_options.TableName}:keys") ?? new HashSet<TKey>();
+        var keys = _memoryCache.Get<HashSet<TKey>>($"{_options.TableName}:keys") ?? [];
         keys.Add(key);
 
         _memoryCache.Set($"{_options.TableName}:keys", keys, _options.ExpirationDuration);
@@ -240,9 +225,15 @@ public sealed class InMemoryCacheSet<TItem, TKey> : ICacheSet<TItem, TKey>
         return items.Skip(page * pageSize).Take(pageSize).ToList();
     }
 
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        _memoryCache.Dispose();
+    }
+
     private IEnumerable<TItem> Items()
     {
-        var keys = _memoryCache.Get<HashSet<TKey>>($"{_options.TableName}:keys") ?? new HashSet<TKey>();
+        var keys = _memoryCache.Get<HashSet<TKey>>($"{_options.TableName}:keys") ?? [];
 
         foreach (var key in keys)
         {

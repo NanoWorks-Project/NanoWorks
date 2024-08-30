@@ -33,8 +33,8 @@ Consumers' queues are bound to the exchanges for the message types they handle, 
 
 ### Important Considerations
 
-- **Avoid Name Collisions:** Use distinct RabbitMQ virtual hosts or servers to prevent collisions between exchange and queue names.
-- **Manage Orphaned Exchanges and Queues:** If exchanges and queues are not set to auto-delete, orphaned items may accumulate, requiring manual cleanup. This can happen when queue names or message types change.
+- **Avoid Name Collisions:** use distinct RabbitMQ virtual hosts or servers to prevent collisions between exchange and queue names.
+- **Manage Orphaned Exchanges and Queues:** if exchanges and queues are not set to auto-delete, orphaned items may accumulate, requiring manual cleanup. This can happen when queue names or message types change.
 
 ---
 
@@ -76,7 +76,7 @@ public async Task OnTransportError(TransportError transportError, CancellationTo
 
 ### Getting Started
 
-1. Install the [NanoWorks.Messaging.RabbitMq](https://www.nuget.org/packages/NanoWorks.Messaging.RabbitMq) NuGet package
+1. Install the [NanoWorks.Messaging.RabbitMq](https://www.nuget.org/packages/NanoWorks.Messaging.RabbitMq) NuGet package.
 
 2. Create a message consumer class with methods that handle specific types of messages.
 
@@ -104,7 +104,7 @@ public sealed class CacheConsumer(
 }
 ```
 
-3. Add NanoWorks.Messaging.RabbitMq dependencies to a ServiceCollection and configure the options to meet your requirements.
+3. Add the NanoWorks.Messaging.RabbitMq dependencies to the `IServiceCollection` at start-up, and configure the options to meet your requirements.
 
 ```
 builder.Services.AddNanoWorksRabbitMq(options =>

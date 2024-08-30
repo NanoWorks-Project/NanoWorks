@@ -12,13 +12,13 @@ NanoWorks creates small yet powerful libraries that add significant value to sof
 
 ### Sample App
 
-This sample web API for a bookstore includes endpoints for interacting with Author and Book resources. It integrates a data layer using Entity Framework for database operations and NanoWorks Redis for caching.
+This sample web API for a bookstore includes endpoints for interacting with Author and Book resources. It integrates a data layer using Entity Framework for database operations and NanoWorks.Cache for caching with [Redis](https://redis.io/).
 
 Key features:
 
-- **Entity Framework:** Manages database context for Author and Book resources.
-- **NanoWorks.Cache:** Provides a caching layer for improved performance.
-- **NanoWorks.Messaging:** Publishes and consumes events via RabbitMQ to asynchronously update the cache when resources are created or modified.
+- **Entity Framework:** manages database context for Author and Book resources.
+- **NanoWorks.Cache:** provides a caching layer for improved performance.
+- **NanoWorks.Messaging.RabbitMq:** publishes and consumes events via RabbitMQ to asynchronously refresh the cache when resources are created or modified.
 
 ---
 

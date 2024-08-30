@@ -16,7 +16,6 @@ Releases
 |------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
 | [Cache 2.0.0](https://www.nuget.org/profiles/sspaniel_nanoworks-project.org)        | [![main](https://github.com/NanoWorks-Project/NanoWorks/actions/workflows/cache_release.yml/badge.svg?branch=main)](https://github.com/NanoWorks-Project/NanoWorks/actions/workflows/cache_release.yml)         |
 | [Messaging 2.0.0](https://www.nuget.org/profiles/sspaniel_nanoworks-project.org)    | [![main](https://github.com/NanoWorks-Project/NanoWorks/actions/workflows/messaging_release.yml/badge.svg?branch=main)](https://github.com/NanoWorks-Project/NanoWorks/actions/workflows/messaging_release.yml) |
-| [Actions 0.0.2-beta](https://www.nuget.org/profiles/sspaniel_nanoworks-project.org) | [![main](https://github.com/NanoWorks-Project/NanoWorks/actions/workflows/actions_release.yml/badge.svg?branch=main)](https://github.com/NanoWorks-Project/NanoWorks/actions/workflows/actions_release.yml)     |
 
 Builds
 

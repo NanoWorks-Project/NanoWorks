@@ -34,6 +34,7 @@ Built on Microsoft's [IDistributedCache](https://learn.microsoft.com/en-us/dotne
 
 ### NanoWorks.Messaging
 
-`NanoWorks.Messaging` is a distributed messaging library that enables developers to build asynchronous messaging systems with publishers and subscribers.
+NanoWorks.Messaging is a lightweight and flexible distributed messaging library designed to simplify the implementation of asynchronous messaging systems. It provides an easy-to-use API for building scalable applications with publisher-subscriber patterns.
 
-`NanoWorks.Messaging` currently supports [RabbitMQ.](https://www.rabbitmq.com/)
+
+The library currently supports [RabbitMQ](https://www.rabbitmq.com/) as the messaging broker, allowing seamless integration into your distributed architecture.

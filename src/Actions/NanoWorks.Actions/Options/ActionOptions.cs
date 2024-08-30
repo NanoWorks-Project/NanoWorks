@@ -11,6 +11,8 @@ namespace NanoWorks.Actions.Options;
 /// <typeparam name="TRequest">Type of request passed to the action.</typeparam>
 /// <typeparam name="TResponse">Type of response returned by the action.</typeparam>
 public class ActionOptions<TRequest, TResponse>
+    where TRequest : class
+    where TResponse : class
 {
     private readonly LinkedList<Type> _steps = new();
 

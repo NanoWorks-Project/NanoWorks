@@ -20,9 +20,9 @@ public class NanoWorksActionTests : IDisposable
         _fixture = new Fixture();
         _fixture.Customize(new AutoMoqCustomization { ConfigureMembers = true });
 
-        var serviceCollection = new ServiceCollection();
+        var services = new ServiceCollection();
 
-        serviceCollection.AddAction<string, string>(options =>
+        services.AddAction<string, string>(options =>
         {
             options.AddStep<TestActionStep>();
             options.AddStep<TestActionStep>();
@@ -30,7 +30,9 @@ public class NanoWorksActionTests : IDisposable
             options.AddStep<TestActionFinalStep>();
         });
 
-        var serviceProvider = serviceCollection.BuildServiceProvider();
+        services.AddLogging();
+
+        var serviceProvider = services.BuildServiceProvider();
 
         _serviceScope = serviceProvider.CreateScope();
         _action = _serviceScope.ServiceProvider.GetRequiredService<IAction<string, string>>();
@@ -54,11 +56,11 @@ public class NanoWorksActionTests : IDisposable
         response.ShouldBe(TestActionFinalStep.ExpectedResponse);
 
         TestActionStep.Invocations.Count().ShouldBe(3);
-        TestActionStep.Invocations.All(i => i.Request == request).ShouldBeTrue();
+        TestActionStep.Invocations.All(i => i.Scope.Request == request).ShouldBeTrue();
         TestActionStep.Invocations.All(i => i.CancellationToken == CancellationToken.None).ShouldBeTrue();
 
         TestActionFinalStep.Invocations.Count().ShouldBe(1);
-        TestActionFinalStep.Invocations.All(i => i.Request == request).ShouldBeTrue();
+        TestActionFinalStep.Invocations.All(i => i.Scope.Request == request).ShouldBeTrue();
         TestActionFinalStep.Invocations.All(i => i.CancellationToken == CancellationToken.None).ShouldBeTrue();
     }
 }

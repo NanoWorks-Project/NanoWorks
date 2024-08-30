@@ -4,14 +4,12 @@ namespace NanoWorks.Actions.Tests.TestObjects;
 
 public class TestActionStepInvocation
 {
-    public TestActionStepInvocation(
-        string request,
-        CancellationToken cancellationToken)
+    public TestActionStepInvocation(IActionScope<string, string> scope, CancellationToken cancellationToken)
     {
-        Request = request;
+        Scope = scope;
         CancellationToken = cancellationToken;
     }
 
-    internal string Request { get; init; }
+    internal IActionScope<string, string> Scope { get; init; }
     internal CancellationToken CancellationToken { get; init; }
 }

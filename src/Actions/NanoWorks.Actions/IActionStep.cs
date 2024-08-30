@@ -1,6 +1,5 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using NanoWorks.Actions.Results;
 
 namespace NanoWorks.Actions;
 
@@ -10,11 +9,13 @@ namespace NanoWorks.Actions;
 /// <typeparam name="TRequest">Type of request passed to the action.</typeparam>
 /// <typeparam name="TResponse">Type of response returned by the action.</typeparam>
 public interface IActionStep<TRequest, TResponse>
+    where TRequest : class
+    where TResponse : class
 {
     /// <summary>
     /// Executes the action step.
     /// </summary>
-    /// <param name="request">Request passed to the action.</param>
+    /// <param name="scope">Scope for the action.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
-    Task<ActionResult> ExecuteAsync(TRequest request, CancellationToken cancellationToken);
+    Task ExecuteAsync(IActionScope<TRequest, TResponse> scope, CancellationToken cancellationToken);
 }

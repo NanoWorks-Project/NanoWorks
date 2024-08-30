@@ -12,7 +12,7 @@ NanoWorks creates small yet powerful libraries that add significant value to sof
 
 ### NanoWorks.Cache
 
-Built on Microsoft's [IDistributedCache](https://learn.microsoft.com/en-us/dotnet/api/microsoft.extensions.caching.distributed.idistributedcache.getasync?view=net-8.0#microsoft-extensions-caching-distributed-idistributedcache-getasync(system-string-system-threading-cancellationtoken)), NanoWorks.Cache provides a type-safe and efficient solution for caching data in distributed environments.
+Built on Microsoft's [IDistributedCache](https://learn.microsoft.com/en-us/dotnet/api/microsoft.extensions.caching.distributed.idistributedcache?view=net-8.0), NanoWorks.Cache provides a type-safe and efficient solution for caching data in distributed environments.
 
 ---
 

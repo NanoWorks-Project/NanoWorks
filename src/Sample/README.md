@@ -18,7 +18,7 @@ Key features:
 
 - **Entity Framework:** manages database context for Author and Book resources.
 - **NanoWorks.Cache:** provides a caching layer for improved performance.
-- **NanoWorks.Messaging.RabbitMq:** publishes and consumes events via RabbitMQ to asynchronously refresh the cache when resources are created or modified.
+- **NanoWorks.Messaging.RabbitMq:** publishes and consumes events via [RabbitMQ](https://www.rabbitmq.com/) to asynchronously refresh the cache when resources are created or modified.
 
 ---
 

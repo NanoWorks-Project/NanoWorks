@@ -4,9 +4,7 @@
 
 ---
 
-NanoWorks creates **_small_** libraries that provide **_big_** value to software projects. 
-
-The libraries are open-source and offered under the Apache 2.0 license.
+NanoWorks creates small yet powerful libraries that add significant value to software projects. Our open-source libraries are licensed under Apache 2.0, allowing free use, modification, and distribution.
 
 ---
 
@@ -14,49 +12,44 @@ The libraries are open-source and offered under the Apache 2.0 license.
 
 ### NanoWorks.Messaging
 
-`NanoWorks.Messaging` is a distributed messaging library that enables developers to build asynchronous messaging systems with publishers and subscribers.
+NanoWorks.Messaging is a lightweight and flexible distributed messaging library designed to simplify the implementation of asynchronous messaging systems. It provides an easy-to-use API for building scalable applications with publisher-subscriber patterns.
 
-`NanoWorks.Messaging` currently supports [RabbitMQ.](https://www.rabbitmq.com/)
+
+The library currently supports [RabbitMQ](https://www.rabbitmq.com/) as the messaging broker, allowing seamless integration into your distributed architecture.
 
 ---
 
 ### Overview
 
-`NanoWorks.Messaging.RabbitMq` has three main components - publishers, consumers, and messages.
+NanoWorks.Messaging.RabbitMq features three main components:
 
-Publishers publish messages, and consumers subscribe to and consume messages.
+1. **Publishers:** publish messages to RabbitMQ exchanges.
+2. **Consumers:** subscribe to queues bound to specific exchanges, processing incoming messages.
+3. **Messages:** each message type is routed through an exchange using a fully qualified name, like "Sample.WebApi.Models.Events.AuthorUpdatedEvent".
 
-Within RabbitMQ, each message type is assigned an exchange using the fully qualified name - "Sample.WebApi.Models.Events.AuthorUpdatedEvent".
-
-Each consumer is assigned a queue, and the queue is bound to all exchanges / message types it is subscribed to.
+Consumers' queues are bound to the exchanges for the message types they handle, ensuring proper message delivery.
 
 ---
 
 ### Important Considerations
 
-Avoid exchange and queue name collisions by using different RabbitMQ virtual hosts and servers.  
-
-If exchanges and queues are not configured to be auto-deleted, orphaned exchanges and queues are possible. This may require manual cleanup, and it can occur when configured queue names change, message types change, etc...
+- **Avoid Name Collisions:** Use distinct RabbitMQ virtual hosts or servers to prevent collisions between exchange and queue names.
+- **Manage Orphaned Exchanges and Queues:** If exchanges and queues are not set to auto-delete, orphaned items may accumulate, requiring manual cleanup. This can happen when queue names or message types change.
 
 ---
 
 ### Dead Letters
 
-Any messages that fail to be processed, or exceed the configured retry limit, will be published to the `NanoWorks.DeadLetter` queue.
-
-Messages that fail serialization can be ignored and discarded through configuration - by default they are sent to the `NanoWorks.DeadLetter` queue.
+Messages that fail processing or exceed the retry limit are published to the `NanoWorks.DeadLetter` queue. By default, messages that fail serialization are also sent to this queue, but they can be configured to be ignored and discarded.
 
 ---
 
 ### Faults and Exceptions
 
-If a consumer throws an exception while processing a message, a `TransportError` with the exception details will be published.
-
-If the message retry limit has not been exceeded, the message will be published to the consumer's retry queue and processed again. 
-
-Transport errors can be consumed by subscribing to the `NanoWorks.TransportError` message type.
-
-To avoid transport error loops, these consumers should handle exceptions with a logger of last resort.
+- When a consumer throws an exception during message processing, a `TransportError` with details will be published.
+- If the retry limit has not been exceeded, the message is sent to the consumer's retry queue for reprocessing.
+- `TransportError` messages can be consumed by subscribing to the `NanoWorks.TransportError` type.
+- To prevent error loops, ensure that `TransportError` endpoints handle exceptions using a fallback logger.
 
 ```
 options.AddMessageConsumer<SomeConsumer>(consumerOptions =>
@@ -83,68 +76,47 @@ public async Task OnTransportError(TransportError transportError, CancellationTo
 
 ### Getting Started
 
-#### Download / install the [NanoWorks.Messaging.RabbitMq](https://www.nuget.org/packages/NanoWorks.Messaging.RabbitMq) NuGet package
+1. Install the [NanoWorks.Messaging.RabbitMq](https://www.nuget.org/packages/NanoWorks.Messaging.RabbitMq) NuGet package
 
-#### Create a message consumer
+2. Create a message consumer class with methods that handle specific types of messages.
 
-Message endpoints must be a public method with two parameters inside the consumer.
+    - A message endpoint must be a public method with two parameters.
 
-The first parameter must be the message model and the second a `CancellationToken`.
+    - The first parameter must be the message model and the second a `CancellationToken`.
 
 ```
-public class CacheConsumer(IBookStoreDatabase bookStoreDatabase, IBookStoreCache bookStoreCache)
+public sealed class CacheConsumer(
+    ICache<AuthorDto> authorCache,
+    ICache<BookDto> bookCache)
 {
-    public async Task OnAuthorUpdated(AuthorUpdatedEvent @event, CancellationToken token)
+    public async Task OnAuthorUpdated(AuthorUpdatedEvent @event, CancellationToken cancellationToken)
     {
-        Console.WriteLine($"{nameof(Author)} updated '{@event.AuthorId}' - syncing with cache");
-
-        var author = await bookStoreDatabase.Authors
-            .SingleOrDefaultAsync(x => x.AuthorId == @event.AuthorId);
-
-        if (author == null)
-        {
-            return;
-        }
-
-        var authorDto = new AuthorDto(author);
-        bookStoreCache.Authors[authorDto.AuthorId] = authorDto;
+        Console.WriteLine($"{nameof(Author)} updated '{@event.AuthorId}' - refreshing cache");
+        await authorCache.RefreshAsync(@event.AuthorId.ToString(), cancellationToken);
     }
 
-    public async Task OnBookUpdated(BookUpdatedEvent @event, CancellationToken token)
+    public async Task OnBookUpdated(BookUpdatedEvent @event, CancellationToken cancellationToken)
     {
-        Console.WriteLine($"{nameof(Book)} updated '{@event.BookId}' - syncing with cache");
-
-        var book = await bookStoreDatabase.Books
-            .SingleOrDefaultAsync(x => x.BookId == @event.BookId);
-
-        if (book == null)
-        {
-            return;
-        }
-
-        var bookDto = new BookDto(book);
-        bookStoreCache.Books[bookDto.BookId] = bookDto;
-
-        var authorBooks = bookStoreCache.AuthorBooks[bookDto.AuthorId] ?? new AuthorBooksDto(bookDto.AuthorId);
-        authorBooks.BookIds.Add(bookDto.BookId);
-        bookStoreCache.AuthorBooks[bookDto.AuthorId] = authorBooks;
+        Console.WriteLine($"{nameof(Book)} updated '{@event.BookId}' - refreshing cache");
+        await authorCache.RefreshAsync(@event.AuthorId.ToString(), cancellationToken);
+        await bookCache.RefreshAsync(@event.BookId.ToString(), cancellationToken);
     }
 }
 ```
 
-#### Add dependencies at startup
+3. Add NanoWorks.Messaging.RabbitMq dependencies to a ServiceCollection and configure the options to meet your requirements.
 
 ```
 builder.Services.AddNanoWorksRabbitMq(options =>
 {
-    options.UseConnectionString("your connection string");
+    options.UseConnectionString("amqp://rabbitmq:password@localhost:5672/");
 
-    options.AddMessagePublisher(publisherOptions =>
+    options.UseMessagePublisher(publisherOptions =>
     {
         publisherOptions.OnSerializationException(PublisherSerializerExceptionBehavior.Ignore);
     });
 
-    options.AddMessageConsumer<CacheConsumer>(consumerOptions =>
+    options.UseMessageConsumer<CacheConsumer>(consumerOptions =>
     {
         consumerOptions.Queue(nameof(CacheConsumer));
         consumerOptions.MaxMessageConcurrency(10);
@@ -159,30 +131,11 @@ builder.Services.AddNanoWorksRabbitMq(options =>
 });
 ```
 
-#### Publish messages
+4. Publish messages
 
-An instance of `IMessagePublisher` is available via the service provider / dependency injection.
+    - An instance of `IMessagePublisher` is available via the service provider / dependency injection.
 
 ```
 var authorUpdatedEvent = new AuthorUpdatedEvent { AuthorId = author.AuthorId };
 await messagePublisher.PublishAsync(authorUpdatedEvent);
-```
-___
-
-### Sample App
-
-Location
-
-```
-[root]\src\Cache\Sample
-```
-
-Run the docker compose file to start Redis, PostgreSQL, and RabbitMQ
-```
-[root]\src\Sample\docker\docker-compose
-```
-
-Build and run the project
-```
-[root]\src\Sample\Sample.WebApi\Sample.WebApi.csproj
 ```

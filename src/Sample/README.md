@@ -4,9 +4,7 @@
 
 ---
 
-NanoWorks creates **_small_** libraries that provide **_big_** value to software projects. 
-
-The libraries are open-source and offered under the Apache 2.0 license.
+NanoWorks creates small yet powerful libraries that add significant value to software projects. Our open-source libraries are licensed under Apache 2.0, allowing free use, modification, and distribution.
 
 ---
 
@@ -14,22 +12,24 @@ The libraries are open-source and offered under the Apache 2.0 license.
 
 ### Sample App
 
-This simple web API for a bookstore exposes endpoints to interact with Author and Book resources. 
+This sample web API for a bookstore includes endpoints for interacting with Author and Book resources. It integrates a data layer using Entity Framework for database operations and NanoWorks Redis for caching.
 
-It features a data layer with an Entity Framework database context and NanoWorks Redis cache context.
+Key features:
 
-When resources are created or updated, events are published and consumed using the NanoWorks messaging library for RabbitMQ to asynchronously update items in the cache.
+- **Entity Framework:** Manages database context for Author and Book resources.
+- **NanoWorks.Cache:** Provides a caching layer for improved performance.
+- **NanoWorks.Messaging:** Publishes and consumes events via RabbitMQ to asynchronously update the cache when resources are created or modified.
 
 ---
 
 ### Getting Started
 
-Run the `docker-compose` file to start Redis, PostgreSQL, and RabbitMQ
+1. Run the `docker-compose` file to start Redis, PostgreSQL, and RabbitMQ
 ```
 [root]\src\Sample\docker\docker-compose
 ```
 
-Build and run the project
+2. Build and run the project
 ```
 [root]\src\Sample\Sample.WebApi\Sample.WebApi.csproj
 ```

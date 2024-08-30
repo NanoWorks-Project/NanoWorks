@@ -9,4 +9,9 @@ public sealed class BookUpdatedEvent
     /// Gets or sets Book id.
     /// </summary>
     public Guid BookId { get; set; }
+
+    /// <summary>
+    /// Gets or sets Author id.
+    /// </summary>
+    public Guid AuthorId { get; set; }
 }

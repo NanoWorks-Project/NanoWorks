@@ -2,12 +2,12 @@
 // Ignore Spelling: Mq
 
 using Microsoft.EntityFrameworkCore;
-using NanoWorks.Cache.Redis.DependencyInjection;
+using NanoWorks.Cache.DependencyInjection;
 using NanoWorks.Messaging.RabbitMq.DependencyInjection;
 using NanoWorks.Messaging.Serialization;
-using Sample.WebApi.Data.Cache;
-using Sample.WebApi.Data.Database;
+using Sample.WebApi.Data;
 using Sample.WebApi.Messaging;
+using Sample.WebApi.Models.Dtos;
 using Sample.WebApi.Models.Events;
 
 namespace Sample.WebApi;
@@ -28,24 +28,38 @@ internal class Program
 
         builder.Services.AddScoped<IBookStoreDatabase, BookStoreDatabase>();
 
-        builder.Services.AddNanoWorksRedisCache<BookStoreCache>(options =>
+        builder.Services.AddStackExchangeRedisCache(options =>
         {
-            options.UseConnectionString("localhost:6379");
-            options.UseConnectionPoolSize(Environment.ProcessorCount);
+            options.Configuration = "localhost:6379";
         });
 
-        builder.Services.AddScoped<IBookStoreCache, BookStoreCache>();
+        builder.Services.AddNanoWorksCaching(options =>
+        {
+            options.UseCache<AuthorDto>(cacheOptions =>
+            {
+                cacheOptions.ExpirationDuration = TimeSpan.FromHours(1);
+                cacheOptions.Key(authorDto => authorDto.AuthorId.ToString());
+                cacheOptions.Source<BookStoreCacheSource>();
+            });
+
+            options.UseCache<BookDto>(cacheOptions =>
+            {
+                cacheOptions.ExpirationDuration = TimeSpan.FromHours(1);
+                cacheOptions.Key(bookDto => bookDto.BookId.ToString());
+                cacheOptions.Source<BookStoreCacheSource>();
+            });
+        });
 
         builder.Services.AddNanoWorksRabbitMq(options =>
         {
             options.UseConnectionString("amqp://rabbitmq:password@localhost:5672/");
 
-            options.AddMessagePublisher(publisherOptions =>
+            options.UseMessagePublisher(publisherOptions =>
             {
                 publisherOptions.OnSerializationException(PublisherSerializerExceptionBehavior.Ignore);
             });
 
-            options.AddMessageConsumer<CacheConsumer>(consumerOptions =>
+            options.UseMessageConsumer<CacheConsumer>(consumerOptions =>
             {
                 consumerOptions.Queue(nameof(CacheConsumer));
                 consumerOptions.MaxMessageConcurrency(10);
@@ -65,7 +79,6 @@ internal class Program
         {
             var context = scope.ServiceProvider.GetRequiredService<BookStoreDatabase>();
             await context.Database.MigrateAsync();
-            await context.Database.EnsureCreatedAsync();
         }
 
         // Configure the HTTP request pipeline.

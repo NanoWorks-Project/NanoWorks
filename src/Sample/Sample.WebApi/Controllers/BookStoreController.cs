@@ -2,9 +2,9 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NanoWorks.Cache.Caches;
 using NanoWorks.Messaging.MessagePublishers;
-using Sample.WebApi.Data.Cache;
-using Sample.WebApi.Data.Database;
+using Sample.WebApi.Data;
 using Sample.WebApi.Models.Dtos;
 using Sample.WebApi.Models.Entities;
 using Sample.WebApi.Models.Events;
@@ -15,13 +15,13 @@ namespace Sample.WebApi.Controllers;
 /// Controller for the book store API.
 /// </summary>
 /// <param name="bookStoreDatabase"><see cref="IBookStoreDatabase"/>.</param>
-/// <param name="bookStoreCache"><see cref="IBookStoreCache"/>.</param>
+/// <param name="authorCache"><see cref="ICache{AuthorDto}"/>.</param>
 /// <param name="messagePublisher"><see cref="IMessagePublisher"/>.</param>
 [ApiController]
 [Route("api")]
 public sealed class BookStoreController(
     IBookStoreDatabase bookStoreDatabase,
-    IBookStoreCache bookStoreCache,
+    ICache<AuthorDto> authorCache,
     IMessagePublisher messagePublisher)
     : ControllerBase
 {
@@ -31,7 +31,7 @@ public sealed class BookStoreController(
     [HttpGet("authors")]
     public IActionResult GetAuthors()
     {
-        var authors = bookStoreCache.Authors;
+        var authors = bookStoreDatabase.Authors.ToList();
         return Ok(authors);
     }
 
@@ -42,7 +42,7 @@ public sealed class BookStoreController(
     [HttpGet("authors/{authorId}")]
     public IActionResult GetAuthor(Guid authorId)
     {
-        var author = bookStoreCache.Authors[authorId];
+        var author = authorCache[authorId.ToString()];
         return Ok(author);
     }
 
@@ -53,15 +53,8 @@ public sealed class BookStoreController(
     [HttpGet("authors/{authorId}/books")]
     public IActionResult GetAuthorBooks(Guid authorId)
     {
-        var authorBooks = bookStoreCache.AuthorBooks[authorId];
-
-        if (authorBooks?.BookIds == null)
-        {
-            return Ok(Enumerable.Empty<BookDto>());
-        }
-
-        var books = bookStoreCache.Books[authorBooks.BookIds];
-        return Ok(books);
+        var author = authorCache[authorId.ToString()];
+        return Ok(author?.Books ?? []);
     }
 
     /// <summary>
@@ -213,7 +206,7 @@ public sealed class BookStoreController(
         bookStoreDatabase.Books.Add(book);
         await bookStoreDatabase.SaveChangesAsync();
 
-        var bookUpdatedEvent = new BookUpdatedEvent { BookId = book.BookId };
+        var bookUpdatedEvent = new BookUpdatedEvent { BookId = book.BookId, AuthorId = book.AuthorId };
         await messagePublisher.PublishAsync(bookUpdatedEvent);
         return Ok();
     }
@@ -266,7 +259,7 @@ public sealed class BookStoreController(
         bookStoreDatabase.Books.Update(book);
         await bookStoreDatabase.SaveChangesAsync();
 
-        var bookUpdatedEvent = new BookUpdatedEvent { BookId = book.BookId };
+        var bookUpdatedEvent = new BookUpdatedEvent { BookId = book.BookId, AuthorId = book.AuthorId };
         await messagePublisher.PublishAsync(bookUpdatedEvent);
         return Ok();
     }

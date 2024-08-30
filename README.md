@@ -4,16 +4,19 @@
 
 ---
 
-NanoWorks creates **_small_** libraries that provide **_big_** value to software projects. 
+NanoWorks creates small yet powerful libraries that add significant value to software projects. Our open-source libraries are licensed under Apache 2.0, allowing free use, modification, and distribution.
 
-The libraries are open-source and offered under the Apache 2.0 license.
+---
+
+</center>
 
 Releases
 
 | Package          | Status                                                                                                
 |------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
-| [Cache 1.1.3](https://www.nuget.org/profiles/sspaniel_nanoworks-project.org)     |    [![main](https://github.com/NanoWorks-Project/NanoWorks/actions/workflows/cache_release.yml/badge.svg?branch=main)](https://github.com/NanoWorks-Project/NanoWorks/actions/workflows/cache_release.yml)         |
-| [Messaging 1.1.3](https://www.nuget.org/profiles/sspaniel_nanoworks-project.org) |    [![main](https://github.com/NanoWorks-Project/NanoWorks/actions/workflows/messaging_release.yml/badge.svg?branch=main)](https://github.com/NanoWorks-Project/NanoWorks/actions/workflows/messaging_release.yml) |
+| [Cache 2.0.0](https://www.nuget.org/profiles/sspaniel_nanoworks-project.org)        | [![main](https://github.com/NanoWorks-Project/NanoWorks/actions/workflows/cache_release.yml/badge.svg?branch=main)](https://github.com/NanoWorks-Project/NanoWorks/actions/workflows/cache_release.yml)         |
+| [Messaging 2.0.0](https://www.nuget.org/profiles/sspaniel_nanoworks-project.org)    | [![main](https://github.com/NanoWorks-Project/NanoWorks/actions/workflows/messaging_release.yml/badge.svg?branch=main)](https://github.com/NanoWorks-Project/NanoWorks/actions/workflows/messaging_release.yml) |
+| [Actions 0.0.1-beta](https://www.nuget.org/profiles/sspaniel_nanoworks-project.org) | [![main](https://github.com/NanoWorks-Project/NanoWorks/actions/workflows/actions_release.yml/badge.svg?branch=main)](https://github.com/NanoWorks-Project/NanoWorks/actions/workflows/actions_release.yml)     |
 
 Builds
 
@@ -21,15 +24,11 @@ Builds
 |------------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
 | [main](https://github.com/NanoWorks-Project/NanoWorks/tree/main)     |    [![main](https://github.com/NanoWorks-Project/NanoWorks/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/NanoWorks-Project/NanoWorks/actions/workflows/build.yml)          |
 
-</center>
-
 ---
 
 ### NanoWorks.Cache
 
-`NanoWorks.Cache` is inspired by Entity Framework's [DbSet.](https://learn.microsoft.com/en-us/dotnet/api/system.data.entity.dbset-1?view=entity-framework-6.2.0) This library offers a similar syntax and coding experience for caching. 
-
-`NanoWorks.Cache` currently supports caching with [Redis](https://redis.io/) and in-memory.
+Built on Microsoft's [IDistributedCache](https://learn.microsoft.com/en-us/dotnet/api/microsoft.extensions.caching.distributed.idistributedcache.getasync?view=net-8.0#microsoft-extensions-caching-distributed-idistributedcache-getasync(system-string-system-threading-cancellationtoken)), NanoWorks.Cache provides a type-safe and efficient solution for caching data in distributed environments.
 
 ---
 

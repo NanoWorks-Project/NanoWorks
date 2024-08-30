@@ -23,6 +23,7 @@ public class AuthorDto
         AuthorId = entity.AuthorId;
         FirstName = entity.FirstName;
         LastName = entity.LastName;
+        Books = entity.Books.Select(x => new BookDto(x));
     }
 
     /// <summary>
@@ -39,4 +40,9 @@ public class AuthorDto
     /// Gets or sets the last name.
     /// </summary>
     public string LastName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the books associated with the author.
+    /// </summary>
+    public IEnumerable<BookDto> Books { get; set; } = [];
 }

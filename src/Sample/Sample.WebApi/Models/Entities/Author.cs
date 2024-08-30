@@ -19,4 +19,9 @@ public sealed class Author
     /// Gets or sets the last name.
     /// </summary>
     public string LastName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the books associated with the author.
+    /// </summary>
+    public ICollection<Book> Books { get; set; } = [];
 }

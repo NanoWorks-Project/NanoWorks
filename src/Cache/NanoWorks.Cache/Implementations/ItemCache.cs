@@ -1,15 +1,18 @@
 ﻿// Ignore Spelling: Nano
 
+using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.DependencyInjection;
+using NanoWorks.Cache.Abstractions;
 using NanoWorks.Cache.Options;
 
-namespace NanoWorks.Cache.Caches;
+namespace NanoWorks.Cache.Implementations;
 
-internal class ItemCache<TItem>(ICacheSource<TItem> source, IDistributedCache cache, ItemCacheOptions<TItem> options) : ICache<TItem>
+internal class ItemCache<TItem>(IServiceProvider serviceProvider, IDistributedCache cache, ItemCacheOptions<TItem> options) : ICache<TItem>
     where TItem : class, new()
 {
     private readonly string _prefix = typeof(TItem).Name;
@@ -38,7 +41,9 @@ internal class ItemCache<TItem>(ICacheSource<TItem> source, IDistributedCache ca
             return cachedItem;
         }
 
-        var sourceItem = source.Get(key);
+        var source = serviceProvider.GetRequiredService(options.CacheSourceType);
+        var sourceGetMethod = options.SourceMethodSelector(source);
+        var sourceItem = sourceGetMethod.Invoke(key, CancellationToken.None).Result;
 
         if (sourceItem is null)
         {
@@ -66,7 +71,9 @@ internal class ItemCache<TItem>(ICacheSource<TItem> source, IDistributedCache ca
             return cachedItem;
         }
 
-        var sourceItem = await source.GetAsync(key, cancellationToken);
+        var source = serviceProvider.GetRequiredService(options.CacheSourceType);
+        var sourceGetMethod = options.SourceMethodSelector(source);
+        var sourceItem = await sourceGetMethod.Invoke(key, CancellationToken.None);
 
         if (sourceItem is null)
         {
@@ -158,7 +165,9 @@ internal class ItemCache<TItem>(ICacheSource<TItem> source, IDistributedCache ca
     /// <inheritdoc />
     public void Refresh(string key)
     {
-        var sourceItem = source.Get(key);
+        var source = serviceProvider.GetRequiredService(options.CacheSourceType);
+        var sourceGetMethod = options.SourceMethodSelector(source);
+        var sourceItem = sourceGetMethod.Invoke(key, CancellationToken.None).Result;
 
         if (sourceItem is null)
         {
@@ -171,7 +180,9 @@ internal class ItemCache<TItem>(ICacheSource<TItem> source, IDistributedCache ca
     /// <inheritdoc />
     public async Task RefreshAsync(string key, CancellationToken cancellationToken)
     {
-        var sourceItem = await source.GetAsync(key, cancellationToken);
+        var source = serviceProvider.GetRequiredService(options.CacheSourceType);
+        var sourceGetMethod = options.SourceMethodSelector(source);
+        var sourceItem = await sourceGetMethod.Invoke(key, CancellationToken.None);
 
         if (sourceItem is null)
         {

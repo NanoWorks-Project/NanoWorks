@@ -39,14 +39,14 @@ internal class Program
             {
                 cacheOptions.ExpirationDuration = TimeSpan.FromHours(1);
                 cacheOptions.Key(authorDto => authorDto.AuthorId.ToString());
-                cacheOptions.Source<BookStoreCacheSource>();
+                cacheOptions.Source<BookStoreDatabase>(database => database.GetAuthorAsync);
             });
 
             options.UseCache<BookDto>(cacheOptions =>
             {
                 cacheOptions.ExpirationDuration = TimeSpan.FromHours(1);
                 cacheOptions.Key(bookDto => bookDto.BookId.ToString());
-                cacheOptions.Source<BookStoreCacheSource>();
+                cacheOptions.Source<BookStoreDatabase>(database => database.GetBookAsync);
             });
         });
 

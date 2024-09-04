@@ -25,7 +25,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pipelines", "Pipelines", "{
 	ProjectSection(SolutionItems) = preProject
 		..\.github\workflows\build.yml = ..\.github\workflows\build.yml
 		..\.github\workflows\cache_release.yml = ..\.github\workflows\cache_release.yml
-		..\.github\workflows\mesh_release.yml = ..\.github\workflows\mesh_release.yml
 		..\.github\workflows\messaging_release.yml = ..\.github\workflows\messaging_release.yml
 	EndProjectSection
 EndProject

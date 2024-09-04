@@ -2,7 +2,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using NanoWorks.Cache.Caches;
+using NanoWorks.Cache.Abstractions;
 using NanoWorks.Messaging.MessagePublishers;
 using Sample.WebApi.Data;
 using Sample.WebApi.Models.Dtos;

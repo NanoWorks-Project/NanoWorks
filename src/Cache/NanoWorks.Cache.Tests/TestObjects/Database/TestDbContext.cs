@@ -1,18 +1,15 @@
 ﻿// Ignore Spelling: Nano
 
 using Microsoft.EntityFrameworkCore;
+using NanoWorks.Cache.Tests.TestObjects.Cache;
 
 namespace NanoWorks.Cache.Tests.TestObjects.Database;
 
-public class TestDbContext : DbContext
+public class TestDbContext(DbContextOptions<TestDbContext> options) : DbContext(options)
 {
     public DbSet<Author> Authors { get; set; } = null!;
     public DbSet<Book> Books { get; set; } = null!;
     public DbSet<Genre> Genres { get; set; } = null!;
-
-    public TestDbContext(DbContextOptions<TestDbContext> options) : base(options)
-    {
-    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -31,5 +28,20 @@ public class TestDbContext : DbContext
             new Genre { Id = Guid.Parse("c4f33581-12cc-4776-8808-c66b0d1ec1bb"), Name = "Fiction" },
             new Genre { Id = Guid.Parse("c19eb6ab-57e4-4abf-be4c-b758f04b5f8a"), Name = "Non-Fiction" }
         );
+    }
+
+    public async Task<AuthorSummary?> GetAuthorSummaryAsync(string key, CancellationToken cancellationToken)
+    {
+        var author = await Authors
+            .Include(a => a.Books).ThenInclude(a => a.Genre)
+            .SingleOrDefaultAsync(a => a.Id == Guid.Parse(key), cancellationToken);
+
+        if (author is null)
+        {
+            return null;
+        }
+
+        var authorSummary = new AuthorSummary(author);
+        return authorSummary;
     }
 }

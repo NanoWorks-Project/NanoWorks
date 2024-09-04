@@ -4,7 +4,8 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
-using NanoWorks.Cache.Caches;
+using NanoWorks.Cache.Abstractions;
+using NanoWorks.Cache.Implementations;
 
 namespace NanoWorks.Cache.Options;
 
@@ -41,18 +42,11 @@ public class CacheOptions
         _services.AddSingleton(itemCacheOptions);
         _services.AddScoped(itemCacheOptions.CacheSourceType);
 
-        _services.AddScoped(sp =>
-        {
-            var cacheSource = sp.GetRequiredService(itemCacheOptions.CacheSourceType) as ICacheSource<TItem>;
-            return cacheSource!;
-        });
-
         _services.AddScoped<ICache<TItem>>(sp =>
         {
-            var cacheSource = sp.GetRequiredService<ICacheSource<TItem>>();
             var distributedCache = sp.GetRequiredService<IDistributedCache>();
             var options = sp.GetRequiredService<ItemCacheOptions<TItem>>();
-            var itemCache = new ItemCache<TItem>(cacheSource, distributedCache, options);
+            var itemCache = new ItemCache<TItem>(sp, distributedCache, options);
             return itemCache;
         });
 

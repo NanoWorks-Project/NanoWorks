@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace NanoWorks.Cache.Caches;
+namespace NanoWorks.Cache.Abstractions;
 
 /// <summary>
 /// Distributed cache containing items of type <typeparamref name="TItem"/>.

@@ -1,7 +1,8 @@
 ﻿// Ignore Spelling: Nano
 
 using System;
-using NanoWorks.Cache.Caches;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace NanoWorks.Cache.Options;
 
@@ -19,6 +20,8 @@ public class ItemCacheOptions<TItem>
 
     internal Func<TItem, string> KeySelector { get; private set; } = null!;
 
+    internal Func<object, Func<string, CancellationToken, Task<TItem?>>> SourceMethodSelector { get; private set; } = null!;
+
     internal Type CacheSourceType { get; private set; } = null!;
 
     /// <summary>
@@ -31,13 +34,15 @@ public class ItemCacheOptions<TItem>
     }
 
     /// <summary>
-    /// Configures the cache source for the cache set.
+    /// Configures the source for the cache items.
     /// </summary>
+    /// <param name="sourceMethodSelector">Provider function.</param>
     /// <typeparam name="TCacheSource">Type of cache source.</typeparam>
-    public void Source<TCacheSource>()
-        where TCacheSource : class, ICacheSource<TItem>
+    public void Source<TCacheSource>(Func<TCacheSource, Func<string, CancellationToken, Task<TItem?>>> sourceMethodSelector)
+        where TCacheSource : class
     {
         CacheSourceType = typeof(TCacheSource);
+        SourceMethodSelector = source => (key, cancellationToken) => sourceMethodSelector((TCacheSource)source)(key, cancellationToken);
     }
 
     /// <summary>
@@ -46,6 +51,7 @@ public class ItemCacheOptions<TItem>
     public virtual void Validate()
     {
         ArgumentNullException.ThrowIfNull(KeySelector, nameof(KeySelector));
+        ArgumentNullException.ThrowIfNull(SourceMethodSelector, nameof(SourceMethodSelector));
         ArgumentNullException.ThrowIfNull(CacheSourceType, nameof(CacheSourceType));
 
         if (ExpirationDuration <= TimeSpan.Zero)

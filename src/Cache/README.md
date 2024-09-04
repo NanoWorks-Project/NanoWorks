@@ -18,7 +18,7 @@ Built on Microsoft's [IDistributedCache](https://learn.microsoft.com/en-us/dotne
 
 ### Overview
 
-NanoWorks.Cache exposes an `ICache<TItem>` interface that provides methods to get, set, and remove items from the cache. Each `ICache<TItem>` instance is bound to an `ICacheSource<TItem>`, which automatically populates the cache with items behind the scenes. `ICacheSource<TItem>` is only used when an item is not found in the cache, or an item is refreshed at runtime by calling `ICache<TItem>.Refresh(string key)`.
+NanoWorks.Cache exposes an `ICache<TItem>` interface that provides methods to get, set, and remove items from the cache. Each `ICache<TItem>` instance is bound to a source, which automatically populates the cache with items behind the scenes. The source is only called when an item is not found in the cache, or an item is refreshed at runtime by calling `ICache<TItem>.Refresh(string key)`.
 
 ---
 
@@ -26,46 +26,7 @@ NanoWorks.Cache exposes an `ICache<TItem>` interface that provides methods to ge
 
 1. Install the [NanoWorks.Cache](https://www.nuget.org/packages/NanoWorks.Cache/) NuGet package.
 
-2. Implement an `ICacheSource<TItem>` to populate the cache.
-
-```
-public class TestCacheSource(TestDbContext dbContext) : ICacheSource<AuthorSummary>
-{
-    public AuthorSummary? Get(string key)
-    {
-        var author = dbContext.Authors
-            .Include(a => a.Books)
-            .ThenInclude(a => a.Genre)
-            .SingleOrDefault(a => a.Id == Guid.Parse(key));
-
-        if (author is null)
-        {
-            return null;
-        }
-
-        var authorSummary = new AuthorSummary(author);
-        return authorSummary;
-    }
-
-    public async Task<AuthorSummary?> GetAsync(string key, CancellationToken cancellationToken)
-    {
-        var author = await dbContext.Authors
-            .Include(a => a.Books)
-            .ThenInclude(a => a.Genre)
-            .SingleOrDefaultAsync(a => a.Id == Guid.Parse(key), cancellationToken);
-
-        if (author is null)
-        {
-            return null;
-        }
-
-        var authorSummary = new AuthorSummary(author);
-        return authorSummary;
-    }
-}
-```
-
-3. Add an `IDistributedCache` implementation to the service collection.
+2. Add an `IDistributedCache` implementation to the service collection.
 
 ```
 services.AddStackExchangeRedisCache(options =>
@@ -74,7 +35,7 @@ services.AddStackExchangeRedisCache(options =>
 });
 ```
 
-4. Configure the cache.
+3. Configure the cache.
 
 ```
 services.AddNanoWorksCaching(options =>
@@ -83,12 +44,12 @@ services.AddNanoWorksCaching(options =>
     {
         cacheOptions.ExpirationDuration = TimeSpan.FromSeconds(10);
         cacheOptions.Key(authorSummary => authorSummary.AuthorId.ToString());
-        cacheOptions.Source<TestCacheSource>();
+        cacheOptions.Source<TestDbContext>(source => source.GetAuthorSummaryAsync);
     });
 });
 ```
 
-5. Inject `ICache<TItem>` and use it.
+4. Inject `ICache<TItem>` and use it.
 
 ```
 public class AuthorService

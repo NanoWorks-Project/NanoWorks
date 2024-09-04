@@ -1,4 +1,4 @@
-﻿using NanoWorks.Cache.Caches;
+﻿using NanoWorks.Cache.Abstractions;
 using Sample.WebApi.Models.Dtos;
 using Sample.WebApi.Models.Entities;
 using Sample.WebApi.Models.Events;

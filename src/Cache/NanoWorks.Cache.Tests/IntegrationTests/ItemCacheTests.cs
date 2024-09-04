@@ -2,7 +2,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using NanoWorks.Cache.Caches;
+using NanoWorks.Cache.Abstractions;
 using NanoWorks.Cache.DependencyInjection;
 using NanoWorks.Cache.Tests.TestObjects.Cache;
 using NanoWorks.Cache.Tests.TestObjects.Database;
@@ -33,7 +33,7 @@ public class ItemCacheTests : IDisposable
             {
                 cacheOptions.ExpirationDuration = TimeSpan.FromSeconds(10);
                 cacheOptions.Key(authorSummary => authorSummary.AuthorId.ToString());
-                cacheOptions.Source<TestCacheSource>();
+                cacheOptions.Source<TestDbContext>(source => source.GetAuthorSummaryAsync);
             });
         });
 

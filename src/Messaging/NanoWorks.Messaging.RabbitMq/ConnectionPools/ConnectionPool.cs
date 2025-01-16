@@ -10,7 +10,6 @@ namespace NanoWorks.Messaging.RabbitMq.ConnectionPools;
 internal static class ConnectionPool
 {
     private static readonly Queue<IConnection> _connections = new Queue<IConnection>();
-    private static readonly object _lock = string.Empty;
 
     internal static int Size { get; set; } = Environment.ProcessorCount;
 
@@ -20,33 +19,30 @@ internal static class ConnectionPool
     /// <param name="connectionString">Connection string for RabbitMQ.</param>
     public static IConnection GetConnection(string connectionString)
     {
-        lock (_lock)
+        if (_connections.Count >= Size)
         {
-            if (_connections.Count >= Size)
+            var poolConnection = _connections.Dequeue();
+
+            if (poolConnection.IsOpen)
             {
-                var poolConnection = _connections.Dequeue();
-
-                if (poolConnection.IsOpen)
-                {
-                    _connections.Enqueue(poolConnection);
-                    return poolConnection;
-                }
-
-                poolConnection.Dispose();
+                _connections.Enqueue(poolConnection);
+                return poolConnection;
             }
 
-            var factory = new ConnectionFactory
-            {
-                Uri = new Uri(connectionString),
-                AutomaticRecoveryEnabled = true,
-                NetworkRecoveryInterval = TimeSpan.FromSeconds(3),
-                TopologyRecoveryEnabled = true,
-                RequestedHeartbeat = TimeSpan.FromSeconds(5),
-            };
-
-            var newConnection = factory.CreateConnection();
-            _connections.Enqueue(newConnection);
-            return newConnection;
+            poolConnection.Dispose();
         }
+
+        var factory = new ConnectionFactory
+        {
+            Uri = new Uri(connectionString),
+            AutomaticRecoveryEnabled = true,
+            NetworkRecoveryInterval = TimeSpan.FromSeconds(3),
+            TopologyRecoveryEnabled = true,
+            RequestedHeartbeat = TimeSpan.FromSeconds(5),
+        };
+
+        var newConnection = factory.CreateConnectionAsync().Result;
+        _connections.Enqueue(newConnection);
+        return newConnection;
     }
 }

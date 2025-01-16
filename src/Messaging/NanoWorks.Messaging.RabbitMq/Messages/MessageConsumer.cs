@@ -2,6 +2,7 @@
 // Ignore Spelling: Mq
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using NanoWorks.Messaging.Errors;
@@ -16,13 +17,13 @@ internal sealed class MessageConsumer : IDisposable
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ConsumerOptions _consumerOptions;
-    private readonly IModel _channel;
+    private readonly IChannel _channel;
     private readonly ILogger _logger;
 
-    private EventingBasicConsumer _rabbitMqConsumer;
-    private EventingBasicConsumer _rabbitMqRetryConsumer;
+    private AsyncEventingBasicConsumer _rabbitMqConsumer;
+    private AsyncEventingBasicConsumer _rabbitMqRetryConsumer;
 
-    internal MessageConsumer(IServiceProvider serviceProvider, ConsumerOptions consumerOptions, IModel channel, ILogger logger)
+    internal MessageConsumer(IServiceProvider serviceProvider, ConsumerOptions consumerOptions, IChannel channel, ILogger logger)
     {
         _serviceProvider = serviceProvider;
         _consumerOptions = consumerOptions;
@@ -34,35 +35,35 @@ internal sealed class MessageConsumer : IDisposable
     {
         foreach (var consumerTag in _rabbitMqConsumer?.ConsumerTags ?? new string[0])
         {
-            _channel.BasicCancel(consumerTag);
+            _channel.BasicCancelAsync(consumerTag).Wait();
         }
 
         foreach (var consumerTag in _rabbitMqRetryConsumer?.ConsumerTags ?? new string[0])
         {
-            _channel.BasicCancel(consumerTag);
+            _channel.BasicCancelAsync(consumerTag).Wait();
         }
     }
 
-    internal void Start()
+    internal async Task StartAsync(CancellationToken cancellationToken)
     {
-        _rabbitMqConsumer = new EventingBasicConsumer(_channel);
-        _rabbitMqConsumer.Received += async (sender, eventArgs) => await TryProcessMessageAsync(eventArgs);
-        _channel.BasicQos(prefetchSize: 0, prefetchCount: _consumerOptions.MaxConcurrency, global: false);
-        _channel.BasicConsume(queue: _consumerOptions.QueueName, autoAck: false, consumer: _rabbitMqConsumer);
+        _rabbitMqConsumer = new AsyncEventingBasicConsumer(_channel);
+        _rabbitMqConsumer.ReceivedAsync += async (sender, eventArgs) => await TryProcessMessageAsync(eventArgs, cancellationToken);
+        await _channel.BasicQosAsync(prefetchSize: 0, prefetchCount: _consumerOptions.MaxConcurrency, global: false, cancellationToken: cancellationToken);
+        await _channel.BasicConsumeAsync(queue: _consumerOptions.QueueName, autoAck: false, consumer: _rabbitMqConsumer, cancellationToken: cancellationToken);
 
-        _rabbitMqRetryConsumer = new EventingBasicConsumer(_channel);
-        _rabbitMqRetryConsumer.Received += async (sender, eventArgs) => await TryProcessMessageAsync(eventArgs);
-        _channel.BasicQos(prefetchSize: 0, prefetchCount: _consumerOptions.MaxConcurrency, global: false);
-        _channel.BasicConsume(queue: _consumerOptions.RetryQueueName, autoAck: false, consumer: _rabbitMqRetryConsumer);
+        _rabbitMqRetryConsumer = new AsyncEventingBasicConsumer(_channel);
+        _rabbitMqRetryConsumer.ReceivedAsync += async (sender, eventArgs) => await TryProcessMessageAsync(eventArgs, cancellationToken);
+        await _channel.BasicQosAsync(prefetchSize: 0, prefetchCount: _consumerOptions.MaxConcurrency, global: false, cancellationToken: cancellationToken);
+        await _channel.BasicConsumeAsync(queue: _consumerOptions.RetryQueueName, autoAck: false, consumer: _rabbitMqRetryConsumer, cancellationToken: cancellationToken);
     }
 
-    private async Task TryProcessMessageAsync(BasicDeliverEventArgs eventArgs)
+    private async Task TryProcessMessageAsync(BasicDeliverEventArgs eventArgs, CancellationToken cancellationToken)
     {
         var messageProcessor = new MessageProcessor(_serviceProvider, _consumerOptions, _channel, eventArgs, _logger);
 
         try
         {
-            await messageProcessor.ProcessMessageAsync();
+            await messageProcessor.ProcessMessageAsync(cancellationToken);
         }
         catch (Exception ex)
         {
@@ -70,15 +71,17 @@ internal sealed class MessageConsumer : IDisposable
             var transportError = new TransportError(_consumerOptions.ConsumerType.FullName, ex);
             var transportErrorBody = MessageSerializer.Serialize(transportError);
 
-            var properties = _channel.CreateBasicProperties();
-            properties.Persistent = true;
-            properties.Type = typeof(TransportError).FullName;
-
-            _channel.BasicPublish(exchange: properties.Type, routingKey: string.Empty, body: transportErrorBody, basicProperties: properties);
+            await _channel.BasicPublishAsync(
+                exchange: typeof(TransportError).FullName,
+                routingKey: string.Empty,
+                mandatory: false,
+                body: transportErrorBody,
+                basicProperties: new BasicProperties { Type = typeof(TransportError).FullName, Persistent = true },
+                cancellationToken: cancellationToken);
 
             if (_consumerOptions.MaxRetryCount > 0)
             {
-                await messageProcessor.RetryMessageAsync();
+                await messageProcessor.RetryMessageAsync(cancellationToken);
             }
         }
     }

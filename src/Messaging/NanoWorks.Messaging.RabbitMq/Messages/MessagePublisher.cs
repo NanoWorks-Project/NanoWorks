@@ -16,45 +16,36 @@ namespace NanoWorks.Messaging.RabbitMq.Messages;
 
 internal sealed class MessagePublisher : IMessagePublisher
 {
-    private readonly IModel _channel;
-    private readonly PublisherOptions _options;
+    private readonly MessagingOptions _options;
     private readonly ILogger _logger;
+    private IChannel _channel;
 
     public MessagePublisher(MessagingOptions options, ILogger<MessagePublisher> logger)
     {
-        _channel = options.PublisherConnection.CreateModel();
-        _options = options.PublisherOptions;
+        _options = options;
         _logger = logger;
     }
 
     public void Dispose()
     {
-        _channel.Dispose();
+        _channel?.Dispose();
     }
 
     /// <inheritdoc />
     public async Task PublishAsync<TMessage>(TMessage message, CancellationToken cancellationToken = default)
         where TMessage : class, new()
     {
-        var publishTask = Task.Run(() => Publish(message), cancellationToken);
-        await publishTask;
-    }
-
-    private void Publish<TMessage>(TMessage message)
-        where TMessage : class, new()
-    {
         try
         {
-            PublishMessage(message);
+            await PublishMessageAsync(message, cancellationToken);
         }
         catch (JsonException ex)
         {
-            var errorMessage = $"Error serializing message of type {typeof(TMessage).Name}.";
-            _logger.LogError(ex, errorMessage);
+            _logger.LogError(ex, $"Error serializing message of type {typeof(TMessage).Name}.");
 
-            if (_options.SerializerExceptionBehavior == PublisherSerializerExceptionBehavior.Throw)
+            if (_options.PublisherOptions.SerializerExceptionBehavior == PublisherSerializerExceptionBehavior.Throw)
             {
-                throw new MessagePublishException(errorMessage, ex);
+                throw;
             }
         }
         catch (Exception ex)
@@ -65,17 +56,21 @@ internal sealed class MessagePublisher : IMessagePublisher
         }
     }
 
-    private void PublishMessage<TMessage>(TMessage message)
+    private async Task PublishMessageAsync<TMessage>(TMessage message, CancellationToken cancellationToken)
         where TMessage : class, new()
     {
+        _channel = _channel ?? await _options.PublisherConnection.CreateChannelAsync(cancellationToken: cancellationToken);
         var messageType = typeof(TMessage).FullName;
         var jsonBytes = MessageSerializer.Serialize(message);
 
-        var properties = _channel.CreateBasicProperties();
-        properties.Persistent = true;
-        properties.Type = messageType;
-
         _logger.LogInformation($"Publishing message of type {typeof(TMessage).Name}.");
-        _channel.BasicPublish(exchange: messageType, routingKey: string.Empty, body: jsonBytes, basicProperties: properties);
+
+        await _channel.BasicPublishAsync(
+            exchange: messageType,
+            routingKey: string.Empty,
+            mandatory: false,
+            body: jsonBytes,
+            basicProperties: new BasicProperties { Type = messageType, Persistent = true },
+            cancellationToken: cancellationToken);
     }
 }

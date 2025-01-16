@@ -30,23 +30,21 @@ internal sealed class MessagingService : IHostedService
 
     internal ICollection<MessageConsumer> Consumers { get; } = new LinkedList<MessageConsumer>();
 
-    public Task StartAsync(CancellationToken cancellationToken)
+    public async Task StartAsync(CancellationToken cancellationToken)
     {
-        ExchangeHelper.CreateDefaultExchanges(_options.ConsumerConnection);
-        ExchangeHelper.CreateMessageExchanges(_options.ConsumerConnection, _options.ConsumerOptions.Values);
+        await ExchangeHelper.CreateDefaultExchangesAsync(_options.ConsumerConnection, cancellationToken);
+        await ExchangeHelper.CreateMessageExchangesAsync(_options.ConsumerConnection, _options.ConsumerOptions.Values, cancellationToken);
 
         foreach (var subscriberOptions in _options.ConsumerOptions.Values)
         {
-            var consumer = QueueHelper.Initialize(_serviceProvider, _options.ConsumerConnection, subscriberOptions);
+            var consumer = await QueueHelper.InitializeAsync(_serviceProvider, _options.ConsumerConnection, subscriberOptions, cancellationToken);
             Consumers.Add(consumer);
         }
 
         foreach (var consumer in Consumers)
         {
-            consumer.Start();
+            await consumer.StartAsync(cancellationToken);
         }
-
-        return Task.CompletedTask;
     }
 
     public Task StopAsync(CancellationToken cancellationToken)

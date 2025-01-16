@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NanoWorks.Messaging.RabbitMq.Messages;
@@ -14,9 +16,9 @@ namespace NanoWorks.Messaging.RabbitMq.Helpers;
 
 internal static class QueueHelper
 {
-    internal static MessageConsumer Initialize(IServiceProvider serviceProvider, IConnection connection, ConsumerOptions consumerOptions)
+    internal static async Task<MessageConsumer> InitializeAsync(IServiceProvider serviceProvider, IConnection connection, ConsumerOptions consumerOptions, CancellationToken cancellationToken)
     {
-        var channel = connection.CreateModel();
+        var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
 
         var queueOptions = new Dictionary<string, object>
         {
@@ -35,13 +37,36 @@ internal static class QueueHelper
             queueOptions.Add("x-max-length", consumerOptions.MaxCount);
         }
 
-        channel.QueueDeclare(consumerOptions.QueueName, durable: true, exclusive: false, autoDelete: consumerOptions.AutoDeleteQueue, queueOptions);
-        channel.QueueDeclare(consumerOptions.RetryQueueName, durable: true, exclusive: false, autoDelete: consumerOptions.AutoDeleteQueue, queueOptions);
+        await channel.QueueDeclareAsync(
+            consumerOptions.QueueName,
+            durable: true,
+            exclusive: false,
+            autoDelete: consumerOptions.AutoDeleteQueue,
+            queueOptions,
+            cancellationToken: cancellationToken);
+
+        await channel.QueueDeclareAsync(
+            consumerOptions.RetryQueueName,
+            durable: true,
+            exclusive: false,
+            autoDelete: consumerOptions.AutoDeleteQueue,
+            queueOptions,
+            cancellationToken: cancellationToken);
 
         foreach (var subscription in consumerOptions.Subscriptions.Values)
         {
-            channel.ExchangeDeclare(exchange: subscription.MessageType.FullName, type: ExchangeType.Fanout, durable: true, autoDelete: false);
-            channel.QueueBind(consumerOptions.QueueName, exchange: subscription.MessageType.FullName, routingKey: string.Empty);
+            await channel.ExchangeDeclareAsync(
+                exchange: subscription.MessageType.FullName,
+                type: ExchangeType.Fanout,
+                durable: true,
+                autoDelete: false,
+                cancellationToken: cancellationToken);
+
+            await channel.QueueBindAsync(
+                consumerOptions.QueueName,
+                exchange: subscription.MessageType.FullName,
+                routingKey: string.Empty,
+                cancellationToken: cancellationToken);
         }
 
         var consumer = new MessageConsumer(serviceProvider, consumerOptions, channel, serviceProvider.GetRequiredService<ILogger<MessagingService>>());

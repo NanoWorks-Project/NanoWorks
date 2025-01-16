@@ -4,6 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using NanoWorks.Messaging.Errors;
 using NanoWorks.Messaging.RabbitMq.Options;
 using NanoWorks.Messaging.RabbitMq.Services;
@@ -13,30 +15,56 @@ namespace NanoWorks.Messaging.RabbitMq.Helpers;
 
 internal static class ExchangeHelper
 {
-    public static void CreateDefaultExchanges(IConnection connection)
+    public static async Task CreateDefaultExchangesAsync(IConnection connection, CancellationToken cancellationToken)
     {
-        var channel = connection.CreateModel();
+        var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
 
-        channel.ExchangeDeclare(exchange: typeof(TransportError).FullName, type: ExchangeType.Fanout, durable: true, autoDelete: false);
+        await channel.ExchangeDeclareAsync(
+            exchange: typeof(TransportError).FullName,
+            type: ExchangeType.Fanout,
+            durable: true,
+            autoDelete: false,
+            cancellationToken: cancellationToken);
 
-        channel.QueueDeclare(MessagingService.DeadLetterQueueName, durable: true, exclusive: false, autoDelete: false, new Dictionary<string, object>
-        {
-            { "x-max-length",  1000 },
-            { "x-message-ttl",  (int)TimeSpan.FromDays(1).TotalMilliseconds },
-            { "queue-mode", "lazy" },
-        });
+        await channel.QueueDeclareAsync(
+            MessagingService.DeadLetterQueueName,
+            durable: true,
+            exclusive: false,
+            autoDelete: false,
+            new Dictionary<string, object>
+            {
+                { "x-max-length",  1000 },
+                { "x-message-ttl",  (int)TimeSpan.FromDays(1).TotalMilliseconds },
+                { "queue-mode", "lazy" },
+            },
+            cancellationToken: cancellationToken);
 
-        channel.ExchangeDeclare(MessagingService.DeadLetterExchangeName, ExchangeType.Fanout, durable: true, autoDelete: false);
-        channel.QueueBind(MessagingService.DeadLetterQueueName, MessagingService.DeadLetterExchangeName, string.Empty);
+        await channel.ExchangeDeclareAsync(
+            MessagingService.DeadLetterExchangeName,
+            ExchangeType.Fanout,
+            durable: true,
+            autoDelete: false,
+            cancellationToken: cancellationToken);
+
+        await channel.QueueBindAsync(
+            MessagingService.DeadLetterQueueName,
+            MessagingService.DeadLetterExchangeName,
+            routingKey: string.Empty,
+            cancellationToken: cancellationToken);
     }
 
-    public static void CreateMessageExchanges(IConnection connection, IEnumerable<ConsumerOptions> consumerOptions)
+    public static async Task CreateMessageExchangesAsync(IConnection connection, IEnumerable<ConsumerOptions> consumerOptions, CancellationToken cancellationToken)
     {
-        var channel = connection.CreateModel();
+        var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
 
         foreach (var subscription in consumerOptions.SelectMany(x => x.Subscriptions.Values))
         {
-            channel.ExchangeDeclare(exchange: subscription.MessageType.FullName, type: ExchangeType.Fanout, durable: true, autoDelete: false);
+            await channel.ExchangeDeclareAsync(
+                exchange: subscription.MessageType.FullName,
+                type: ExchangeType.Fanout,
+                durable: true,
+                autoDelete: false,
+                cancellationToken: cancellationToken);
         }
     }
 }

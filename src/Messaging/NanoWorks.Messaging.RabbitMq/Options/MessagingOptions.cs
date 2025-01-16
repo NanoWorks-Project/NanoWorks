@@ -29,11 +29,6 @@ public sealed class MessagingOptions
     public IConnection ConsumerConnection => ConnectionPool.GetConnection(ConnectionString);
 
     /// <summary>
-    /// Gets or sets a value indicating whether to use the messaging service.
-    /// </summary>
-    public bool UseMessagingService { get; set; }
-
-    /// <summary>
     /// Gets or sets the publisher options.
     /// </summary>
     public PublisherOptions PublisherOptions { get; set; } = new PublisherOptions();

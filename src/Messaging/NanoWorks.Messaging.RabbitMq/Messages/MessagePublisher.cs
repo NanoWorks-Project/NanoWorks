@@ -76,7 +76,6 @@ internal sealed class MessagePublisher : IMessagePublisher
         properties.Type = messageType;
 
         _logger.LogInformation($"Publishing message of type {typeof(TMessage).Name}.");
-        _channel.ExchangeDeclare(exchange: messageType, type: ExchangeType.Fanout, durable: true, autoDelete: _options.AutoDeleteExchange);
         _channel.BasicPublish(exchange: messageType, routingKey: string.Empty, body: jsonBytes, basicProperties: properties);
     }
 }

@@ -32,7 +32,8 @@ internal sealed class MessagingService : IHostedService
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        ExchangeHelper.CreateExchanges(_options.ConsumerConnection);
+        ExchangeHelper.CreateDefaultExchanges(_options.ConsumerConnection);
+        ExchangeHelper.CreateMessageExchanges(_options.ConsumerConnection, _options.ConsumerOptions.Values);
 
         foreach (var subscriberOptions in _options.ConsumerOptions.Values)
         {

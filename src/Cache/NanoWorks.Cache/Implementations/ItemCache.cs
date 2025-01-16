@@ -73,7 +73,7 @@ internal class ItemCache<TItem>(IServiceProvider serviceProvider, IDistributedCa
 
         var source = serviceProvider.GetRequiredService(options.CacheSourceType);
         var sourceGetMethod = options.SourceMethodSelector(source);
-        var sourceItem = await sourceGetMethod.Invoke(key, CancellationToken.None);
+        var sourceItem = await sourceGetMethod.Invoke(key, cancellationToken);
 
         if (sourceItem is null)
         {
@@ -182,7 +182,7 @@ internal class ItemCache<TItem>(IServiceProvider serviceProvider, IDistributedCa
     {
         var source = serviceProvider.GetRequiredService(options.CacheSourceType);
         var sourceGetMethod = options.SourceMethodSelector(source);
-        var sourceItem = await sourceGetMethod.Invoke(key, CancellationToken.None);
+        var sourceItem = await sourceGetMethod.Invoke(key, cancellationToken);
 
         if (sourceItem is null)
         {

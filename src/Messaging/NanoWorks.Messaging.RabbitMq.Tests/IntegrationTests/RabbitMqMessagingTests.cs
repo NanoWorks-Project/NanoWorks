@@ -176,7 +176,7 @@ public sealed class RabbitMqMessagingTests : IDisposable
 
         foreach (var transportError in TestMessageConsumer.TransportErrors())
         {
-            transportError.SubscriberName.ShouldBe(typeof(TestMessageConsumer).FullName);
+            transportError.ConsumerName.ShouldBe(typeof(TestMessageConsumer).FullName);
             transportError.Message.ShouldBe("The method or operation is not implemented.");
             transportError.StackTrace.ShouldNotBeNullOrWhiteSpace();
         }

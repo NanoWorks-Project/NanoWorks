@@ -65,7 +65,7 @@ public async Task OnTransportError(TransportError transportError, CancellationTo
     {
         // Do something with the transport error
     }
-    catch (Exception ex)
+    catch (Exception error)
     {
         // Log the exception
     }

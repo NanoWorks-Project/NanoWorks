@@ -216,8 +216,8 @@ public sealed class ConsumerOptions<TConsumer> : ConsumerOptions
     /// Subscribes to a message type.
     /// </summary>
     /// <typeparam name="TMessage">Type of message.</typeparam>
-    /// <param name="receiveMethodSelector">Function in the consumer to receive the message.</param>
-    public void Subscribe<TMessage>(Func<TConsumer, Func<TMessage, CancellationToken, Task>> receiveMethodSelector)
+    /// <param name="endpointSelector">Function in the consumer to receive the message.</param>
+    public void Subscribe<TMessage>(Func<TConsumer, Func<TMessage, CancellationToken, Task>> endpointSelector)
         where TMessage : class, new()
     {
         if (Subscriptions.ContainsKey(typeof(TMessage).FullName))
@@ -225,6 +225,6 @@ public sealed class ConsumerOptions<TConsumer> : ConsumerOptions
             throw new InvalidOperationException($"Consumer {ConsumerType.FullName} is already subscribed to message type {typeof(TMessage).FullName}");
         }
 
-        Subscriptions[typeof(TMessage).FullName] = new SubscriptionOptions<TConsumer, TMessage>(receiveMethodSelector);
+        Subscriptions[typeof(TMessage).FullName] = new SubscriptionOptions<TConsumer, TMessage>(endpointSelector);
     }
 }

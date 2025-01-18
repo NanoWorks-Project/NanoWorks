@@ -9,7 +9,7 @@ namespace NanoWorks.Messaging.RabbitMq.ConnectionPools;
 
 internal static class ConnectionPool
 {
-    private static readonly Queue<IConnection> _connections = new Queue<IConnection>();
+    private static readonly Queue<IConnection> _connections = new();
 
     internal static int Size { get; set; } = Environment.ProcessorCount;
 

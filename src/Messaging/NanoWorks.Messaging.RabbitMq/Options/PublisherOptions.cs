@@ -11,7 +11,7 @@ namespace NanoWorks.Messaging.RabbitMq.Options;
 public sealed class PublisherOptions
 {
     /// <summary>
-    /// Gets or sets a value indicating whether to delete the exchange for this message type when the last subscriber / queue is unbound from it.
+    /// Gets or sets a value indicating whether to delete the exchange for this message type when the last consumer / queue is unbound from it.
     /// </summary>
     public bool AutoDeleteExchange { get; set; } = false;
 
@@ -21,7 +21,7 @@ public sealed class PublisherOptions
     public PublisherSerializerExceptionBehavior SerializerExceptionBehavior { get; set; }
 
     /// <summary>
-    /// Deletes the exchange for this message type when the last subscriber / queue is unbound from it.
+    /// Deletes the exchange for this message type when the last consumer / queue is unbound from it.
     /// </summary>
     public PublisherOptions AutoDelete()
     {

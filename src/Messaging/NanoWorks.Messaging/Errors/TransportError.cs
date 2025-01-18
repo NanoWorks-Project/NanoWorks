@@ -19,20 +19,20 @@ public class TransportError
     /// <summary>
     /// Initializes a new instance of the <see cref="TransportError"/> class.
     /// </summary>
-    /// <param name="subscriberName">Destination subscriber that encountered the exception.</param>
-    /// <param name="exception">Exception thrown by the subscriber.</param>
-    public TransportError(string subscriberName, Exception exception)
+    /// <param name="consumerName">Destination consumer that encountered the exception.</param>
+    /// <param name="exception">Exception thrown by the consumer.</param>
+    public TransportError(string consumerName, Exception exception)
     {
-        SubscriberName = subscriberName;
+        ConsumerName = consumerName;
         Message = exception.Message;
         StackTrace = exception.StackTrace ?? string.Empty;
-        InnerError = exception.InnerException != null ? new TransportError(subscriberName, exception.InnerException) : null;
+        InnerError = exception.InnerException != null ? new TransportError(consumerName, exception.InnerException) : null;
     }
 
     /// <summary>
-    /// Gets or sets the name of the subscriber that encountered the exception.
+    /// Gets or sets the name of the consumer that encountered the exception.
     /// </summary>
-    public string SubscriberName { get; set; }
+    public string ConsumerName { get; set; }
 
     /// <summary>
     /// Gets or sets message of the exception.

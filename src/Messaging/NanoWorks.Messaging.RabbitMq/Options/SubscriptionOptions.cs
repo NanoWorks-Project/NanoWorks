@@ -26,7 +26,7 @@ public class SubscriptionOptions
     /// <summary>
     /// Gets or sets the consumer method to receive the message.
     /// </summary>
-    public Func<object, Func<object, CancellationToken, Task>> ReceiveMethodSelector { get; set; }
+    public Func<object, Func<object, CancellationToken, Task>> EndpointSelector { get; set; }
 
     /// <summary>
     /// Validates the subscription options.
@@ -43,9 +43,9 @@ public class SubscriptionOptions
             throw new ArgumentNullException(nameof(MessageType));
         }
 
-        if (ReceiveMethodSelector == null)
+        if (EndpointSelector == null)
         {
-            throw new ArgumentNullException(nameof(ReceiveMethodSelector));
+            throw new ArgumentNullException(nameof(EndpointSelector));
         }
     }
 }
@@ -58,12 +58,12 @@ public class SubscriptionOptions
 public sealed class SubscriptionOptions<TConsumer, TMessage> : SubscriptionOptions
     where TMessage : class, new()
 {
-    internal SubscriptionOptions(Func<TConsumer, Func<TMessage, CancellationToken, Task>> receiveMethodSelector)
+    internal SubscriptionOptions(Func<TConsumer, Func<TMessage, CancellationToken, Task>> endpointSelector)
     {
         ConsumerType = typeof(TConsumer);
         MessageType = typeof(TMessage);
 
-        ReceiveMethodSelector = consumer =>
-            (message, cancellationToken) => receiveMethodSelector((TConsumer)consumer)((TMessage)message, cancellationToken);
+        EndpointSelector = consumer =>
+            (message, cancellationToken) => endpointSelector((TConsumer)consumer)((TMessage)message, cancellationToken);
     }
 }

@@ -17,12 +17,14 @@ namespace NanoWorks.Messaging.RabbitMq.Messages;
 internal sealed class MessagePublisher : IMessagePublisher
 {
     private readonly MessagingOptions _options;
-    private readonly ILogger _logger;
+    private readonly IMessageSerializer _messageSerializer;
+    private readonly ILogger<MessagePublisher> _logger;
     private IChannel _channel;
 
-    public MessagePublisher(MessagingOptions options, ILogger<MessagePublisher> logger)
+    public MessagePublisher(MessagingOptions options, IMessageSerializer messageSerializer, ILogger<MessagePublisher> logger)
     {
         _options = options;
+        _messageSerializer = messageSerializer;
         _logger = logger;
     }
 
@@ -37,40 +39,34 @@ internal sealed class MessagePublisher : IMessagePublisher
     {
         try
         {
-            await PublishMessageAsync(message, cancellationToken);
+            _channel ??= await _options.PublisherConnection.CreateChannelAsync(cancellationToken: cancellationToken);
+            var messageType = typeof(TMessage).FullName;
+            var jsonBytes = _messageSerializer.Serialize(message);
+
+            _logger.LogInformation($"Publishing message of type {typeof(TMessage).Name}.");
+
+            await _channel.BasicPublishAsync(
+                exchange: messageType,
+                routingKey: string.Empty,
+                mandatory: false,
+                body: jsonBytes,
+                basicProperties: new BasicProperties { Type = messageType, Persistent = true },
+                cancellationToken: cancellationToken);
         }
-        catch (JsonException ex)
+        catch (JsonException error)
         {
-            _logger.LogError(ex, $"Error serializing message of type {typeof(TMessage).Name}.");
+            _logger.LogError(error, $"Error serializing message of type {typeof(TMessage).Name}.");
 
             if (_options.PublisherOptions.SerializerExceptionBehavior == PublisherSerializerExceptionBehavior.Throw)
             {
                 throw;
             }
         }
-        catch (Exception ex)
+        catch (Exception error)
         {
             var errorMessage = $"Error publishing message of type {typeof(TMessage).Name}.";
-            _logger.LogError(ex, errorMessage);
-            throw new MessagePublishException(errorMessage, ex);
+            _logger.LogError(error, errorMessage);
+            throw new MessagePublishException(errorMessage, error);
         }
-    }
-
-    private async Task PublishMessageAsync<TMessage>(TMessage message, CancellationToken cancellationToken)
-        where TMessage : class, new()
-    {
-        _channel = _channel ?? await _options.PublisherConnection.CreateChannelAsync(cancellationToken: cancellationToken);
-        var messageType = typeof(TMessage).FullName;
-        var jsonBytes = MessageSerializer.Serialize(message);
-
-        _logger.LogInformation($"Publishing message of type {typeof(TMessage).Name}.");
-
-        await _channel.BasicPublishAsync(
-            exchange: messageType,
-            routingKey: string.Empty,
-            mandatory: false,
-            body: jsonBytes,
-            basicProperties: new BasicProperties { Type = messageType, Persistent = true },
-            cancellationToken: cancellationToken);
     }
 }

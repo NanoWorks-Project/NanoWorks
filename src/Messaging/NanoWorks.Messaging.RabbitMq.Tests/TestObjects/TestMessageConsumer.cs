@@ -5,6 +5,7 @@
 // Ignore Spelling: Mq
 
 using NanoWorks.Messaging.Errors;
+using System.Collections.Concurrent;
 
 namespace NanoWorks.Messaging.RabbitMq.Tests.TestObjects;
 
@@ -15,10 +16,10 @@ public sealed class TestMessageConsumer
     public static IEnumerable<TestExceptionMessage> ExceptionMessages() => _exceptionMessages;
     public static IEnumerable<TransportError> TransportErrors() => _transportErrors;
 
-    private static readonly ICollection<TestSimpleMessage> _simpleMessages = new LinkedList<TestSimpleMessage>();
-    private static readonly ICollection<TestComplexMessage> _complexMessages = new LinkedList<TestComplexMessage>();
-    private static readonly ICollection<TestExceptionMessage> _exceptionMessages = new LinkedList<TestExceptionMessage>();
-    private static readonly ICollection<TransportError> _transportErrors = new LinkedList<TransportError>();
+    private static readonly ConcurrentBag<TestSimpleMessage> _simpleMessages = new ConcurrentBag<TestSimpleMessage>();
+    private static readonly ConcurrentBag<TestComplexMessage> _complexMessages = new ConcurrentBag<TestComplexMessage>();
+    private static readonly ConcurrentBag<TestExceptionMessage> _exceptionMessages = new ConcurrentBag<TestExceptionMessage>();
+    private static readonly ConcurrentBag<TransportError> _transportErrors = new ConcurrentBag<TransportError>();
 
     public async Task ReceiveSimpleMessage(TestSimpleMessage message, CancellationToken cancellationToken)
     {

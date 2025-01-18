@@ -8,6 +8,7 @@ using NanoWorks.Messaging.MessagePublishers;
 using NanoWorks.Messaging.RabbitMq.Messages;
 using NanoWorks.Messaging.RabbitMq.Options;
 using NanoWorks.Messaging.RabbitMq.Services;
+using NanoWorks.Messaging.RabbitMq.TransportErrors;
 
 namespace NanoWorks.Messaging.RabbitMq.DependencyInjection;
 
@@ -26,7 +27,11 @@ public static class Extensions
         var options = new MessagingOptions();
         configure(options);
         options.Validate();
+
         services.AddSingleton(options);
+        services.AddSingleton<IMessageSerializer, MessageSerializer>();
+        services.AddSingleton<ITransportErrorPublisher, TransportErrorPublisher>();
+        services.AddSingleton<IMessageRetry, MessageRetry>();
         services.AddSingleton<IMessagePublisher, MessagePublisher>();
 
         foreach (var consumerOptions in options.ConsumerOptions.Values)

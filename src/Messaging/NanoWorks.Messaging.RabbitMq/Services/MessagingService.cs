@@ -5,10 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using NanoWorks.Messaging.RabbitMq.Helpers;
 using NanoWorks.Messaging.RabbitMq.Messages;
 using NanoWorks.Messaging.RabbitMq.Options;
+using NanoWorks.Messaging.RabbitMq.TransportErrors;
 
 namespace NanoWorks.Messaging.RabbitMq.Services;
 
@@ -32,12 +35,17 @@ internal sealed class MessagingService : IHostedService
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        await ExchangeHelper.CreateDefaultExchangesAsync(_options.ConsumerConnection, cancellationToken);
-        await ExchangeHelper.CreateMessageExchangesAsync(_options.ConsumerConnection, _options.ConsumerOptions.Values, cancellationToken);
+        using var startupChannel = await _options.ConsumerConnection.CreateChannelAsync(cancellationToken: cancellationToken);
+        await RabbitMQHelper.CreateDefaultExchangesAsync(startupChannel, cancellationToken);
+        await RabbitMQHelper.CreateDefaultQueuesAsync(startupChannel, cancellationToken);
+        await RabbitMQHelper.CreateMessageExchangesAsync(startupChannel, _options.ConsumerOptions.Values, cancellationToken);
 
-        foreach (var subscriberOptions in _options.ConsumerOptions.Values)
+        foreach (var consumerOptions in _options.ConsumerOptions.Values)
         {
-            var consumer = await QueueHelper.InitializeAsync(_serviceProvider, _options.ConsumerConnection, subscriberOptions, cancellationToken);
+            var consumerChannel = await _options.ConsumerConnection.CreateChannelAsync(cancellationToken: cancellationToken);
+            await RabbitMQHelper.CreateConsumerQueuesAsync(consumerOptions, consumerChannel, cancellationToken);
+            var consumer = new MessageConsumer(_serviceProvider, consumerOptions, consumerChannel);
+
             Consumers.Add(consumer);
         }
 

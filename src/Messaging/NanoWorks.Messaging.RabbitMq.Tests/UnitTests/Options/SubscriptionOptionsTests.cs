@@ -39,16 +39,16 @@ public sealed class SubscriptionOptionsTests
     }
 
     [Test]
-    public void Validate_WhenReceiveMethodSelectorIsNull_ThrowsArgumentNullException()
+    public void Validate_WhenEndpointSelectorIsNull_ThrowsArgumentNullException()
     {
         // Arrange
         var options = _fixture.Create<SubscriptionOptions>();
-        options.ReceiveMethodSelector = null;
+        options.EndpointSelector = null;
 
         // Act
         void Act() => options.Validate();
 
         // Assert
-        Assert.Throws<ArgumentNullException>(Act, $"Value cannot be null. (Parameter '{nameof(options.ReceiveMethodSelector)}')");
+        Assert.Throws<ArgumentNullException>(Act, $"Value cannot be null. (Parameter '{nameof(options.EndpointSelector)}')");
     }
 }

@@ -54,12 +54,12 @@ internal class Program
         {
             options.UseConnectionString("amqp://rabbitmq:password@localhost:5672/");
 
-            options.UseMessagePublisher(publisherOptions =>
+            options.ConfigureMessagePublisher(publisherOptions =>
             {
                 publisherOptions.OnSerializationException(PublisherSerializerExceptionBehavior.Ignore);
             });
 
-            options.UseMessageConsumer<CacheConsumer>(consumerOptions =>
+            options.ConfigureMessageConsumer<CacheConsumer>(consumerOptions =>
             {
                 consumerOptions.Queue(nameof(CacheConsumer));
                 consumerOptions.MaxMessageConcurrency(10);

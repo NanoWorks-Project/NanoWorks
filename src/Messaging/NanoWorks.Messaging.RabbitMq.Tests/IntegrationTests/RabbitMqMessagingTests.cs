@@ -42,12 +42,12 @@ public sealed class RabbitMqMessagingTests : IDisposable
                 options.UseConnectionString("amqp://rabbitmq:password@localhost:5672/");
                 options.UseConnectionPoolSize(Environment.ProcessorCount);
 
-                options.UseMessagePublisher(publisherOptions =>
+                options.ConfigureMessagePublisher(publisherOptions =>
                 {
                     publisherOptions.OnSerializationException(PublisherSerializerExceptionBehavior.Ignore);
                 });
 
-                options.UseMessageConsumer<TestMessageConsumer>(consumerOptions =>
+                options.ConfigureMessageConsumer<TestMessageConsumer>(consumerOptions =>
                 {
                     consumerOptions.Queue(nameof(TestMessageConsumer));
                     consumerOptions.MaxMessageConcurrency((ushort)Environment.ProcessorCount);

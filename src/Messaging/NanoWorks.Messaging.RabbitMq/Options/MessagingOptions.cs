@@ -60,7 +60,7 @@ public sealed class MessagingOptions
     /// Adds a message publisher to the service collection.
     /// </summary>
     /// <param name="configure">Action to configure the publisher options.</param>
-    public void UseMessagePublisher(Action<PublisherOptions> configure)
+    public void ConfigureMessagePublisher(Action<PublisherOptions> configure)
     {
         configure(PublisherOptions);
     }
@@ -70,7 +70,7 @@ public sealed class MessagingOptions
     /// </summary>
     /// <typeparam name="TConsumer">Type of consumer.</typeparam>
     /// <param name="configure">Action to configure the consumer options.</param>
-    public void UseMessageConsumer<TConsumer>(Action<ConsumerOptions<TConsumer>> configure)
+    public void ConfigureMessageConsumer<TConsumer>(Action<ConsumerOptions<TConsumer>> configure)
         where TConsumer : class
     {
         var options = new ConsumerOptions<TConsumer>();

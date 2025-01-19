@@ -52,7 +52,7 @@ Messages that fail processing or exceed the retry limit are published to the `Na
 - To prevent error loops, ensure that `TransportError` endpoints handle exceptions using a fallback logger.
 
 ```
-options.AddMessageConsumer<SomeConsumer>(consumerOptions =>
+options.ConfigureMessageConsumer<SomeConsumer>(consumerOptions =>
 {
     consumerOptions.Subscribe<TransportError>(consumer => consumer.OnTransportError);
 });
@@ -111,12 +111,12 @@ builder.Services.AddNanoWorksRabbitMq(options =>
 {
     options.UseConnectionString("amqp://rabbitmq:password@localhost:5672/");
 
-    options.UseMessagePublisher(publisherOptions =>
+    options.ConfigureMessagePublisher(publisherOptions =>
     {
         publisherOptions.OnSerializationException(PublisherSerializerExceptionBehavior.Ignore);
     });
 
-    options.UseMessageConsumer<CacheConsumer>(consumerOptions =>
+    options.ConfigureMessageConsumer<CacheConsumer>(consumerOptions =>
     {
         consumerOptions.Queue(nameof(CacheConsumer));
         consumerOptions.MaxMessageConcurrency(10);

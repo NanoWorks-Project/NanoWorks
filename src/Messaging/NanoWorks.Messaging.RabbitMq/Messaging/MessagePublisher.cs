@@ -12,7 +12,7 @@ using NanoWorks.Messaging.RabbitMq.Options;
 using NanoWorks.Messaging.Serialization;
 using RabbitMQ.Client;
 
-namespace NanoWorks.Messaging.RabbitMq.Messages;
+namespace NanoWorks.Messaging.RabbitMq.Messaging;
 
 internal sealed class MessagePublisher : IMessagePublisher
 {

@@ -7,7 +7,7 @@ using NanoWorks.Messaging.RabbitMq.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
-namespace NanoWorks.Messaging.RabbitMq.Messages;
+namespace NanoWorks.Messaging.RabbitMq.Messaging;
 
 /// <summary>
 /// Marker interface for messages that should be retried.

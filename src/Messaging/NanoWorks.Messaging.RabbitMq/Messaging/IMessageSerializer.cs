@@ -4,7 +4,7 @@
 using System;
 using RabbitMQ.Client.Events;
 
-namespace NanoWorks.Messaging.RabbitMq.Messages;
+namespace NanoWorks.Messaging.RabbitMq.Messaging;
 
 /// <summary>
 /// Message serializer interface.

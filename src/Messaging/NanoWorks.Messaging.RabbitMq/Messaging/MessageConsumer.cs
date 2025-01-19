@@ -5,13 +5,11 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using NanoWorks.Messaging.RabbitMq.Options;
-using NanoWorks.Messaging.RabbitMq.TransportErrors;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
-namespace NanoWorks.Messaging.RabbitMq.Messages;
+namespace NanoWorks.Messaging.RabbitMq.Messaging;
 
 internal sealed class MessageConsumer : IMessageConsumer
 {

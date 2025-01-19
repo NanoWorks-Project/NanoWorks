@@ -5,13 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using NanoWorks.Messaging.RabbitMq.Helpers;
-using NanoWorks.Messaging.RabbitMq.Messages;
+using NanoWorks.Messaging.RabbitMq.Messaging;
 using NanoWorks.Messaging.RabbitMq.Options;
-using NanoWorks.Messaging.RabbitMq.TransportErrors;
 
 namespace NanoWorks.Messaging.RabbitMq.Services;
 

@@ -6,7 +6,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using RabbitMQ.Client.Events;
 
-namespace NanoWorks.Messaging.RabbitMq.Messages;
+namespace NanoWorks.Messaging.RabbitMq.Messaging;
 
 internal sealed class MessageSerializer : IMessageSerializer
 {

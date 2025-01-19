@@ -5,7 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using NanoWorks.Messaging.Errors;
-using NanoWorks.Messaging.RabbitMq.Messages;
+using NanoWorks.Messaging.RabbitMq.Messaging;
 using RabbitMQ.Client;
 
 namespace NanoWorks.Messaging.RabbitMq.TransportErrors;

@@ -13,7 +13,7 @@ using NanoWorks.Messaging.Serialization;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
-namespace NanoWorks.Messaging.RabbitMq.Messages;
+namespace NanoWorks.Messaging.RabbitMq.Messaging;
 
 internal sealed class MessageProcessor
 {

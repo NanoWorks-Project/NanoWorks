@@ -5,7 +5,7 @@ using System;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using NanoWorks.Messaging.MessagePublishers;
-using NanoWorks.Messaging.RabbitMq.Messages;
+using NanoWorks.Messaging.RabbitMq.Messaging;
 using NanoWorks.Messaging.RabbitMq.Options;
 using NanoWorks.Messaging.RabbitMq.Services;
 using NanoWorks.Messaging.RabbitMq.TransportErrors;

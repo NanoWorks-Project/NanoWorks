@@ -10,7 +10,7 @@ namespace NanoWorks.Messaging.RabbitMq.Messaging;
 /// <summary>
 /// Message consumer definition.
 /// </summary>
-public interface IMessageConsumer : IDisposable
+public interface IMessageConsumer : IAsyncDisposable
 {
     /// <summary>
     /// Start consuming messages.

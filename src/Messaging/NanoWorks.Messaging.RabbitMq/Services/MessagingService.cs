@@ -52,13 +52,11 @@ internal sealed class MessagingService : IHostedService
         }
     }
 
-    public Task StopAsync(CancellationToken cancellationToken)
+    public async Task StopAsync(CancellationToken cancellationToken)
     {
         foreach (var consumer in Consumers)
         {
-            consumer.Dispose();
+            await consumer.DisposeAsync();
         }
-
-        return Task.CompletedTask;
     }
 }

@@ -27,19 +27,19 @@ internal sealed class MessageConsumer : IMessageConsumer
         _channel = channel;
     }
 
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
         foreach (var consumerTag in _rabbitMqConsumer?.ConsumerTags ?? [])
         {
-            _channel.BasicCancelAsync(consumerTag).Wait();
+            await _channel.BasicCancelAsync(consumerTag);
         }
 
         foreach (var consumerTag in _rabbitMqRetryConsumer?.ConsumerTags ?? [])
         {
-            _channel.BasicCancelAsync(consumerTag).Wait();
+            await _channel.BasicCancelAsync(consumerTag);
         }
 
-        _channel.Dispose();
+        await _channel.DisposeAsync();
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)

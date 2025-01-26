@@ -10,10 +10,7 @@ namespace NanoWorks.Messaging.RabbitMq.Options;
 /// </summary>
 public sealed class PublisherOptions
 {
-    /// <summary>
-    /// Gets or sets the behavior for the serializer when an exception occurs.
-    /// </summary>
-    public PublisherSerializerExceptionBehavior SerializerExceptionBehavior { get; set; }
+    internal PublisherSerializerExceptionBehavior SerializerExceptionBehavior { get; set; }
 
     /// <summary>
     /// Sets the behavior for the serializer when an exception occurs.

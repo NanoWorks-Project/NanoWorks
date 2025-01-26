@@ -13,30 +13,15 @@ namespace NanoWorks.Messaging.RabbitMq.Options;
 /// </summary>
 public sealed class MessagingOptions
 {
-    /// <summary>
-    /// Gets or sets the connection pool.
-    /// </summary>
-    public string ConnectionString { get; set; }
+    internal string ConnectionString { get; set; }
 
-    /// <summary>
-    /// Gets the publisher connection from the connection pool.
-    /// </summary>
-    public IConnection PublisherConnection => ConnectionPool.GetConnection(ConnectionString);
+    internal IConnection PublisherConnection => ConnectionPool.GetConnection(ConnectionString);
 
-    /// <summary>
-    /// Gets the consumer connection from the connection pool.
-    /// </summary>
-    public IConnection ConsumerConnection => ConnectionPool.GetConnection(ConnectionString);
+    internal IConnection ConsumerConnection => ConnectionPool.GetConnection(ConnectionString);
 
-    /// <summary>
-    /// Gets or sets the publisher options.
-    /// </summary>
-    public PublisherOptions PublisherOptions { get; set; } = new PublisherOptions();
+    internal PublisherOptions PublisherOptions { get; set; } = new PublisherOptions();
 
-    /// <summary>
-    /// Gets or sets the consumer options.
-    /// </summary>
-    public IDictionary<Type, ConsumerOptions> ConsumerOptions { get; set; } = new Dictionary<Type, ConsumerOptions>();
+    internal IDictionary<Type, ConsumerOptions> ConsumerOptions { get; set; } = new Dictionary<Type, ConsumerOptions>();
 
     /// <summary>
     /// Sets the connection string.

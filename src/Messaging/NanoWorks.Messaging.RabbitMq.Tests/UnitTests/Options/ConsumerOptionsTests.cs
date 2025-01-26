@@ -1,20 +1,17 @@
 ﻿// Ignore Spelling: Nano
 // Ignore Spelling: Mq
 
-using AutoFixture;
 using NanoWorks.Messaging.RabbitMq.Options;
 
 namespace NanoWorks.Messaging.RabbitMq.Tests.UnitTests.Options;
 
 public sealed class ConsumerOptionsTests
 {
-    private readonly IFixture _fixture = new Fixture();
-
     [Test]
     public void Validate_WhenConsumerTypeIsNull_ThrowsArgumentNullException()
     {
         // Arrange
-        var options = _fixture.Create<ConsumerOptions>();
+        var options = CreateConsumerOptions();
         options.ConsumerType = null;
 
         // Act
@@ -28,7 +25,7 @@ public sealed class ConsumerOptionsTests
     public void Validate_WhenQueueNameIsNullOrWhiteSpace_ThrowsArgumentNullException()
     {
         // Arrange
-        var options = _fixture.Create<ConsumerOptions>();
+        var options = CreateConsumerOptions();
         options.QueueName = null;
 
         // Act
@@ -42,7 +39,7 @@ public sealed class ConsumerOptionsTests
     public void Validate_WhenRetryQueueNameIsNullOrWhiteSpace_ThrowsArgumentNullException()
     {
         // Arrange
-        var options = _fixture.Create<ConsumerOptions>();
+        var options = CreateConsumerOptions();
         options.RetryQueueName = null;
 
         // Act
@@ -56,7 +53,7 @@ public sealed class ConsumerOptionsTests
     public void Validate_WhenTtlIsLessThanZero_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
-        var options = _fixture.Create<ConsumerOptions>();
+        var options = CreateConsumerOptions();
         options.Ttl = TimeSpan.FromSeconds(-1);
 
         // Act
@@ -70,7 +67,7 @@ public sealed class ConsumerOptionsTests
     public void Validate_WhenMaxCountIsLessThanZero_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
-        var options = _fixture.Create<ConsumerOptions>();
+        var options = CreateConsumerOptions();
         options.MaxCount = -1;
 
         // Act
@@ -84,7 +81,7 @@ public sealed class ConsumerOptionsTests
     public void Validate_WhenMaxConcurrencyIsLessThanOne_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
-        var options = _fixture.Create<ConsumerOptions>();
+        var options = CreateConsumerOptions();
         options.MaxConcurrency = 0;
 
         // Act
@@ -98,7 +95,7 @@ public sealed class ConsumerOptionsTests
     public void Validate_WhenMaxRetryCountIsLessThanZero_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
-        var options = _fixture.Create<ConsumerOptions>();
+        var options = CreateConsumerOptions();
         options.MaxRetryCount = -1;
 
         // Act
@@ -112,7 +109,7 @@ public sealed class ConsumerOptionsTests
     public void Validate_WhenRetryDelayIsLessThanZero_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
-        var options = _fixture.Create<ConsumerOptions>();
+        var options = CreateConsumerOptions();
         options.RetryDelay = TimeSpan.FromSeconds(-1);
 
         // Act
@@ -126,7 +123,7 @@ public sealed class ConsumerOptionsTests
     public void Validate_WhenMaxRetryCountIsGreaterThanZeroAndRetryDelayIsZero_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
-        var options = _fixture.Create<ConsumerOptions>();
+        var options = CreateConsumerOptions();
         options.MaxRetryCount = 1;
         options.RetryDelay = TimeSpan.Zero;
 
@@ -135,5 +132,20 @@ public sealed class ConsumerOptionsTests
 
         // Assert
         Assert.Throws<ArgumentOutOfRangeException>(Act, $"Specified argument was out of the range of valid values. (Parameter '{nameof(options.RetryDelay)}')");
+    }
+
+    private ConsumerOptions CreateConsumerOptions()
+    {
+        var options = new ConsumerOptions();
+        options.ConsumerType = typeof(ConsumerOptionsTests);
+        options.QueueName = "queue";
+        options.RetryQueueName = "retry";
+        options.Ttl = TimeSpan.FromSeconds(1);
+        options.MaxCount = 1;
+        options.MaxConcurrency = 1;
+        options.MaxRetryCount = 1;
+        options.RetryDelay = TimeSpan.FromSeconds(1);
+        options.Subscriptions.Add(nameof(ConsumerOptions), new SubscriptionOptions());
+        return options;
     }
 }

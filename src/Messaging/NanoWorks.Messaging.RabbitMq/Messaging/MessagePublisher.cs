@@ -45,6 +45,14 @@ internal sealed class MessagePublisher : IMessagePublisher
 
             _logger.LogInformation($"Publishing message of type {typeof(TMessage).Name}.");
 
+            await _channel.ExchangeDeclareAsync(
+                exchange: messageType,
+                type: ExchangeType.Fanout,
+                durable: true,
+                autoDelete: false,
+                arguments: null,
+                cancellationToken: cancellationToken);
+
             await _channel.BasicPublishAsync(
                 exchange: messageType,
                 routingKey: string.Empty,

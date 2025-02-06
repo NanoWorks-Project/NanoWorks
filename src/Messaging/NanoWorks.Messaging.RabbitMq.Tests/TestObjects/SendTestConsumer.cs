@@ -9,17 +9,17 @@ using System.Collections.Concurrent;
 
 namespace NanoWorks.Messaging.RabbitMq.Tests.TestObjects;
 
-public sealed class TestMessageConsumer
+public sealed class SendTestConsumer
 {
     public static IEnumerable<TestSimpleMessage> SimpleMessages() => _simpleMessages;
     public static IEnumerable<TestComplexMessage> ComplexMessages() => _complexMessages;
     public static IEnumerable<TestExceptionMessage> ExceptionMessages() => _exceptionMessages;
     public static IEnumerable<TransportError> TransportErrors() => _transportErrors;
 
-    private static readonly ConcurrentBag<TestSimpleMessage> _simpleMessages = new ConcurrentBag<TestSimpleMessage>();
-    private static readonly ConcurrentBag<TestComplexMessage> _complexMessages = new ConcurrentBag<TestComplexMessage>();
-    private static readonly ConcurrentBag<TestExceptionMessage> _exceptionMessages = new ConcurrentBag<TestExceptionMessage>();
-    private static readonly ConcurrentBag<TransportError> _transportErrors = new ConcurrentBag<TransportError>();
+    private static readonly ConcurrentBag<TestSimpleMessage> _simpleMessages = [];
+    private static readonly ConcurrentBag<TestComplexMessage> _complexMessages = [];
+    private static readonly ConcurrentBag<TestExceptionMessage> _exceptionMessages = [];
+    private static readonly ConcurrentBag<TransportError> _transportErrors = [];
 
     public async Task ReceiveSimpleMessage(TestSimpleMessage message, CancellationToken cancellationToken)
     {

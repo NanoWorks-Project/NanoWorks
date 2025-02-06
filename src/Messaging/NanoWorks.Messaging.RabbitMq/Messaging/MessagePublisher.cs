@@ -34,7 +34,7 @@ internal sealed class MessagePublisher : IMessagePublisher
     }
 
     /// <inheritdoc />
-    public async Task PublishAsync<TMessage>(TMessage message, CancellationToken cancellationToken = default)
+    public async Task BroadcastAsync<TMessage>(TMessage message, CancellationToken cancellationToken = default)
         where TMessage : class, new()
     {
         try
@@ -73,6 +73,51 @@ internal sealed class MessagePublisher : IMessagePublisher
         catch (Exception error)
         {
             var errorMessage = $"Error publishing message of type {typeof(TMessage).Name}.";
+            _logger.LogError(error, errorMessage);
+            throw new MessagePublishException(errorMessage, error);
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task SendAsync<TMessage>(string consumer, TMessage message, CancellationToken cancellationToken = default)
+        where TMessage : class, new()
+    {
+        try
+        {
+            _channel ??= await _options.PublisherConnection.CreateChannelAsync(cancellationToken: cancellationToken);
+            var messageType = typeof(TMessage).FullName;
+            var jsonBytes = _messageSerializer.Serialize(message);
+
+            _logger.LogInformation($"Publishing message of type {typeof(TMessage).Name} to {consumer}.");
+
+            await _channel.ExchangeDeclareAsync(
+                exchange: consumer,
+                type: ExchangeType.Direct,
+                durable: true,
+                autoDelete: false,
+                arguments: null,
+                cancellationToken: cancellationToken);
+
+            await _channel.BasicPublishAsync(
+                exchange: string.Empty,
+                routingKey: consumer,
+                mandatory: true,
+                body: jsonBytes,
+                basicProperties: new BasicProperties { Type = messageType, Persistent = true },
+                cancellationToken: cancellationToken);
+        }
+        catch (JsonException error)
+        {
+            _logger.LogError(error, $"Error serializing message of type {typeof(TMessage).Name}.");
+
+            if (_options.PublisherOptions.SerializerExceptionBehavior == PublisherSerializerExceptionBehavior.Throw)
+            {
+                throw;
+            }
+        }
+        catch (Exception error)
+        {
+            var errorMessage = $"Error sending message of type {typeof(TMessage).Name} to {consumer}.";
             _logger.LogError(error, errorMessage);
             throw new MessagePublishException(errorMessage, error);
         }

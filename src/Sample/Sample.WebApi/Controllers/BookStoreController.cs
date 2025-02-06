@@ -103,7 +103,7 @@ public sealed class BookStoreController(
         await bookStoreDatabase.SaveChangesAsync();
 
         var authorUpdatedEvent = new AuthorUpdatedEvent { AuthorId = author.AuthorId };
-        await messagePublisher.PublishAsync(authorUpdatedEvent);
+        await messagePublisher.BroadcastAsync(authorUpdatedEvent);
         return Ok();
     }
 
@@ -158,7 +158,7 @@ public sealed class BookStoreController(
         await bookStoreDatabase.SaveChangesAsync();
 
         var authorUpdatedEvent = new AuthorUpdatedEvent { AuthorId = author.AuthorId };
-        await messagePublisher.PublishAsync(authorUpdatedEvent);
+        await messagePublisher.BroadcastAsync(authorUpdatedEvent);
         return Ok();
     }
 
@@ -207,7 +207,7 @@ public sealed class BookStoreController(
         await bookStoreDatabase.SaveChangesAsync();
 
         var bookUpdatedEvent = new BookUpdatedEvent { BookId = book.BookId, AuthorId = book.AuthorId };
-        await messagePublisher.PublishAsync(bookUpdatedEvent);
+        await messagePublisher.BroadcastAsync(bookUpdatedEvent);
         return Ok();
     }
 
@@ -260,7 +260,7 @@ public sealed class BookStoreController(
         await bookStoreDatabase.SaveChangesAsync();
 
         var bookUpdatedEvent = new BookUpdatedEvent { BookId = book.BookId, AuthorId = book.AuthorId };
-        await messagePublisher.PublishAsync(bookUpdatedEvent);
+        await messagePublisher.BroadcastAsync(bookUpdatedEvent);
         return Ok();
     }
 }

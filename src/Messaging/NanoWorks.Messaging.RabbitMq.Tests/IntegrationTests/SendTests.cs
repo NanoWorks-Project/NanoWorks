@@ -20,7 +20,7 @@ namespace NanoWorks.Messaging.RabbitMq.Tests.IntegrationTests;
 /// These tests require RabbitMq running locally on the default ports.
 /// </summary>
 /// </summary>
-public sealed class RabbitMqMessagingTests : IDisposable
+public sealed class SendTests : IDisposable
 {
     private readonly Fixture _fixture;
     private readonly IServiceScope _serviceScope;
@@ -28,7 +28,7 @@ public sealed class RabbitMqMessagingTests : IDisposable
     private readonly MessagingOptions _messagingOptions;
     private readonly MessagingService _messagingService;
 
-    public RabbitMqMessagingTests()
+    public SendTests()
     {
         _fixture = new Fixture();
         _fixture.Customize(new AutoMoqCustomization() { ConfigureMembers = true });
@@ -47,14 +47,30 @@ public sealed class RabbitMqMessagingTests : IDisposable
                     publisherOptions.OnSerializationException(PublisherSerializerExceptionBehavior.Ignore);
                 });
 
-                options.ConfigureMessageConsumer<TestMessageConsumer>(consumerOptions =>
+                options.ConfigureMessageConsumer<SendTestConsumer>(consumerOptions =>
                 {
-                    consumerOptions.Queue(nameof(TestMessageConsumer));
+                    consumerOptions.Queue(nameof(SendTestConsumer));
                     consumerOptions.MaxMessageConcurrency((ushort)Environment.ProcessorCount);
                     consumerOptions.MessageTtl(TimeSpan.FromHours(1));
                     consumerOptions.Retries(maxRetryCount: 3, retryDelay: TimeSpan.FromMilliseconds(100));
                     consumerOptions.OnSerializationException(ConsumerSerializerExceptionBehavior.DeadLetter);
                     consumerOptions.AutoDelete();
+
+                    consumerOptions.Subscribe<TestSimpleMessage>(consumer => consumer.ReceiveSimpleMessage);
+                    consumerOptions.Subscribe<TestComplexMessage>(consumer => consumer.ReceiveComplexMessage);
+                    consumerOptions.Subscribe<TestExceptionMessage>(consumer => consumer.ReceiveExceptionMessage);
+                    consumerOptions.Subscribe<TransportError>(consumer => consumer.ReceiveTransportError);
+                });
+
+                options.ConfigureMessageConsumer<AnotherSendTestConsumer>(consumerOptions =>
+                {
+                    consumerOptions.Queue(nameof(AnotherSendTestConsumer));
+                    consumerOptions.MaxMessageConcurrency((ushort)Environment.ProcessorCount);
+                    consumerOptions.MessageTtl(TimeSpan.FromHours(1));
+                    consumerOptions.Retries(maxRetryCount: 3, retryDelay: TimeSpan.FromMilliseconds(100));
+                    consumerOptions.OnSerializationException(ConsumerSerializerExceptionBehavior.DeadLetter);
+                    consumerOptions.AutoDelete();
+
                     consumerOptions.Subscribe<TestSimpleMessage>(consumer => consumer.ReceiveSimpleMessage);
                     consumerOptions.Subscribe<TestComplexMessage>(consumer => consumer.ReceiveComplexMessage);
                     consumerOptions.Subscribe<TestExceptionMessage>(consumer => consumer.ReceiveExceptionMessage);
@@ -80,7 +96,7 @@ public sealed class RabbitMqMessagingTests : IDisposable
     }
 
     [Test]
-    public async Task Publish_Receive_SimpleMessages()
+    public async Task Send_SimpleMessages()
     {
         // arrange
         var publishedSimpleMessages = _fixture.CreateMany<TestSimpleMessage>();
@@ -88,17 +104,18 @@ public sealed class RabbitMqMessagingTests : IDisposable
         // act
         foreach (var publishedSimpleMessage in publishedSimpleMessages)
         {
-            await _messagePublisher.PublishAsync(publishedSimpleMessage);
+            await _messagePublisher.SendAsync(nameof(SendTestConsumer), publishedSimpleMessage);
         }
 
-        Thread.Sleep(1000); // wait for messages to be delivered
+        Thread.Sleep(500); // wait for messages to be delivered
 
         // assert
-        TestMessageConsumer.SimpleMessages().Count().ShouldBe(publishedSimpleMessages.Count());
+        SendTestConsumer.SimpleMessages().Count().ShouldBe(publishedSimpleMessages.Count());
+        AnotherSendTestConsumer.SimpleMessages().ShouldBeEmpty();
 
         foreach (var publishedSimpleMessage in publishedSimpleMessages)
         {
-            var receivedSimpleMessage = TestMessageConsumer.SimpleMessages()
+            var receivedSimpleMessage = SendTestConsumer.SimpleMessages()
                 .SingleOrDefault(x => x.Guid == publishedSimpleMessage.Guid);
 
             receivedSimpleMessage.ShouldNotBeNull();
@@ -111,7 +128,7 @@ public sealed class RabbitMqMessagingTests : IDisposable
     }
 
     [Test]
-    public async Task Publish_Receive_ComplexMessages()
+    public async Task Send_ComplexMessages()
     {
         // arrange
         var publishedComplexMessages = _fixture.CreateMany<TestComplexMessage>();
@@ -119,17 +136,18 @@ public sealed class RabbitMqMessagingTests : IDisposable
         // act
         foreach (var publishedMessage in publishedComplexMessages)
         {
-            await _messagePublisher.PublishAsync(publishedMessage);
+            await _messagePublisher.SendAsync(nameof(SendTestConsumer), publishedMessage);
         }
 
-        Thread.Sleep(1000); // wait for messages to be delivered
+        Thread.Sleep(500); // wait for messages to be delivered
 
         // assert
-        TestMessageConsumer.ComplexMessages().Count().ShouldBe(publishedComplexMessages.Count());
+        SendTestConsumer.ComplexMessages().Count().ShouldBe(publishedComplexMessages.Count());
+        AnotherSendTestConsumer.ComplexMessages().ShouldBeEmpty();
 
         foreach (var publishedComplexMessage in publishedComplexMessages)
         {
-            var receivedComplexMessage = TestMessageConsumer.ComplexMessages()
+            var receivedComplexMessage = SendTestConsumer.ComplexMessages()
                 .SingleOrDefault(x => x.Guid == publishedComplexMessage.Guid);
 
             receivedComplexMessage.ShouldNotBeNull();
@@ -159,24 +177,25 @@ public sealed class RabbitMqMessagingTests : IDisposable
         var expectedMessageCount = 3; // three retries
 
         // act
-        await _messagePublisher.PublishAsync(publishedExceptionMessage);
+        await _messagePublisher.SendAsync(nameof(SendTestConsumer), publishedExceptionMessage);
 
-        Thread.Sleep(1000); // wait for messages to be delivered and retried
+        Thread.Sleep(500); // wait for messages to be delivered and retried
 
         // assert
-        TestMessageConsumer.ExceptionMessages().Count().ShouldBe(expectedMessageCount);
+        SendTestConsumer.ExceptionMessages().Count().ShouldBe(expectedMessageCount);
+        AnotherSendTestConsumer.ExceptionMessages().ShouldBeEmpty();
 
-        foreach (var receivedExceptionMessage in TestMessageConsumer.ExceptionMessages())
+        foreach (var receivedExceptionMessage in SendTestConsumer.ExceptionMessages())
         {
             receivedExceptionMessage.ShouldNotBeNull();
             receivedExceptionMessage.Guid.ShouldBe(publishedExceptionMessage.Guid);
         }
 
-        TestMessageConsumer.TransportErrors().Count().ShouldBe(expectedMessageCount);
+        SendTestConsumer.TransportErrors().Count().ShouldBe(expectedMessageCount);
 
-        foreach (var transportError in TestMessageConsumer.TransportErrors())
+        foreach (var transportError in SendTestConsumer.TransportErrors())
         {
-            transportError.ConsumerName.ShouldBe(typeof(TestMessageConsumer).FullName);
+            transportError.ConsumerName.ShouldBe(typeof(SendTestConsumer).FullName);
             transportError.Message.ShouldBe("The method or operation is not implemented.");
             transportError.StackTrace.ShouldNotBeNullOrWhiteSpace();
         }

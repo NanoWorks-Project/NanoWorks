@@ -23,7 +23,7 @@ The library currently supports [RabbitMQ](https://www.rabbitmq.com/) as the mess
 
 NanoWorks.Messaging.RabbitMq features three main components:
 
-1. **Publishers:** publish messages to RabbitMQ exchanges.
+1. **Publishers:** publish messages to one or many consumers.
 2. **Consumers:** subscribe to queues bound to specific exchanges, processing incoming messages.
 3. **Messages:** each message type is routed through an exchange using a fully qualified name, like "Sample.WebApi.Models.Events.AuthorUpdatedEvent".
 
@@ -109,7 +109,7 @@ public sealed class CacheConsumer(
 ```
 builder.Services.AddNanoWorksRabbitMq(options =>
 {
-    options.UseConnectionString("amqp://rabbitmq:password@localhost:5672/");
+    options.UseConnectionString("[your connection string]");
 
     options.ConfigureMessagePublisher(publisherOptions =>
     {
@@ -137,5 +137,10 @@ builder.Services.AddNanoWorksRabbitMq(options =>
 
 ```
 var authorUpdatedEvent = new AuthorUpdatedEvent { AuthorId = author.AuthorId };
-await messagePublisher.PublishAsync(authorUpdatedEvent);
+
+// broadcast message to all subscribed consumers
+await messagePublisher.BroadcastAsync(authorUpdatedEvent);
+
+// send message to a specific consumer
+await messagePublisher.SendAsync(nameof(CacheConsumer), authorUpdatedEvent);
 ```

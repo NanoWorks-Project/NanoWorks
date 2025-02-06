@@ -61,7 +61,7 @@ internal class Program
 
             options.ConfigureMessageConsumer<CacheConsumer>(consumerOptions =>
             {
-                consumerOptions.Queue(nameof(CacheConsumer));
+                consumerOptions.Name(nameof(CacheConsumer));
                 consumerOptions.MaxMessageConcurrency(10);
                 consumerOptions.MessageTtl(TimeSpan.FromHours(1));
                 consumerOptions.Retries(maxRetryCount: 3, retryDelay: TimeSpan.FromSeconds(1));

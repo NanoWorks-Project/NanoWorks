@@ -113,12 +113,12 @@ public sealed class ConsumerOptions<TConsumer> : ConsumerOptions
     }
 
     /// <summary>
-    /// Sets the queue name for the consumer.
+    /// Sets the name for the consumer.
     /// </summary>
-    /// <param name="queueName">Name for the queue.</param>
-    public void Queue(string queueName)
+    /// <param name="consumerName">Name for the consumer.</param>
+    public void Name(string consumerName)
     {
-        QueueName = queueName;
+        QueueName = consumerName;
         RetryQueueName = $"{QueueName}.Retry";
     }
 

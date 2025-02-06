@@ -49,7 +49,7 @@ public sealed class BroadcastTests : IDisposable
 
                 options.ConfigureMessageConsumer<BroadcastTestConsumer>(consumerOptions =>
                 {
-                    consumerOptions.Queue(nameof(BroadcastTestConsumer));
+                    consumerOptions.Name(nameof(BroadcastTestConsumer));
                     consumerOptions.MaxMessageConcurrency((ushort)Environment.ProcessorCount);
                     consumerOptions.MessageTtl(TimeSpan.FromHours(1));
                     consumerOptions.Retries(maxRetryCount: 3, retryDelay: TimeSpan.FromMilliseconds(100));

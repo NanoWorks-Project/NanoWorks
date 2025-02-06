@@ -49,7 +49,7 @@ public sealed class SendTests : IDisposable
 
                 options.ConfigureMessageConsumer<SendTestConsumer>(consumerOptions =>
                 {
-                    consumerOptions.Queue(nameof(SendTestConsumer));
+                    consumerOptions.Name(nameof(SendTestConsumer));
                     consumerOptions.MaxMessageConcurrency((ushort)Environment.ProcessorCount);
                     consumerOptions.MessageTtl(TimeSpan.FromHours(1));
                     consumerOptions.Retries(maxRetryCount: 3, retryDelay: TimeSpan.FromMilliseconds(100));
@@ -64,7 +64,7 @@ public sealed class SendTests : IDisposable
 
                 options.ConfigureMessageConsumer<AnotherSendTestConsumer>(consumerOptions =>
                 {
-                    consumerOptions.Queue(nameof(AnotherSendTestConsumer));
+                    consumerOptions.Name(nameof(AnotherSendTestConsumer));
                     consumerOptions.MaxMessageConcurrency((ushort)Environment.ProcessorCount);
                     consumerOptions.MessageTtl(TimeSpan.FromHours(1));
                     consumerOptions.Retries(maxRetryCount: 3, retryDelay: TimeSpan.FromMilliseconds(100));

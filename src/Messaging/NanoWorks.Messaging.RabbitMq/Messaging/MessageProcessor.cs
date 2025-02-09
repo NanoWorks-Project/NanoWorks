@@ -62,7 +62,7 @@ internal sealed class MessageProcessor
     {
         try
         {
-            _logger.LogInformation($"{_consumerOptions.ConsumerType.Name} processing message of type {subscription.MessageType.Name}.");
+            _logger.LogInformation("{consumerType} processing message of type {messageType}.", _consumerOptions.ConsumerType.Name, subscription.MessageType.Name);
 
             var message = _messageSerializer.Deserialize(subscription.MessageType, eventArgs);
 
@@ -76,11 +76,11 @@ internal sealed class MessageProcessor
             await messageEndpoint.Invoke(message, cancellationToken);
             await channel.BasicAckAsync(eventArgs.DeliveryTag, multiple: false, cancellationToken);
 
-            _logger.LogInformation($"{_consumerOptions.ConsumerType.Name} finished processing message of type {subscription.MessageType.Name}.");
+            _logger.LogInformation("{consumerType} finished processing message of type {messageType}.", _consumerOptions.ConsumerType.Name, subscription.MessageType.Name);
         }
         catch (JsonException error)
         {
-            _logger.LogError(error, $"Failed to deserialize message of type {subscription.MessageType.Name}.");
+            _logger.LogError(error, "Failed to deserialize message of type {messageType}.", subscription.MessageType.Name);
 
             if (_consumerOptions.SerializerExceptionBehavior == ConsumerSerializerExceptionBehavior.Ignore)
             {
@@ -97,7 +97,7 @@ internal sealed class MessageProcessor
         }
         catch (Exception error)
         {
-            _logger.LogError(error, $"{_consumerOptions.ConsumerType.Name} failed to process message of type {subscription.MessageType.Name}.");
+            _logger.LogError(error, "{consumerType} failed to process message of type {messageType}.", _consumerOptions.ConsumerType.Name, subscription.MessageType.Name);
             await _transportErrorPublisher.PublishAsync(_consumerOptions.ConsumerType.FullName, error, channel, cancellationToken);
 
             if (_consumerOptions.MaxRetryCount > 0)

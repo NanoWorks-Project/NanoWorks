@@ -3,46 +3,74 @@
 
 using System;
 using System.Collections.Generic;
+using NanoWorks.Messaging.RabbitMq.Options;
 using RabbitMQ.Client;
 
 namespace NanoWorks.Messaging.RabbitMq.ConnectionPools;
 
-internal static class ConnectionPool
+/// <summary>
+/// Connection pool for RabbitMQ.
+/// </summary>
+public class ConnectionPool : IConnectionPool
 {
-    private static readonly Queue<IConnection> _connections = new();
+    private readonly MessagingOptions _options;
+    private readonly Queue<IConnection> _connections = new();
 
-    internal static int Size { get; set; } = Environment.ProcessorCount;
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ConnectionPool"/> class.
+    /// </summary>
+    /// <param name="options">The messaging options to configure the connection pool.</param>
+    public ConnectionPool(MessagingOptions options)
+    {
+        _options = options;
+    }
+
+    /// <summary>
+    /// Disposes the connection pool.
+    /// </summary>
+    public void Dispose()
+    {
+        while (_connections.Count > 0)
+        {
+            var connection = _connections.Dequeue();
+            connection.Dispose();
+        }
+
+        GC.SuppressFinalize(this);
+    }
 
     /// <summary>
     /// Gets a connection from the pool.
     /// </summary>
-    /// <param name="connectionString">Connection string for RabbitMQ.</param>
-    public static IConnection GetConnection(string connectionString)
+    public IConnection GetConnection()
     {
-        if (_connections.Count >= Size)
+        lock (_connections)
         {
-            var poolConnection = _connections.Dequeue();
-
-            if (poolConnection.IsOpen)
+            if (_connections.Count >= _options.ConnectionPoolSize)
             {
-                _connections.Enqueue(poolConnection);
-                return poolConnection;
+                var poolConnection = _connections.Dequeue();
+
+                if (poolConnection.IsOpen)
+                {
+                    _connections.Enqueue(poolConnection);
+                    return poolConnection;
+                }
+
+                poolConnection.Dispose();
             }
 
-            poolConnection.Dispose();
+            var factory = new ConnectionFactory
+            {
+                Uri = new Uri(_options.ConnectionString),
+                AutomaticRecoveryEnabled = true,
+                NetworkRecoveryInterval = TimeSpan.FromSeconds(3),
+                TopologyRecoveryEnabled = true,
+                RequestedHeartbeat = TimeSpan.FromSeconds(5),
+            };
+
+            var newConnection = factory.CreateConnectionAsync().Result;
+            _connections.Enqueue(newConnection);
+            return newConnection;
         }
-
-        var factory = new ConnectionFactory
-        {
-            Uri = new Uri(connectionString),
-            AutomaticRecoveryEnabled = true,
-            NetworkRecoveryInterval = TimeSpan.FromSeconds(3),
-            TopologyRecoveryEnabled = true,
-            RequestedHeartbeat = TimeSpan.FromSeconds(5),
-        };
-
-        var newConnection = factory.CreateConnectionAsync().Result;
-        _connections.Enqueue(newConnection);
-        return newConnection;
     }
 }

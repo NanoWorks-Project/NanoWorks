@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
+using NanoWorks.Messaging.RabbitMq.ConnectionPools;
 using NanoWorks.Messaging.RabbitMq.Helpers;
 using NanoWorks.Messaging.RabbitMq.Messaging;
 using NanoWorks.Messaging.RabbitMq.Options;
@@ -22,24 +23,32 @@ internal sealed class MessagingService : IHostedService
 
     private readonly MessagingOptions _options;
 
-    public MessagingService(IServiceProvider serviceProvider, MessagingOptions options)
+    private readonly IConnectionPool _connectionPool;
+
+    public MessagingService(
+        IServiceProvider serviceProvider,
+        MessagingOptions options,
+        IConnectionPool connectionPool)
     {
         _serviceProvider = serviceProvider;
         _options = options;
+        _connectionPool = connectionPool;
     }
 
     internal ICollection<MessageConsumer> Consumers { get; } = new LinkedList<MessageConsumer>();
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        using var startupChannel = await _options.ConsumerConnection.CreateChannelAsync(cancellationToken: cancellationToken);
+        var statupConnection = _connectionPool.GetConnection();
+        using var startupChannel = await statupConnection.CreateChannelAsync(cancellationToken: cancellationToken);
         await RabbitMQHelper.CreateDefaultExchangesAsync(startupChannel, cancellationToken);
         await RabbitMQHelper.CreateDefaultQueuesAsync(startupChannel, cancellationToken);
         await RabbitMQHelper.CreateMessageExchangesAsync(startupChannel, _options.ConsumerOptions.Values, cancellationToken);
 
         foreach (var consumerOptions in _options.ConsumerOptions.Values)
         {
-            var consumerChannel = await _options.ConsumerConnection.CreateChannelAsync(cancellationToken: cancellationToken);
+            var consumerConnection = _connectionPool.GetConnection();
+            var consumerChannel = await consumerConnection.CreateChannelAsync(cancellationToken: cancellationToken);
             await RabbitMQHelper.CreateConsumerQueuesAsync(consumerOptions, consumerChannel, cancellationToken);
             var consumer = new MessageConsumer(_serviceProvider, consumerOptions, consumerChannel);
 

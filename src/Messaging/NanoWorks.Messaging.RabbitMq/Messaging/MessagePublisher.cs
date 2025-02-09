@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using NanoWorks.Messaging.Exceptions;
 using NanoWorks.Messaging.MessagePublishers;
+using NanoWorks.Messaging.RabbitMq.ConnectionPools;
 using NanoWorks.Messaging.RabbitMq.Options;
 using NanoWorks.Messaging.Serialization;
 using RabbitMQ.Client;
@@ -17,20 +18,20 @@ namespace NanoWorks.Messaging.RabbitMq.Messaging;
 internal sealed class MessagePublisher : IMessagePublisher
 {
     private readonly MessagingOptions _options;
+    private readonly IConnectionPool _connectionPool;
     private readonly IMessageSerializer _messageSerializer;
     private readonly ILogger<MessagePublisher> _logger;
-    private IChannel _channel;
 
-    public MessagePublisher(MessagingOptions options, IMessageSerializer messageSerializer, ILogger<MessagePublisher> logger)
+    public MessagePublisher(
+        MessagingOptions options,
+        IConnectionPool connectionPool,
+        IMessageSerializer messageSerializer,
+        ILogger<MessagePublisher> logger)
     {
         _options = options;
+        _connectionPool = connectionPool;
         _messageSerializer = messageSerializer;
         _logger = logger;
-    }
-
-    public void Dispose()
-    {
-        _channel?.Dispose();
     }
 
     /// <inheritdoc />
@@ -39,13 +40,14 @@ internal sealed class MessagePublisher : IMessagePublisher
     {
         try
         {
-            _channel ??= await _options.PublisherConnection.CreateChannelAsync(cancellationToken: cancellationToken);
+            var connection = _connectionPool.GetConnection();
+            using var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
             var messageType = typeof(TMessage).FullName;
             var jsonBytes = _messageSerializer.Serialize(message);
 
-            _logger.LogInformation($"Publishing message of type {typeof(TMessage).Name}.");
+            _logger.LogInformation("Broadcasting message of type {messageType}.", typeof(TMessage).Name);
 
-            await _channel.ExchangeDeclareAsync(
+            await channel.ExchangeDeclareAsync(
                 exchange: messageType,
                 type: ExchangeType.Fanout,
                 durable: true,
@@ -53,7 +55,7 @@ internal sealed class MessagePublisher : IMessagePublisher
                 arguments: null,
                 cancellationToken: cancellationToken);
 
-            await _channel.BasicPublishAsync(
+            await channel.BasicPublishAsync(
                 exchange: messageType,
                 routingKey: string.Empty,
                 mandatory: false,
@@ -63,7 +65,7 @@ internal sealed class MessagePublisher : IMessagePublisher
         }
         catch (JsonException error)
         {
-            _logger.LogError(error, $"Error serializing message of type {typeof(TMessage).Name}.");
+            _logger.LogError(error, "Error serializing message of type {messageType}.", typeof(TMessage).Name);
 
             if (_options.PublisherOptions.SerializerExceptionBehavior == PublisherSerializerExceptionBehavior.Throw)
             {
@@ -72,9 +74,8 @@ internal sealed class MessagePublisher : IMessagePublisher
         }
         catch (Exception error)
         {
-            var errorMessage = $"Error publishing message of type {typeof(TMessage).Name}.";
-            _logger.LogError(error, errorMessage);
-            throw new MessagePublishException(errorMessage, error);
+            _logger.LogError(error, "Error broadcasting message of type {messageType}", typeof(TMessage).Name);
+            throw new MessagePublishException($"Error broadcasting message of type {typeof(TMessage).Name}.", error);
         }
     }
 
@@ -84,21 +85,22 @@ internal sealed class MessagePublisher : IMessagePublisher
     {
         try
         {
-            _channel ??= await _options.PublisherConnection.CreateChannelAsync(cancellationToken: cancellationToken);
+            var connection = _connectionPool.GetConnection();
+            using var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
             var messageType = typeof(TMessage).FullName;
             var jsonBytes = _messageSerializer.Serialize(message);
 
-            _logger.LogInformation($"Publishing message of type {typeof(TMessage).Name} to {consumer}.");
+            _logger.LogInformation("Sending message of type {messageType} to {consumer}.", typeof(TMessage).Name, consumer);
 
-            await _channel.ExchangeDeclareAsync(
-                exchange: consumer,
-                type: ExchangeType.Direct,
+            await channel.ExchangeDeclareAsync(
+                exchange: messageType,
+                type: ExchangeType.Fanout,
                 durable: true,
                 autoDelete: false,
                 arguments: null,
                 cancellationToken: cancellationToken);
 
-            await _channel.BasicPublishAsync(
+            await channel.BasicPublishAsync(
                 exchange: string.Empty,
                 routingKey: consumer,
                 mandatory: true,
@@ -108,7 +110,7 @@ internal sealed class MessagePublisher : IMessagePublisher
         }
         catch (JsonException error)
         {
-            _logger.LogError(error, $"Error serializing message of type {typeof(TMessage).Name}.");
+            _logger.LogError(error, "Error serializing message of type {messageType}.", typeof(TMessage).Name);
 
             if (_options.PublisherOptions.SerializerExceptionBehavior == PublisherSerializerExceptionBehavior.Throw)
             {
@@ -117,9 +119,8 @@ internal sealed class MessagePublisher : IMessagePublisher
         }
         catch (Exception error)
         {
-            var errorMessage = $"Error sending message of type {typeof(TMessage).Name} to {consumer}.";
-            _logger.LogError(error, errorMessage);
-            throw new MessagePublishException(errorMessage, error);
+            _logger.LogError(error, "Error sending message of type {messageType} to {consumer}.", typeof(TMessage).Name, consumer);
+            throw new MessagePublishException($"Error sending message of type {typeof(TMessage).Name} to {consumer}.", error);
         }
     }
 }

@@ -6,6 +6,7 @@ using AutoFixture.AutoMoq;
 using Microsoft.Extensions.DependencyInjection;
 using NanoWorks.Messaging.Errors;
 using NanoWorks.Messaging.MessagePublishers;
+using NanoWorks.Messaging.RabbitMq.ConnectionPools;
 using NanoWorks.Messaging.RabbitMq.DependencyInjection;
 using NanoWorks.Messaging.RabbitMq.Options;
 using NanoWorks.Messaging.RabbitMq.Services;
@@ -27,6 +28,7 @@ public sealed class SendTests : IDisposable
     private readonly IMessagePublisher _messagePublisher;
     private readonly MessagingOptions _messagingOptions;
     private readonly MessagingService _messagingService;
+    private readonly IConnectionPool _connectionPool;
 
     public SendTests()
     {
@@ -83,13 +85,14 @@ public sealed class SendTests : IDisposable
         _serviceScope = serviceProvider.CreateScope();
         _messagePublisher = _serviceScope.ServiceProvider.GetRequiredService<IMessagePublisher>();
         _messagingOptions = _serviceScope.ServiceProvider.GetRequiredService<MessagingOptions>();
-        _messagingService = new MessagingService(_serviceScope.ServiceProvider, _messagingOptions);
+        _connectionPool = _serviceScope.ServiceProvider.GetRequiredService<IConnectionPool>();
+        _messagingService = new MessagingService(_serviceScope.ServiceProvider, _messagingOptions, _connectionPool);
         _messagingService.StartAsync(CancellationToken.None).Wait();
     }
 
     public void Dispose()
     {
-        _messagePublisher.Dispose();
+        _connectionPool.Dispose();
         _messagingService.StopAsync(CancellationToken.None).Wait();
         _serviceScope.Dispose();
         GC.SuppressFinalize(this);

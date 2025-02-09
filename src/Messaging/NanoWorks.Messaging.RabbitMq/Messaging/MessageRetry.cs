@@ -26,7 +26,7 @@ internal sealed class MessageRetry : IMessageRetry
     {
         await Task.Delay(consumerOptions.RetryDelay, cancellationToken);
 
-        _logger.LogInformation($"{consumerOptions.ConsumerType.Name} retrying message of type {eventArgs.BasicProperties.Type}.");
+        _logger.LogInformation("{consumerType} retrying message of type {messageType}.", consumerOptions.ConsumerType.Name, eventArgs.BasicProperties.Type);
 
         var retryCount = eventArgs.BasicProperties.Headers?.TryGetValue("x-retry-count", out var value) ?? false ? (int)value : 0;
 

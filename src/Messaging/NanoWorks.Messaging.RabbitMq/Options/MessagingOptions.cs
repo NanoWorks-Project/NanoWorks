@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using NanoWorks.Messaging.RabbitMq.ConnectionPools;
-using RabbitMQ.Client;
 
 namespace NanoWorks.Messaging.RabbitMq.Options;
 
@@ -15,9 +14,7 @@ public sealed class MessagingOptions
 {
     internal string ConnectionString { get; set; }
 
-    internal IConnection PublisherConnection => ConnectionPool.GetConnection(ConnectionString);
-
-    internal IConnection ConsumerConnection => ConnectionPool.GetConnection(ConnectionString);
+    internal int ConnectionPoolSize { get; set; } = Environment.ProcessorCount;
 
     internal PublisherOptions PublisherOptions { get; set; } = new PublisherOptions();
 
@@ -38,7 +35,7 @@ public sealed class MessagingOptions
     /// <param name="connectionPoolSize">Maximum number of connections.</param>
     public void UseConnectionPoolSize(int connectionPoolSize)
     {
-        ConnectionPool.Size = connectionPoolSize;
+        ConnectionPoolSize = connectionPoolSize;
     }
 
     /// <summary>
@@ -85,9 +82,9 @@ public sealed class MessagingOptions
             throw new ArgumentNullException(nameof(PublisherOptions));
         }
 
-        if (ConnectionPool.Size < 1)
+        if (ConnectionPoolSize < 1)
         {
-            throw new ArgumentOutOfRangeException(nameof(ConnectionPool.Size));
+            throw new ArgumentOutOfRangeException(nameof(ConnectionPoolSize));
         }
 
         PublisherOptions.Validate();

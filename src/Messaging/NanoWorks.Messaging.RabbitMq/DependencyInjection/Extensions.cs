@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using NanoWorks.Messaging.MessagePublishers;
+using NanoWorks.Messaging.RabbitMq.ConnectionPools;
 using NanoWorks.Messaging.RabbitMq.Messaging;
 using NanoWorks.Messaging.RabbitMq.Options;
 using NanoWorks.Messaging.RabbitMq.Services;
@@ -29,6 +30,7 @@ public static class Extensions
         options.Validate();
 
         services.AddSingleton(options);
+        services.AddSingleton<IConnectionPool, ConnectionPool>();
         services.AddSingleton<IMessageSerializer, MessageSerializer>();
         services.AddSingleton<ITransportErrorPublisher, TransportErrorPublisher>();
         services.AddSingleton<IMessageRetry, MessageRetry>();

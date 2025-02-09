@@ -1,6 +1,5 @@
 ﻿// Ignore Spelling: Nano
 
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -9,7 +8,7 @@ namespace NanoWorks.Messaging.MessagePublishers;
 /// <summary>
 /// Interface defining a message publisher.
 /// </summary>
-public interface IMessagePublisher : IDisposable
+public interface IMessagePublisher
 {
     /// <summary>
     /// Broadcasts a message to all subscribed consumers.
